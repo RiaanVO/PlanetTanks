@@ -51,7 +51,7 @@ public class GameStateManager {
      */
     public void update(float deltaTime){
         if(states.size() == 0) return;
-        states.peek().update(deltaTime);
+        states.peek().Update(deltaTime);
     }
 
     /**
@@ -61,7 +61,7 @@ public class GameStateManager {
      */
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch){
         if(states.size() == 0) return;
-        states.peek().render(spriteBatch, modelBatch);
+        states.peek().Render(spriteBatch, modelBatch);
     }
 
     public void dispose(){

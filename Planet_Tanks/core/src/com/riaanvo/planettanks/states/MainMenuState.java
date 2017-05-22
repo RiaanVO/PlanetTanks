@@ -22,8 +22,6 @@ import com.riaanvo.planettanks.managers.ContentManager;
 
 public class MainMenuState extends State{
 
-    private boolean isLoading;
-    private ContentManager mContentManager;
     private Stage mStage;
     private Skin mSkin;
     private Table mTable;
@@ -36,44 +34,21 @@ public class MainMenuState extends State{
     private Image mBackgroundImage;
 
     public MainMenuState(){
-        mContentManager = ContentManager.get();
-
-        mContentManager.addSkin(Constants.SKIN_KEY);
-        mContentManager.addTexture(Constants.MAIN_MENU_BACKGROUND);
-
-        isLoading = true;
+        mContentManager.loadSkin(Constants.SKIN_KEY);
+        mContentManager.loadTexture(Constants.MAIN_MENU_BACKGROUND);
     }
 
     @Override
-    public void update(float deltaTime) {
-        if(!isLoaded()) return;
+    protected void update(float deltaTime) {
     }
 
     @Override
-    public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
-        if(!isLoaded()) return;
+    protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         mStage.draw();
     }
 
     @Override
-    public void dispose() {
-        mStage.dispose();
-    }
-
-    private boolean isLoaded(){
-        if(isLoading){
-            if(mContentManager.assetManagerUpdate()){
-                loaded();
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void loaded(){
-        isLoading = false;
-
+    protected void loaded(){
         mStage = new Stage(new ScreenViewport());
 
         mTable = new Table();
@@ -136,5 +111,11 @@ public class MainMenuState extends State{
         mStage.addActor(mBackgroundImage);
         mStage.addActor(mTable);
         Gdx.input.setInputProcessor(mStage);
+    }
+
+
+    @Override
+    public void dispose() {
+        mStage.dispose();
     }
 }

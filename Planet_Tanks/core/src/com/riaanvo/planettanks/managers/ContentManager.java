@@ -26,7 +26,7 @@ public class ContentManager {
         mAssetManager = new AssetManager();
     }
 
-    public void addModel(String key){
+    public void loadModel(String key){
         mAssetManager.load(key, Model.class);
     }
 
@@ -34,7 +34,7 @@ public class ContentManager {
         return mAssetManager.get(key, Model.class);
     }
 
-    public void addTextureAtlas(String key){
+    public void loadTextureAtlas(String key){
         mAssetManager.load(key, TextureAtlas.class);
     }
 
@@ -42,7 +42,7 @@ public class ContentManager {
         return mAssetManager.get(key, TextureAtlas.class);
     }
 
-    public void addTexture(String key){
+    public void loadTexture(String key){
         mAssetManager.load(key, Texture.class);
     }
 
@@ -50,7 +50,7 @@ public class ContentManager {
         return mAssetManager.get(key, Texture.class);
     }
 
-    public void addSkin(String key){
+    public void loadSkin(String key){
         mAssetManager.load(key, Skin.class);
     }
 
@@ -58,7 +58,7 @@ public class ContentManager {
         return mAssetManager.get(key, Skin.class);
     }
 
-    public void addBitmapFont(String key){
+    public void loadBitmapFont(String key){
         mAssetManager.load(key, BitmapFont.class);
     }
 

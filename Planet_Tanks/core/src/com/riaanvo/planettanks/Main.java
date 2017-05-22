@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
-import com.riaanvo.planettanks.states.MainMenuState;
 import com.riaanvo.planettanks.states.PlayState;
 import com.riaanvo.planettanks.states.SplashScreenState;
 
@@ -29,9 +28,8 @@ public class Main extends ApplicationAdapter {
         mContentManager = ContentManager.get();
 
         //For frame rate debugging
-        mContentManager.addBitmapFont(Constants.DEFAULT_FONT);
-
-        mContentManager.addTexture(Constants.FLOOR_TEXTURE);
+        mContentManager.loadBitmapFont(Constants.DEFAULT_FONT);
+        mContentManager.loadTexture(Constants.BLACK_TEXTURE); // used for transitions
 
         isLoaded = false;
 
