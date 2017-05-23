@@ -16,12 +16,18 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.Objects.CameraController;
 import com.riaanvo.planettanks.Objects.FloorTile;
 import com.riaanvo.planettanks.Objects.GameObject;
 import com.riaanvo.planettanks.Objects.Player;
 import com.riaanvo.planettanks.Objects.WallSegment;
+import com.riaanvo.planettanks.managers.CollisionManager;
+import com.riaanvo.planettanks.managers.GameObjectManager;
 
 import java.util.LinkedList;
 
@@ -31,52 +37,22 @@ import java.util.LinkedList;
 
 public class PlayState extends State {
 
-    private Model cube;
-
     private Player player;
     private CameraController mCameraController;
-
-    private LinkedList<GameObject> mGameObjects = new LinkedList<GameObject>();
+    private GameObjectManager mGameObjectManager;
 
     //For the floor
     private ModelBuilder modelBuilder;
     private Model floor;
-    private ModelInstance[][] floorInstances;
+    private Model cube;
 
-    public PlayState(){
-        mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
-        mContentManager.loadModel(Constants.BASIC_TANK_BODY_MODEL);
-        mContentManager.loadModel(Constants.BASIC_TANK_TURRET_MODEL);
-    }
+    //UI controls
+    private Stage mStage;
+    private Touchpad movementTouchpad;
+    private Touchpad.TouchpadStyle touchpadStyle;
+    private Skin touchpadSkin;
 
-    @Override
-    protected void update(float deltaTime) {
-        //player.update(deltaTime);
-
-        for(GameObject gameObject : mGameObjects){
-            gameObject.update(deltaTime);
-        }
-
-        mCameraController.update(deltaTime);
-    }
-
-    @Override
-    protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
-        //player.render(spriteBatch, modelBatch);
-
-        for(GameObject gameObject : mGameObjects){
-            gameObject.render(spriteBatch, modelBatch);
-        }
-
-//        modelBatch.begin(mCameraController.getCamera());
-//        for(int y = 0; y < floorInstances.length; y ++){
-//            for(int x = 0; x < floorInstances[0].length; x ++){
-//                modelBatch.render(floorInstances[y][x]);
-//            }
-//        }
-//        modelBatch.end();
-
-    }
+    private Touchpad aimingTouchpad;
 
     private int[][] floorMap = {
             {0,0,0,0,0,0,0,0,0,0},
@@ -98,14 +74,42 @@ public class PlayState extends State {
             {1,1,1,1,1,1,1,1,1,1}
     };
 
+
+
+    public PlayState(){
+        mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
+        mContentManager.loadModel(Constants.BASIC_TANK_BODY_MODEL);
+        mContentManager.loadModel(Constants.BASIC_TANK_TURRET_MODEL);
+
+        mContentManager.loadTexture(Constants.TOUCHPAD_BACKGROUND);
+        mContentManager.loadTexture(Constants.TOUCHPAD_KNOB);
+    }
+
+    @Override
+    protected void update(float deltaTime) {
+        mGameObjectManager.update(deltaTime);
+
+        mCameraController.update(deltaTime);
+
+        mStage.act();
+    }
+
+    @Override
+    protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        mGameObjectManager.render(spriteBatch, modelBatch);
+
+        mStage.draw();
+    }
+
     @Override
     protected void loaded() {
+        mGameObjectManager = GameObjectManager.get();
         mCameraController = CameraController.get();
         mCameraController.CreatePerspective(45, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 1f, 300f, new Vector3(0,0,0), new Vector3(0,20,10));
 
         player = new Player(mContentManager.getModel(Constants.BASIC_TANK_BODY_MODEL), mContentManager.getModel(Constants.BASIC_TANK_TURRET_MODEL));
         player.setPosition(new Vector3(5,0,5));
-        mGameObjects.add(player);
+        mGameObjectManager.addGameObject(player);
 
         mCameraController.setTrackingObject(player);
 
@@ -121,8 +125,7 @@ public class PlayState extends State {
             for(int x = 0; x < floorMap[0].length; x ++){
                 if(floorMap[z][x] == 1){
                     Vector3 position = new Vector3(tileSize/2 + tileSize * x, 0, tileSize/2 + tileSize * z);
-                    System.out.println("Adding floor: " + position);
-                    mGameObjects.add(new FloorTile(floor, position));
+                    mGameObjectManager.addGameObject(new FloorTile(floor, position));
                 }
             }
         }
@@ -135,18 +138,49 @@ public class PlayState extends State {
             for(int x = 0; x < wallMap[0].length; x ++){
                 if(wallMap[z][x] == 1){
                     Vector3 position = new Vector3(tileSize/2 + tileSize * x, tileSize/2, tileSize/2 + tileSize * z);
-                    System.out.println("Adding wall: " + position);
-                    mGameObjects.add(new WallSegment(cube, position));
+                    mGameObjectManager.addGameObject(new WallSegment(cube, position, new Vector3(tileSize, tileSize, tileSize)));
                 }
             }
         }
 
+
+
+        mStage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(mStage);
+
+        touchpadSkin = new Skin();
+        touchpadSkin.add("touchBackground", mContentManager.getTexture(Constants.TOUCHPAD_BACKGROUND));
+        touchpadSkin.add("touchKnob", mContentManager.getTexture(Constants.TOUCHPAD_KNOB));
+        touchpadStyle = new Touchpad.TouchpadStyle();
+        touchpadStyle.background = touchpadSkin.getDrawable("touchBackground");
+        touchpadStyle.knob = touchpadSkin.getDrawable("touchKnob");
+
+        float touchpadSize = 200f;//mStage.getWidth() * 0.1f;
+        float touchpadPadding = mStage.getWidth() * 0.01f;
+        float deadZoneRadius = 10f;
+        movementTouchpad = new Touchpad(deadZoneRadius, touchpadStyle);
+        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+        movementTouchpad.setScale(2,2);
+
+        aimingTouchpad = new Touchpad(deadZoneRadius, touchpadStyle);
+        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+        aimingTouchpad.setScale(2,2);
+
+        //mStage.addActor(movementTouchpad);
+        //mStage.addActor(aimingTouchpad);
+
+        //player.setTouchPads(movementTouchpad, aimingTouchpad);
     }
 
     @Override
     public void dispose() {
         cube.dispose();
         floor.dispose();
+        mStage.dispose();
+        touchpadSkin.dispose();
+        mGameObjectManager.clearGameObjects();
+        CollisionManager.get().clearColliders();
+        CollisionManager.get().dispose();
     }
 
     private Model createPlaneModel(final float width, final float height, final Material material, final float u1, final float v1, final float u2, final float v2) {

@@ -1,10 +1,15 @@
 package com.riaanvo.planettanks.managers;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.HashMap;
@@ -22,8 +27,17 @@ public class ContentManager {
         return sContentManager;
     }
 
+    private Model shell;
+    public Model getShell(){
+        return shell;
+    }
+
     private ContentManager(){
         mAssetManager = new AssetManager();
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        Material mat = new Material(ColorAttribute.createDiffuse(Color.RED));
+        shell = modelBuilder.createBox(0.2f, 0.2f, 0.5f, mat, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
 
     public void loadModel(String key){
@@ -78,5 +92,7 @@ public class ContentManager {
      */
     public void dispose(){
         mAssetManager.dispose();
+
+        shell.dispose();
     }
 }

@@ -1,7 +1,7 @@
 package com.riaanvo.planettanks.Physics;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Sphere;
 import com.riaanvo.planettanks.Objects.GameObject;
 
 /**
@@ -10,19 +10,46 @@ import com.riaanvo.planettanks.Objects.GameObject;
 
 public abstract class Collider {
     public enum  ColliderTag {
-        WALLS,
+        ALL,
+        WALL,
         ENTITIES,
         PROJECTILES
     }
 
+    public enum ColliderType{
+        SPHERE,
+        BOX
+    }
+
+    protected ColliderType mColliderType;
     protected GameObject mGameObject;
     protected ColliderTag mTag;
+    protected Vector3 mOffset;
 
-    public abstract boolean isColliding(BoundingBox other);
-    public abstract boolean isColliding(Sphere other);
+    public abstract boolean intersectsWith(Collider other);
 
-    public boolean isTag(ColliderTag testTag){
+    public boolean hasTag(ColliderTag testTag){
         return mTag == testTag;
+    }
+
+    public void setOffset(Vector3 newOffset){
+        mOffset = newOffset;
+    }
+
+    protected boolean intersects(BoundingBox box1, BoundingBox box2){
+        return box1.intersects(box2);
+    }
+
+    protected boolean intersects(BoundingBox box, BoundingSphere sphere){
+        return sphere.intersects(box);
+    }
+
+    protected boolean intersects(BoundingSphere sphere1, BoundingSphere sphere2){
+        return sphere1.intersects(sphere2);
+    }
+
+    public boolean isType(ColliderType type){
+        return mColliderType == type;
     }
 
 }

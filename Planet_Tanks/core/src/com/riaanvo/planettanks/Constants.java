@@ -13,6 +13,8 @@ public class Constants {
     public static final String FLOOR_TEXTURE = "android/assets/Textures/floor.jpg";
     public static final String BASIC_TANK_BODY_MODEL = "android/assets/Models/Tank/BasicTankBody.obj";
     public static final String BASIC_TANK_TURRET_MODEL = "android/assets/Models/Tank/BasicTankTurret.obj";
+    public static final String TOUCHPAD_KNOB = "android/assets/UI/touchKnob.png";
+    public static final String TOUCHPAD_BACKGROUND = "android/assets/UI/touchBackground.png";
 
 //    //Android constants
 //    public static final String SKIN_KEY = "UI/uiskin.json";
@@ -23,5 +25,6 @@ public class Constants {
 //    public static final String FLOOR_TEXTURE = "Textures/floor.jpg";
 //    public static final String BASIC_TANK_BODY_MODEL = "Models/Tank/BasicTankBody.obj";
 //    public static final String BASIC_TANK_TURRET_MODEL = "Models/Tank/BasicTankTurret.obj";
-
+//    public static final String TOUCHPAD_KNOB = "UI/touchKnob.png";
+//    public static final String TOUCHPAD_BACKGROUND = "UI/touchBackground.png";
 }

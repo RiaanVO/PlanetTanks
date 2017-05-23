@@ -34,9 +34,9 @@ public class Main extends ApplicationAdapter {
         isLoaded = false;
 
         //Initialise the first screen
-        mGameStateManager.push(new SplashScreenState());
+        //mGameStateManager.push(new SplashScreenState());
         //mGameStateManager.push(new MainMenuState());
-        //mGameStateManager.push(new PlayState());
+        mGameStateManager.push(new PlayState());
     }
 
 	@Override
