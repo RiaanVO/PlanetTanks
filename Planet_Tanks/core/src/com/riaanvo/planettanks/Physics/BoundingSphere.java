@@ -20,7 +20,7 @@ public class BoundingSphere {
         Vector3 otherPosition = other.getCenter();
         float distanceBetweenSpheres = Vector3.dst2(mCenter.x, mCenter.y, mCenter.z, otherPosition.x, otherPosition.y, otherPosition.z);
         float actualDistance2 = (mRadius + other.getRadius()) * (mRadius + other.getRadius());
-        return actualDistance2 <= distanceBetweenSpheres;
+        return distanceBetweenSpheres <= actualDistance2;
     }
 
     //http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx

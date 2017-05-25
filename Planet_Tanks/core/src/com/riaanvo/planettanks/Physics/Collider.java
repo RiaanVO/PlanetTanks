@@ -52,4 +52,8 @@ public abstract class Collider {
         return mColliderType == type;
     }
 
+    public GameObject getGameObject(){
+        return mGameObject;
+    }
+
 }

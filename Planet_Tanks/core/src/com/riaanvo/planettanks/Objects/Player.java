@@ -20,7 +20,7 @@ import com.riaanvo.planettanks.managers.GameObjectManager;
  * Created by riaanvo on 15/5/17.
  */
 
-public class Player extends GameObject {
+public class Player extends LivingGameObject {
     private ModelInstance mPlayerTankBase;
     private ModelInstance mPlayerTankTurret;
     private CameraController mCameraController;
@@ -61,7 +61,6 @@ public class Player extends GameObject {
         bodyOrientation = getOrientation();
         turretOrientation = getOrientation();
 
-        //GameObject gameObject, ColliderTag tag, Vector3 offSet, float radius
         mCollisionManager = CollisionManager.get();
         float colliderRadius = 1f;
         Vector3 colliderOffset = new Vector3(0, 1, 0);
@@ -77,14 +76,22 @@ public class Player extends GameObject {
 
         mGameObjectManager = GameObjectManager.get();
         rotateTurret(new Vector3(0,0,-1));
-        bulletStartOffset = 1f;
-        bulletStartHeight = 1f;
+        bulletStartOffset = 1.1f;
+        bulletStartHeight = 0.8f;
         mMinTimeBetweenShots = 0.1f;
         mShotTimer = 0;
+        setTag("Player");
+
+        setHealth(3);
     }
 
     @Override
     public void update(float deltaTime) {
+        if(isDead()){
+            handelDeath();
+            return;
+        }
+
         Vector3 moveDirection = new Vector3();
         if(movementTouchpad == null) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) moveDirection.z += -1;
@@ -171,24 +178,6 @@ public class Player extends GameObject {
         turretOrientation = newOrientation;
     }
 
-    private float calculateOrientation(Vector3 direction){
-        float newOrientation;
-        if (direction.x != 0) {
-            if (direction.x < 0) {
-                newOrientation = 360 - (float) Math.toDegrees(Math.atan2(direction.x, direction.z)) * -1;
-            } else {
-                newOrientation = (float) Math.toDegrees(Math.atan2(direction.x, direction.z));
-            }
-        } else {
-            if(direction.z > 0){
-                newOrientation = 0;
-            } else {
-                newOrientation = 180;
-            }
-        }
-        return newOrientation;
-    }
-
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
@@ -197,8 +186,6 @@ public class Player extends GameObject {
         modelBatch.end();
 
         mCollisionManager.renderCollider(mBaseSphereCollider);
-        //mCollisionManager.renderCollider(mXTestCollider);
-        //mCollisionManager.renderCollider(mZTestCollider);
     }
 
     @Override
@@ -209,8 +196,17 @@ public class Player extends GameObject {
         mBaseSphereCollider.updatePosition();
     }
 
+
+
     public void setTouchPads(Touchpad movement, Touchpad aiming){
         movementTouchpad = movement;
         aimingTouchpad = aiming;
+    }
+
+    @Override
+    protected void handelDeath() {
+        System.out.println("Player is dead");
+        mGameObjectManager.removeGameObject(this);
+        mCollisionManager.removeCollider(mBaseSphereCollider);
     }
 }

@@ -10,11 +10,13 @@ import com.riaanvo.planettanks.Physics.SphereCollider;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 
+import java.util.LinkedList;
+
 /**
  * Created by riaanvo on 23/5/17.
  */
 
-public class Shell extends GameObject {
+public class Shell extends LivingGameObject {
     private ModelInstance mShell;
     private CameraController mCameraController;
     private CollisionManager mCollisionManager;
@@ -27,15 +29,16 @@ public class Shell extends GameObject {
 
     private final int mMaxBounceCount;
     private int mCurrentBounceCount;
+    private int hitDamage;
 
-    public Shell(Model shell, Vector3 startingPosition, Vector3 startingDirection){
+    public Shell(Model shell, Vector3 startingPosition, Vector3 startingDirection) {
         super();
         mShell = new ModelInstance(shell);
         mCameraController = CameraController.get();
         moveDirection = startingDirection.cpy();
 
         float colliderRadius = 0.1f;
-        Vector3 colliderOffset = new Vector3(0,0,0);
+        Vector3 colliderOffset = new Vector3(0, 0, 0);
         mCollisionManager = CollisionManager.get();
         mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.PROJECTILES, colliderOffset, colliderRadius);
         mCollisionManager.addCollider(mBaseSphereCollider);
@@ -44,27 +47,37 @@ public class Shell extends GameObject {
 
         setPosition(startingPosition);
 
-        mMaxBounceCount = 100;
+        mMaxBounceCount = 1;
         mCurrentBounceCount = 0;
-        speed = 5f;
+        speed = 7f;
+        setTag("Basic shell");
+        setHealth(1);
+        hitDamage = 1;
     }
 
     @Override
     public void update(float dt) {
+        if (isDead()) {
+            handelDeath();
+            return;
+        }
+
         move(moveDirection, dt);
-        if(mCurrentBounceCount > mMaxBounceCount){
-            mCollisionManager.removeCollider(mBaseSphereCollider);
-            GameObjectManager.get().removeGameObject(this);
+        checkDamageCollisions(Collider.ColliderTag.ENTITIES);
+        checkDamageCollisions(Collider.ColliderTag.PROJECTILES);
+
+        if (mCurrentBounceCount > mMaxBounceCount) {
+            takeDamage(getHealth());
         }
     }
 
-    private void move(Vector3 direction, float deltaTime){
+    private void move(Vector3 direction, float deltaTime) {
         direction.nor();
         Vector3 moveAdjustment = direction.cpy().scl(deltaTime * speed);
         Vector3 newPosition = moveAdjustment.cpy().add(getPosition());
 
         mBaseSphereCollider.setPosition(newPosition);
-        if(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL).size() > 0){
+        if (mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL).size() > 0) {
             Vector3 xMoveAdjustment = moveAdjustment.cpy();
             xMoveAdjustment.z = 0;
             Vector3 zMoveAdjustment = moveAdjustment.cpy();
@@ -73,13 +86,13 @@ public class Shell extends GameObject {
             mXTestCollider.adjustPosition(xMoveAdjustment);
             mZTestCollider.adjustPosition(zMoveAdjustment);
 
-            if(mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.WALL). size() > 0){
+            if (mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.WALL).size() > 0) {
                 newPosition.x = getPosition().x - xMoveAdjustment.x;
                 moveDirection.x = -moveDirection.x;
                 mCurrentBounceCount++;
             }
 
-            if(mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.WALL). size() > 0){
+            if (mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.WALL).size() > 0) {
                 newPosition.z = getPosition().z - zMoveAdjustment.z;
                 moveDirection.z = -moveDirection.z;
                 mCurrentBounceCount++;
@@ -90,29 +103,28 @@ public class Shell extends GameObject {
         rotateShell(direction);
     }
 
-    private void rotateShell(Vector3 direction){
+    private void checkDamageCollisions(Collider.ColliderTag tag) {
+        LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBaseSphereCollider, tag);
+        if (collisions.size() > 0) {
+            damageOtherLivingGameObjects(collisions);
+            takeDamage(getHealth());
+        }
+    }
+
+    private void damageOtherLivingGameObjects(LinkedList<Collider> others) {
+        for (Collider collider : others) {
+            LivingGameObject livingGameObject = ((LivingGameObject) collider.getGameObject());
+            if (livingGameObject != null) {
+                livingGameObject.takeDamage(hitDamage);
+            }
+        }
+    }
+
+    private void rotateShell(Vector3 direction) {
         float newOrientation = calculateOrientation(direction);
         float changeInOrientation = newOrientation - mOrientation;
         mShell.transform.rotate(Vector3.Y, changeInOrientation);
         mOrientation = newOrientation;
-    }
-
-    private float calculateOrientation(Vector3 direction){
-        float newOrientation;
-        if (direction.x != 0) {
-            if (direction.x < 0) {
-                newOrientation = 360 - (float) Math.toDegrees(Math.atan2(direction.x, direction.z)) * -1;
-            } else {
-                newOrientation = (float) Math.toDegrees(Math.atan2(direction.x, direction.z));
-            }
-        } else {
-            if(direction.z > 0){
-                newOrientation = 0;
-            } else {
-                newOrientation = 180;
-            }
-        }
-        return newOrientation;
     }
 
     @Override
@@ -131,5 +143,11 @@ public class Shell extends GameObject {
         mBaseSphereCollider.updatePosition();
         mXTestCollider.updatePosition();
         mZTestCollider.updatePosition();
+    }
+
+    @Override
+    protected void handelDeath() {
+        mCollisionManager.removeCollider(mBaseSphereCollider);
+        GameObjectManager.get().removeGameObject(this);
     }
 }

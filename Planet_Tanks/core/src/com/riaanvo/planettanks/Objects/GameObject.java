@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
  */
 
 public abstract class GameObject {
+    protected String mTag;
     protected Vector3 mPosition;
     protected float mOrientation;
     protected Vector3 mVelocity;
@@ -27,6 +28,7 @@ public abstract class GameObject {
         mOrientation = orientation;
         mVelocity = Vector3.Zero;
         mAngularVelocity = 0;
+        mTag = "GameObject";
     }
 
 
@@ -51,6 +53,24 @@ public abstract class GameObject {
         mOrientation = orientation;
     }
 
+    protected float calculateOrientation(Vector3 direction){
+        float newOrientation;
+        if (direction.x != 0) {
+            if (direction.x < 0) {
+                newOrientation = 360 - (float) Math.toDegrees(Math.atan2(direction.x, direction.z)) * -1;
+            } else {
+                newOrientation = (float) Math.toDegrees(Math.atan2(direction.x, direction.z));
+            }
+        } else {
+            if(direction.z > 0){
+                newOrientation = 0;
+            } else {
+                newOrientation = 180;
+            }
+        }
+        return newOrientation;
+    }
+
     public Vector3 getVelocity() {
         return mVelocity;
     }
@@ -65,5 +85,17 @@ public abstract class GameObject {
 
     public void setAngularVelocity(float angularVelocity) {
         mAngularVelocity = angularVelocity;
+    }
+
+    protected void setTag(String newTag){
+        mTag = newTag;
+    }
+
+    public String getTag(){
+        return mTag;
+    }
+
+    public boolean compareTag(String testTag){
+        return mTag.equals(testTag);
     }
 }
