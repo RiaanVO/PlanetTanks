@@ -6,6 +6,7 @@ package com.riaanvo.planettanks.Objects;
 
 public abstract class LivingGameObject extends GameObject {
     protected int mHealth;
+    protected boolean deathHandled = false;
 
     public void takeDamage(int amount){
         if(mHealth >= 0) {

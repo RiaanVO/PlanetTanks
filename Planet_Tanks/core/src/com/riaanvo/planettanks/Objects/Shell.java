@@ -147,7 +147,10 @@ public class Shell extends LivingGameObject {
 
     @Override
     protected void handelDeath() {
-        mCollisionManager.removeCollider(mBaseSphereCollider);
-        GameObjectManager.get().removeGameObject(this);
+        if (!deathHandled) {
+            mCollisionManager.removeCollider(mBaseSphereCollider);
+            GameObjectManager.get().removeGameObject(this);
+            deathHandled = true;
+        }
     }
 }

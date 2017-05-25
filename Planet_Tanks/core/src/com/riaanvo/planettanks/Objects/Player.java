@@ -2,18 +2,13 @@ package com.riaanvo.planettanks.Objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.riaanvo.planettanks.Physics.Collider;
 import com.riaanvo.planettanks.Physics.SphereCollider;
 import com.riaanvo.planettanks.managers.CollisionManager;
-import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 
 /**
@@ -21,14 +16,11 @@ import com.riaanvo.planettanks.managers.GameObjectManager;
  */
 
 public class Player extends LivingGameObject {
-    private ModelInstance mPlayerTankBase;
-    private ModelInstance mPlayerTankTurret;
-    private CameraController mCameraController;
+
+    private TankController mTankController;
+    private GameObjectManager mGameObjectManager;
 
     private float speed;
-
-    private float bodyOrientation;
-    private float turretOrientation;
 
     private Touchpad movementTouchpad;
     private Touchpad aimingTouchpad;
@@ -38,32 +30,20 @@ public class Player extends LivingGameObject {
     private SphereCollider mXTestCollider;
     private SphereCollider mZTestCollider;
 
-    private GameObjectManager mGameObjectManager;
-    private Vector3 aimingDirection;
-    private float bulletStartOffset;
-    private float bulletStartHeight;
     private float mMinTimeBetweenShots;
     private float mShotTimer;
 
-    public Player(Model playerTankBase, Model playerTankTurret){
+
+    public Player(TankController tankController){
         super();
-        ColorAttribute TcolorAttr = new ColorAttribute(ColorAttribute.Diffuse, Color.BLUE);
-        mPlayerTankBase = new ModelInstance(playerTankBase);
-        mPlayerTankBase.transform.translate(getPosition());
-        mPlayerTankBase.materials.get(0).set(TcolorAttr);
+        mTankController = tankController;
+        mTankController.setParent(this);
 
-        mPlayerTankTurret = new ModelInstance(playerTankTurret);
-        mPlayerTankTurret.transform.translate(getPosition());
-
-        mCameraController = CameraController.get();
         speed = 5f;
 
-        bodyOrientation = getOrientation();
-        turretOrientation = getOrientation();
-
         mCollisionManager = CollisionManager.get();
-        float colliderRadius = 1f;
-        Vector3 colliderOffset = new Vector3(0, 1, 0);
+        float colliderRadius = 0.8f;
+        Vector3 colliderOffset = new Vector3(0, 0.5f, 0);
         mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, colliderOffset, colliderRadius);
         mCollisionManager.addCollider(mBaseSphereCollider);
 
@@ -75,14 +55,11 @@ public class Player extends LivingGameObject {
         mZTestCollider.updatePosition();
 
         mGameObjectManager = GameObjectManager.get();
-        rotateTurret(new Vector3(0,0,-1));
-        bulletStartOffset = 1.1f;
-        bulletStartHeight = 0.8f;
-        mMinTimeBetweenShots = 0.1f;
-        mShotTimer = 0;
         setTag("Player");
-
         setHealth(3);
+
+        mMinTimeBetweenShots = 0.8f;
+        mShotTimer = 0;
     }
 
     @Override
@@ -115,17 +92,14 @@ public class Player extends LivingGameObject {
             aimDirection.x += aimingTouchpad.getKnobPercentX() * 1;
             aimDirection.z += aimingTouchpad.getKnobPercentY() * (-1);
         }
-        if(aimDirection.x != 0 || aimDirection.z != 0) rotateTurret(aimDirection);
+        if(aimDirection.x != 0 || aimDirection.z != 0) mTankController.setTurretDirection(aimDirection);
 
 
         mShotTimer += deltaTime;
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
             if(mShotTimer > mMinTimeBetweenShots){
                 mShotTimer = 0;
-                Vector3 startingPosition = getPosition().cpy();
-                startingPosition.y = bulletStartHeight;
-                startingPosition.add(aimingDirection.cpy().scl(bulletStartOffset));
-                mGameObjectManager.addGameObject(new Shell(ContentManager.get().getShell(), startingPosition, aimingDirection));
+                mTankController.shoot();
             }
         }
     }
@@ -136,67 +110,57 @@ public class Player extends LivingGameObject {
         Vector3 newPosition = moveAdjustment.cpy().add(getPosition());
 
         mBaseSphereCollider.setPosition(newPosition);
+
+        Vector3 xMoveAdjustment = moveAdjustment.cpy();
+        xMoveAdjustment.z = 0;
+        Vector3 zMoveAdjustment = moveAdjustment.cpy();
+        zMoveAdjustment.x = 0;
+
+        mXTestCollider.adjustPosition(xMoveAdjustment);
+        mZTestCollider.adjustPosition(zMoveAdjustment);
+
+        boolean moveX = true;
+        boolean moveZ = true;
+
         if(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL).size() > 0){
-            Vector3 xMoveAdjustment = moveAdjustment.cpy();
-            xMoveAdjustment.z = 0;
-            Vector3 zMoveAdjustment = moveAdjustment.cpy();
-            zMoveAdjustment.x = 0;
-
-            mXTestCollider.adjustPosition(xMoveAdjustment);
-            mZTestCollider.adjustPosition(zMoveAdjustment);
-
             if(mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.WALL). size() > 0){
-                newPosition.x = getPosition().x;
+                moveX = false;
             }
-
             if(mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.WALL). size() > 0){
-                newPosition.z = getPosition().z;
+                moveZ = false;
             }
         }
 
+        if(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.ENTITIES).size() > 0){
+            if(mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.ENTITIES). size() > 0){
+                moveX = false;
+            }
+            if(mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.ENTITIES). size() > 0){
+                moveZ = false;
+            }
+        }
+
+        if(!moveX) newPosition.x = getPosition().x;
+        if(!moveZ) newPosition.z = getPosition().z;
+
         setPosition(newPosition);
-        mPlayerTankBase.transform.setTranslation(newPosition);
-
-        mBaseSphereCollider.updatePosition();
-        mXTestCollider.updatePosition();
-        mZTestCollider.updatePosition();
-        rotateBody(direction);
-    }
-
-    private void rotateBody(Vector3 direction){
-        float newOrientation = calculateOrientation(direction);
-        float changeInOrientation = newOrientation - bodyOrientation;
-        mPlayerTankBase.transform.rotate(Vector3.Y, changeInOrientation);
-        bodyOrientation = newOrientation;
-    }
-
-    private void rotateTurret(Vector3 direction){
-        aimingDirection = direction.cpy();
-        float newOrientation = calculateOrientation(direction);
-        float changeInOrientation = newOrientation - turretOrientation;
-        mPlayerTankTurret.transform.rotate(Vector3.Y, changeInOrientation);
-        turretOrientation = newOrientation;
+        mTankController.setBodyDirection(direction);
     }
 
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
-        modelBatch.begin(mCameraController.getCamera());
-        modelBatch.render(mPlayerTankBase, mCameraController.getEnvironment());
-        modelBatch.render(mPlayerTankTurret, mCameraController.getEnvironment());
-        modelBatch.end();
-
+        mTankController.renderTank(spriteBatch, modelBatch);
         mCollisionManager.renderCollider(mBaseSphereCollider);
     }
 
     @Override
     public void setPosition(Vector3 position) {
         mPosition = position.cpy();
-        mPlayerTankBase.transform.setTranslation(getPosition());
-        mPlayerTankTurret.transform.setTranslation(getPosition());
+        mTankController.setPosition(position.cpy());
         mBaseSphereCollider.updatePosition();
+        mXTestCollider.updatePosition();
+        mZTestCollider.updatePosition();
     }
-
-
 
     public void setTouchPads(Touchpad movement, Touchpad aiming){
         movementTouchpad = movement;
@@ -205,8 +169,11 @@ public class Player extends LivingGameObject {
 
     @Override
     protected void handelDeath() {
-        System.out.println("Player is dead");
-        mGameObjectManager.removeGameObject(this);
-        mCollisionManager.removeCollider(mBaseSphereCollider);
+        if(!deathHandled) {
+            System.out.println("Player is dead");
+            mGameObjectManager.removeGameObject(this);
+            mCollisionManager.removeCollider(mBaseSphereCollider);
+            deathHandled = true;
+        }
     }
 }

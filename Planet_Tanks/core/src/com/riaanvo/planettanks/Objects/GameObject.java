@@ -71,6 +71,40 @@ public abstract class GameObject {
         return newOrientation;
     }
 
+    protected Vector3 calculateDirection(float orientation){
+        float castOrientation = Math.abs(orientation);
+        boolean negX = false;
+        boolean negZ = false;
+        boolean normalCalc = true;
+        float x;
+        float z;
+        if(castOrientation > 270){
+            castOrientation = 360 - castOrientation;
+            negX = true;
+        } else if(castOrientation > 180){
+            castOrientation = 270 - castOrientation;
+            negZ = true;
+            negX = true;
+            normalCalc = false;
+        } else if(castOrientation > 90){
+            castOrientation = 180 - castOrientation;
+            negZ = true;
+        }
+
+        if(normalCalc){
+            x = (float)Math.sin(Math.toRadians(castOrientation));
+            z = (float)Math.cos(Math.toRadians(castOrientation));
+        } else {
+            x = (float)Math.cos(Math.toRadians(castOrientation));
+            z = (float)Math.sin(Math.toRadians(castOrientation));
+        }
+
+        if(negX) x *= -1;
+        if(negZ) z *= -1;
+
+        return new Vector3(x, 0 , z);
+    }
+
     public Vector3 getVelocity() {
         return mVelocity;
     }
