@@ -26,6 +26,7 @@ import com.riaanvo.planettanks.Objects.CameraController;
 import com.riaanvo.planettanks.Objects.FloorTile;
 import com.riaanvo.planettanks.Objects.GameObject;
 import com.riaanvo.planettanks.Objects.Player;
+import com.riaanvo.planettanks.Objects.SimpleSpikes;
 import com.riaanvo.planettanks.Objects.TankController;
 import com.riaanvo.planettanks.Objects.WallSegment;
 import com.riaanvo.planettanks.managers.CollisionManager;
@@ -55,7 +56,7 @@ public class PlayState extends State {
             {0,1,1,1,1,1,1,1,1,0},
             {0,1,1,1,1,1,1,1,1,0},
             {0,1,1,1,1,1,1,1,1,0},
-            {0,1,1,1,1,1,1,1,1,0},
+            {0,1,1,2,2,2,1,1,1,0},
             {0,1,1,1,1,1,1,1,1,0},
             {0,0,0,0,0,0,0,0,0,0}
     };
@@ -86,8 +87,12 @@ public class PlayState extends State {
         mCameraController.CreatePerspective(45, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 1f, 300f, new Vector3(0,0,0), new Vector3(0,20,10));
 
         mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
+
         mContentManager.loadModel(Constants.BASIC_TANK_BODY_MODEL);
         mContentManager.loadModel(Constants.BASIC_TANK_TURRET_MODEL);
+
+        mContentManager.loadModel(Constants.SIMPLE_SPIKES_SPIKES);
+        mContentManager.loadModel(Constants.SIMPLE_SPIKES_BASE);
 
         mContentManager.loadTexture(Constants.TOUCHPAD_BACKGROUND);
         mContentManager.loadTexture(Constants.TOUCHPAD_KNOB);
@@ -119,16 +124,18 @@ public class PlayState extends State {
         mGameObjectManager.addGameObject(player);
         mCameraController.setTrackingObject(player);
 
-        float tileSize = 2;
+
         Model floorPlane = mContentManager.getFloorPlane();
         TextureAttribute textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, mContentManager.getTexture(Constants.FLOOR_TEXTURE));
         floorPlane.materials.get(0).set(textureAttribute);
 
         for(int z = 0; z < floorMap.length; z++){
             for(int x = 0; x < floorMap[0].length; x ++){
+                Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, 0, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
                 if(floorMap[z][x] == 1){
-                    Vector3 position = new Vector3(tileSize/2 + tileSize * x, 0, tileSize/2 + tileSize * z);
                     mGameObjectManager.addGameObject(new FloorTile(floorPlane, position));
+                } else if(floorMap[z][x] == 2){
+                    mGameObjectManager.addGameObject(new SimpleSpikes(mContentManager.getModel(Constants.SIMPLE_SPIKES_BASE), mContentManager.getModel(Constants.SIMPLE_SPIKES_SPIKES), position));
                 }
             }
         }
@@ -136,8 +143,8 @@ public class PlayState extends State {
         for(int z = 0; z < wallMap.length; z++){
             for(int x = 0; x < wallMap[0].length; x ++){
                 if(wallMap[z][x] == 1){
-                    Vector3 position = new Vector3(tileSize/2 + tileSize * x, tileSize/2, tileSize/2 + tileSize * z);
-                    mGameObjectManager.addGameObject(new WallSegment(mContentManager.getWallSegment(), position, new Vector3(tileSize, tileSize, tileSize)));
+                    Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, Constants.TILE_SIZE/2, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
+                    mGameObjectManager.addGameObject(new WallSegment(mContentManager.getWallSegment(), position, new Vector3(Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE)));
                 }
             }
         }
@@ -145,7 +152,7 @@ public class PlayState extends State {
         for(int z = 0; z < entityMap.length; z++){
             for(int x = 0; x < entityMap[0].length; x ++){
                 if(entityMap[z][x] == 1){
-                    Vector3 position = new Vector3(tileSize/2 + tileSize * x, 0, tileSize/2 + tileSize * z);
+                    Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, 0, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
 
                     ColorAttribute enemyColour = new ColorAttribute(ColorAttribute.Diffuse, Color.RED);
                     TankController enemyTank = new TankController(mContentManager.getModel(Constants.BASIC_TANK_BODY_MODEL), mContentManager.getModel(Constants.BASIC_TANK_TURRET_MODEL), enemyColour);

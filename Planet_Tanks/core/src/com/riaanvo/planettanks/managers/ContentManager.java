@@ -69,12 +69,11 @@ public class ContentManager {
         Material shellMat = new Material(ColorAttribute.createDiffuse(Color.RED));
         shell = modelBuilder.createBox(0.2f, 0.2f, 0.5f, shellMat, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
-        float tileSize = 2;
         Material wallSegmentMat = new Material(ColorAttribute.createDiffuse(Color.GREEN));
-        wallSegment = modelBuilder.createBox(tileSize, tileSize, tileSize, wallSegmentMat, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        wallSegment = modelBuilder.createBox(Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE, wallSegmentMat, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         Material floorMat = new Material( new BlendingAttribute(1), new FloatAttribute(FloatAttribute.AlphaTest, 0.5f));
-        floorPlane = createPlaneModel(tileSize, tileSize, floorMat, 0, 0, 1, 1);
+        floorPlane = createPlaneModel(Constants.TILE_SIZE, Constants.TILE_SIZE, floorMat, 0, 0, 1, 1);
         ColorAttribute colorAttr = new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE);
         floorPlane.materials.get(0).set(colorAttr);
     }

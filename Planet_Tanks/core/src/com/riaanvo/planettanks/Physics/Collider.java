@@ -13,7 +13,8 @@ public abstract class Collider {
         ALL,
         WALL,
         ENTITIES,
-        PROJECTILES
+        PROJECTILES,
+        TRAPS
     }
 
     public enum ColliderType{

@@ -38,6 +38,7 @@ public class Player extends LivingGameObject {
         super();
         mTankController = tankController;
         mTankController.setParent(this);
+        mTankController.setTurretDirection(new Vector3(0,0,1));
 
         speed = 5f;
 

@@ -5,6 +5,10 @@ package com.riaanvo.planettanks;
  */
 
 public class Constants {
+    //Game Constants
+    public static final float TILE_SIZE = 2f;
+
+    //Resource constants
     public static final String SKIN_KEY = "android/assets/UI/uiskin.json";
     public static final String DEFAULT_FONT = "android/assets/UI/default.fnt";
     public static final String SPLASH_BACKGROUND = "android/assets/Textures/SplashScreenBackground.png";
@@ -15,6 +19,9 @@ public class Constants {
     public static final String BASIC_TANK_TURRET_MODEL = "android/assets/Models/Tank/BasicTankTurret.obj";
     public static final String TOUCHPAD_KNOB = "android/assets/UI/touchKnob.png";
     public static final String TOUCHPAD_BACKGROUND = "android/assets/UI/touchBackground.png";
+
+    public static final String SIMPLE_SPIKES_SPIKES = "android/assets/Models/Spikes/SimpleSpikesSpikes.obj";
+    public static final String SIMPLE_SPIKES_BASE = "android/assets/Models/Spikes/SimpleSpikesBase.obj";
 
 //    //Android constants
 //    public static final String SKIN_KEY = "UI/uiskin.json";
@@ -27,4 +34,6 @@ public class Constants {
 //    public static final String BASIC_TANK_TURRET_MODEL = "Models/Tank/BasicTankTurret.obj";
 //    public static final String TOUCHPAD_KNOB = "UI/touchKnob.png";
 //    public static final String TOUCHPAD_BACKGROUND = "UI/touchBackground.png";
+//    public static final String SIMPLE_SPIKES_SPIKES = "Models/Spikes/SimpleSpikesSpikes.obj";
+//    public static final String SIMPLE_SPIKES_BASE = "Models/Spikes/SimpleSpikesBase.obj";
 }
