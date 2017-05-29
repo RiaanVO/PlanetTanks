@@ -14,26 +14,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
-import com.riaanvo.planettanks.managers.ContentManager;
 
 /**
  * Created by riaanvo on 9/5/17.
  */
 
-public class MainMenuState extends State{
+public class MainMenuState extends State {
 
     private Stage mStage;
     private Skin mSkin;
     private Table mTable;
 
     private Label mTitle;
-    private TextButton mStartButton;
-    private TextButton mLevelSelectButton;
+    private TextButton mPlayButton;
     private TextButton mLevelEditorButton;
     private TextButton mQuitButton;
     private Image mBackgroundImage;
 
-    public MainMenuState(){
+    public MainMenuState() {
         mContentManager.loadSkin(Constants.SKIN_KEY);
         mContentManager.loadTexture(Constants.MAIN_MENU_BACKGROUND);
     }
@@ -48,7 +46,7 @@ public class MainMenuState extends State{
     }
 
     @Override
-    protected void loaded(){
+    protected void loaded() {
         mStage = new Stage(new ScreenViewport());
 
         mTable = new Table();
@@ -62,32 +60,24 @@ public class MainMenuState extends State{
         mTitle = new Label("Planet Tanks", mSkin);
         mTitle.setFontScale(4);
 
-        mStartButton = new TextButton("New Game", mSkin);
-        mStartButton.addListener(new ClickListener(){
+        mPlayButton = new TextButton("Play", mSkin);
+        mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.push(new TransitionState(MainMenuState.this, new PlayState(), TransitionState.TransitionType.BLACK_FADE_REPLACE));
+                mGameStateManager.push(new TransitionState(new PlayState(), TransitionState.TransitionType.BLACK_FADE_ADD));
             }
         });
 
-        mLevelSelectButton = new TextButton("GameLevel Select", mSkin);
-        mLevelSelectButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("GameLevel select pressed");
-            }
-        });
-
-        mLevelEditorButton = new TextButton("GameLevel Editor", mSkin);
-        mLevelEditorButton.addListener(new ClickListener(){
+        mLevelEditorButton = new TextButton("Level Editor", mSkin);
+        mLevelEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("GameLevel editor pressed");
             }
         });
 
-        mQuitButton = new TextButton("Quit Game", mSkin);
-        mQuitButton.addListener(new ClickListener(){
+        mQuitButton = new TextButton("Quit", mSkin);
+        mQuitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
@@ -96,9 +86,7 @@ public class MainMenuState extends State{
 
         mTable.add(mTitle).spaceBottom(20);
         mTable.row();
-        mTable.add(mStartButton).spaceBottom(10);
-        mTable.row();
-        mTable.add(mLevelSelectButton).spaceBottom(10);
+        mTable.add(mPlayButton).spaceBottom(10);
         mTable.row();
         mTable.add(mLevelEditorButton).spaceBottom(10);
         mTable.row();
@@ -110,12 +98,19 @@ public class MainMenuState extends State{
 
         mStage.addActor(mBackgroundImage);
         mStage.addActor(mTable);
+        //Gdx.input.setInputProcessor(mStage);
+    }
+
+    @Override
+    public void initialiseInput() {
+        if(mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
     }
 
 
     @Override
     public void dispose() {
+        if(mStage == null) return;
         mStage.dispose();
     }
 }

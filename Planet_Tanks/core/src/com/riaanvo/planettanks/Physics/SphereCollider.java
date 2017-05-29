@@ -10,7 +10,7 @@ import com.riaanvo.planettanks.GameObjects.GameObject;
 public class SphereCollider extends Collider {
     private BoundingSphere mBoundingSphere;
 
-    public SphereCollider(GameObject gameObject, ColliderTag tag, Vector3 offSet, float radius){
+    public SphereCollider(GameObject gameObject, ColliderTag tag, Vector3 offSet, float radius) {
         mColliderType = ColliderType.SPHERE;
         mGameObject = gameObject;
         mTag = tag;
@@ -18,34 +18,34 @@ public class SphereCollider extends Collider {
         mBoundingSphere = new BoundingSphere(gameObject.getPosition().cpy().add(offSet), radius);
     }
 
-    public void updatePosition(){
+    public void updatePosition() {
         mBoundingSphere.setCenter(mGameObject.getPosition().cpy().add(mOffset));
     }
 
-    public void setPosition(Vector3 newGameObjectPosition){
+    public void setPosition(Vector3 newGameObjectPosition) {
         mBoundingSphere.setCenter(newGameObjectPosition.cpy().add(mOffset));
     }
 
-    public void adjustPosition(Vector3 adjustment){
+    public void adjustPosition(Vector3 adjustment) {
         mBoundingSphere.setCenter(mBoundingSphere.getCenter().cpy().add(adjustment));
     }
 
-    public void setRadius(float radius){
+    public void setRadius(float radius) {
         mBoundingSphere.setRadius(radius);
     }
 
     @Override
     public boolean intersectsWith(Collider other) {
-        switch (other.mColliderType){
+        switch (other.mColliderType) {
             case BOX:
-                return intersects(((BoxCollider)other).getBoundingBox(), mBoundingSphere);
+                return intersects(((BoxCollider) other).getBoundingBox(), mBoundingSphere);
             case SPHERE:
-                return intersects(((SphereCollider)other).getBoundingSphere(), mBoundingSphere);
+                return intersects(((SphereCollider) other).getBoundingSphere(), mBoundingSphere);
         }
         return false;
     }
 
-    public BoundingSphere getBoundingSphere(){
+    public BoundingSphere getBoundingSphere() {
         return mBoundingSphere;
     }
 }

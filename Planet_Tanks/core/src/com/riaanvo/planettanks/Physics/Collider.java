@@ -9,7 +9,7 @@ import com.riaanvo.planettanks.GameObjects.GameObject;
  */
 
 public abstract class Collider {
-    public enum  ColliderTag {
+    public enum ColliderTag {
         ALL,
         WALL,
         ENTITIES,
@@ -17,7 +17,7 @@ public abstract class Collider {
         TRAPS
     }
 
-    public enum ColliderType{
+    public enum ColliderType {
         SPHERE,
         BOX
     }
@@ -29,31 +29,31 @@ public abstract class Collider {
 
     public abstract boolean intersectsWith(Collider other);
 
-    public boolean hasTag(ColliderTag testTag){
+    public boolean hasTag(ColliderTag testTag) {
         return mTag == testTag;
     }
 
-    public void setOffset(Vector3 newOffset){
+    public void setOffset(Vector3 newOffset) {
         mOffset = newOffset;
     }
 
-    protected boolean intersects(BoundingBox box1, BoundingBox box2){
+    protected boolean intersects(BoundingBox box1, BoundingBox box2) {
         return box1.intersects(box2);
     }
 
-    protected boolean intersects(BoundingBox box, BoundingSphere sphere){
+    protected boolean intersects(BoundingBox box, BoundingSphere sphere) {
         return sphere.intersects(box);
     }
 
-    protected boolean intersects(BoundingSphere sphere1, BoundingSphere sphere2){
+    protected boolean intersects(BoundingSphere sphere1, BoundingSphere sphere2) {
         return sphere1.intersects(sphere2);
     }
 
-    public boolean isType(ColliderType type){
+    public boolean isType(ColliderType type) {
         return mColliderType == type;
     }
 
-    public GameObject getGameObject(){
+    public GameObject getGameObject() {
         return mGameObject;
     }
 

@@ -11,12 +11,12 @@ public class BoundingSphere {
     private Vector3 mCenter;
     private float mRadius;
 
-    public BoundingSphere(Vector3 center, float radius){
+    public BoundingSphere(Vector3 center, float radius) {
         mCenter = center;
         mRadius = radius;
     }
 
-    public boolean intersects(BoundingSphere other){
+    public boolean intersects(BoundingSphere other) {
         Vector3 otherPosition = other.getCenter();
         float distanceBetweenSpheres = Vector3.dst2(mCenter.x, mCenter.y, mCenter.z, otherPosition.x, otherPosition.y, otherPosition.z);
         float actualDistance2 = (mRadius + other.getRadius()) * (mRadius + other.getRadius());
@@ -24,7 +24,7 @@ public class BoundingSphere {
     }
 
     //http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx
-    public boolean intersects(BoundingBox other){
+    public boolean intersects(BoundingBox other) {
         float dmin = 0;
         Vector3 center = mCenter;
         Vector3 bmin = new Vector3();
@@ -53,19 +53,19 @@ public class BoundingSphere {
         return dmin <= Math.pow(mRadius, 2);
     }
 
-    public void setCenter(Vector3 newCenter){
+    public void setCenter(Vector3 newCenter) {
         mCenter = newCenter;
     }
 
-    public Vector3 getCenter(){
+    public Vector3 getCenter() {
         return mCenter;
     }
 
-    public void setRadius(float newRadius){
+    public void setRadius(float newRadius) {
         mRadius = newRadius;
     }
 
-    public float getRadius(){
+    public float getRadius() {
         return mRadius;
     }
 }

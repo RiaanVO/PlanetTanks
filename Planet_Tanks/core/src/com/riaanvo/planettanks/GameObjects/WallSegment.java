@@ -18,14 +18,14 @@ public class WallSegment extends GameObject {
     private CameraController mCameraController;
     private BoxCollider mBoxCollider;
 
-    public WallSegment(Model wallSegment, Vector3 position, Vector3 size){
+    public WallSegment(Model wallSegment, Vector3 position, Vector3 size) {
         mCameraController = CameraController.get();
         mWallSegment = new ModelInstance(wallSegment);
         mWallSegment.transform.setTranslation(position);
         setPosition(position);
 
         //GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size -- size.cpy().scl(0.5f)
-        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.WALL, new Vector3(0,0,0), size);
+        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.WALL, new Vector3(0, 0, 0), size);
         CollisionManager.get().addCollider(mBoxCollider);
     }
 

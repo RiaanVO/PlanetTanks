@@ -8,21 +8,21 @@ public abstract class LivingGameObject extends GameObject {
     protected int mHealth;
     protected boolean deathHandled = false;
 
-    public void takeDamage(int amount){
-        if(mHealth >= 0) {
+    public void takeDamage(int amount) {
+        if (mHealth >= 0) {
             mHealth -= amount;
         }
     }
 
-    public boolean isDead(){
+    public boolean isDead() {
         return mHealth <= 0;
     }
 
-    public void setHealth(int health){
+    public void setHealth(int health) {
         mHealth = health;
     }
 
-    public int getHealth(){
+    public int getHealth() {
         return mHealth;
     }
 

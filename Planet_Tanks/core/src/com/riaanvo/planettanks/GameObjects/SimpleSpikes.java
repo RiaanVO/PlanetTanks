@@ -35,7 +35,7 @@ public class SimpleSpikes extends GameObject {
     private float spikeAngleDamageThreshold;
     private int hitDamage;
 
-    public SimpleSpikes(Model spikesBase, Model spikesSpikes, Vector3 position){
+    public SimpleSpikes(Model spikesBase, Model spikesSpikes, Vector3 position) {
         mCameraController = com.riaanvo.planettanks.GameObjects.CameraController.get();
         mCollisionManager = CollisionManager.get();
         mSpikesBase = new ModelInstance(spikesBase);
@@ -45,12 +45,12 @@ public class SimpleSpikes extends GameObject {
 
         //GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size -- size.cpy().scl(0.5f)
         float colliderShrink = 0.7f;
-        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.TRAPS, new Vector3(0,Constants.TILE_SIZE/4,0), new Vector3(Constants.TILE_SIZE * colliderShrink, Constants.TILE_SIZE/4, Constants.TILE_SIZE * colliderShrink));
+        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.TRAPS, new Vector3(0, Constants.TILE_SIZE / 4, 0), new Vector3(Constants.TILE_SIZE * colliderShrink, Constants.TILE_SIZE / 4, Constants.TILE_SIZE * colliderShrink));
         CollisionManager.get().addCollider(mBoxCollider);
 
         spikesPosition = position.cpy();
         startingPosition = position.cpy();
-        spikesDownOffset = new Vector3(0, -Constants.TILE_SIZE/2, 0);
+        spikesDownOffset = new Vector3(0, -Constants.TILE_SIZE / 2, 0);
         transitionAngle = 0;
         cycleSpeed = 90f;
         minWaitTime = 3f;
@@ -66,23 +66,23 @@ public class SimpleSpikes extends GameObject {
 
     @Override
     public void update(float dt) {
-        if(waiting){
+        if (waiting) {
             waitTimer += dt;
-            if(waitTimer > minWaitTime){
+            if (waitTimer > minWaitTime) {
                 waitTimer = 0;
                 waiting = false;
             }
         } else {
             transitionAngle += cycleSpeed * dt;
-            if(transitionAngle > 360){
+            if (transitionAngle > 360) {
                 waiting = true;
                 transitionAngle = 0;
             }
             positionSpikes();
         }
 
-        if(!waiting){
-            if(transitionAngle > spikeAngleDamageThreshold && transitionAngle < 360 - spikeAngleDamageThreshold){
+        if (!waiting) {
+            if (transitionAngle > spikeAngleDamageThreshold && transitionAngle < 360 - spikeAngleDamageThreshold) {
                 checkDamageCollisions(Collider.ColliderTag.ENTITIES);
             }
         }
@@ -105,9 +105,9 @@ public class SimpleSpikes extends GameObject {
         }
     }
 
-    private void positionSpikes(){
-        float positionScale = (float)Math.cos(Math.toRadians(transitionAngle));
-        if(positionScale < 0) positionScale = 0;
+    private void positionSpikes() {
+        float positionScale = (float) Math.cos(Math.toRadians(transitionAngle));
+        if (positionScale < 0) positionScale = 0;
         spikesPosition = startingPosition.cpy().add(spikesDownOffset.cpy().scl(positionScale));
         setPosition(spikesPosition);
         mBoxCollider.updatePosition();

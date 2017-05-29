@@ -15,15 +15,15 @@ public abstract class GameObject {
     protected Vector3 mVelocity;
     protected float mAngularVelocity;
 
-    public GameObject(){
+    public GameObject() {
         this(Vector3.Zero);
     }
 
-    public GameObject(Vector3 position){
+    public GameObject(Vector3 position) {
         this(position, 0f);
     }
 
-    public GameObject(Vector3 position, float orientation){
+    public GameObject(Vector3 position, float orientation) {
         mPosition = position;
         mOrientation = orientation;
         mVelocity = Vector3.Zero;
@@ -53,7 +53,7 @@ public abstract class GameObject {
         mOrientation = orientation;
     }
 
-    protected float calculateOrientation(Vector3 direction){
+    protected float calculateOrientation(Vector3 direction) {
         float newOrientation;
         if (direction.x != 0) {
             if (direction.x < 0) {
@@ -62,7 +62,7 @@ public abstract class GameObject {
                 newOrientation = (float) Math.toDegrees(Math.atan2(direction.x, direction.z));
             }
         } else {
-            if(direction.z > 0){
+            if (direction.z > 0) {
                 newOrientation = 0;
             } else {
                 newOrientation = 180;
@@ -71,38 +71,38 @@ public abstract class GameObject {
         return newOrientation;
     }
 
-    protected Vector3 calculateDirection(float orientation){
+    protected Vector3 calculateDirection(float orientation) {
         float castOrientation = Math.abs(orientation);
         boolean negX = false;
         boolean negZ = false;
         boolean normalCalc = true;
         float x;
         float z;
-        if(castOrientation > 270){
+        if (castOrientation > 270) {
             castOrientation = 360 - castOrientation;
             negX = true;
-        } else if(castOrientation > 180){
+        } else if (castOrientation > 180) {
             castOrientation = 270 - castOrientation;
             negZ = true;
             negX = true;
             normalCalc = false;
-        } else if(castOrientation > 90){
+        } else if (castOrientation > 90) {
             castOrientation = 180 - castOrientation;
             negZ = true;
         }
 
-        if(normalCalc){
-            x = (float)Math.sin(Math.toRadians(castOrientation));
-            z = (float)Math.cos(Math.toRadians(castOrientation));
+        if (normalCalc) {
+            x = (float) Math.sin(Math.toRadians(castOrientation));
+            z = (float) Math.cos(Math.toRadians(castOrientation));
         } else {
-            x = (float)Math.cos(Math.toRadians(castOrientation));
-            z = (float)Math.sin(Math.toRadians(castOrientation));
+            x = (float) Math.cos(Math.toRadians(castOrientation));
+            z = (float) Math.sin(Math.toRadians(castOrientation));
         }
 
-        if(negX) x *= -1;
-        if(negZ) z *= -1;
+        if (negX) x *= -1;
+        if (negZ) z *= -1;
 
-        return new Vector3(x, 0 , z);
+        return new Vector3(x, 0, z);
     }
 
     public Vector3 getVelocity() {
@@ -121,15 +121,15 @@ public abstract class GameObject {
         mAngularVelocity = angularVelocity;
     }
 
-    protected void setTag(String newTag){
+    protected void setTag(String newTag) {
         mTag = newTag;
     }
 
-    public String getTag(){
+    public String getTag() {
         return mTag;
     }
 
-    public boolean compareTag(String testTag){
+    public boolean compareTag(String testTag) {
         return mTag.equals(testTag);
     }
 }

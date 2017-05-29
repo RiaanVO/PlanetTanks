@@ -56,7 +56,7 @@ public class CollisionManager {
     }
 
     public void renderCollider(Collider collider) {
-        if(!debugColliders) return;
+        if (!debugColliders) return;
         shapeRenderer.setProjectionMatrix(CameraController.get().getCamera().combined);
 
         if (collider.isType(Collider.ColliderType.BOX)) {

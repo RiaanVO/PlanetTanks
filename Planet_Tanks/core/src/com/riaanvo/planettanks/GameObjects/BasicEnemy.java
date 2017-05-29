@@ -65,7 +65,7 @@ public class BasicEnemy extends LivingGameObject {
 
     @Override
     public void update(float dt) {
-        if(isDead()){
+        if (isDead()) {
             handelDeath();
             return;
         }
@@ -73,15 +73,15 @@ public class BasicEnemy extends LivingGameObject {
         mShotTimer += dt;
 
 
-        if(playerInRange = isPlayerInRange()){
+        if (playerInRange = isPlayerInRange()) {
             rotateToTarget(dt);
-            if(aimingAtPlayer = isAimingAtPlayer()){
+            if (aimingAtPlayer = isAimingAtPlayer()) {
                 clearLineOfFire = true;
             }
         }
 
-        if(playerInRange && aimingAtPlayer && clearLineOfFire){
-            if(mShotTimer > mMinTimeBetweenShots){
+        if (playerInRange && aimingAtPlayer && clearLineOfFire) {
+            if (mShotTimer > mMinTimeBetweenShots) {
                 mShotTimer = 0;
                 mTankController.shoot();
             }
@@ -89,10 +89,10 @@ public class BasicEnemy extends LivingGameObject {
 
     }
 
-    private boolean isPlayerInRange(){
+    private boolean isPlayerInRange() {
         LinkedList<Collider> collisions = mCollisionManager.getCollisions(mSearchSphereCollider, Collider.ColliderTag.ENTITIES);
-        for(Collider collider : collisions){
-            if(collider.getGameObject().compareTag("Player")){
+        for (Collider collider : collisions) {
+            if (collider.getGameObject().compareTag("Player")) {
                 fireDirection = collider.getGameObject().getPosition().cpy().sub(getPosition()).nor();
                 return true;
             }
@@ -100,11 +100,11 @@ public class BasicEnemy extends LivingGameObject {
         return false;
     }
 
-    private void rotateToTarget(float deltaTime){
+    private void rotateToTarget(float deltaTime) {
         float desiredOrientation = calculateOrientation(fireDirection);
         float changeInOrientation = desiredOrientation - mTankController.getTurretOrientation();
-        if(Math.abs(changeInOrientation) > 180) changeInOrientation *= -1;
-        if(!isAimingAtPlayer()){
+        if (Math.abs(changeInOrientation) > 180) changeInOrientation *= -1;
+        if (!isAimingAtPlayer()) {
             changeInOrientation /= Math.abs(changeInOrientation);
             changeInOrientation *= aimingSpeed * deltaTime;
         } else {
@@ -115,7 +115,7 @@ public class BasicEnemy extends LivingGameObject {
         mTankController.setTurretOrientation(newOrientation);
     }
 
-    private boolean isAimingAtPlayer(){
+    private boolean isAimingAtPlayer() {
         float changeInOrientation = calculateOrientation(fireDirection) - mTankController.getTurretOrientation();
         return Math.abs(changeInOrientation) < aimingThreshold;
     }
@@ -130,7 +130,7 @@ public class BasicEnemy extends LivingGameObject {
 
     @Override
     protected void handelDeath() {
-        if(!deathHandled) {
+        if (!deathHandled) {
             GameObjectManager.get().removeGameObject(this);
             mCollisionManager.removeCollider(mBaseSphereCollider);
             deathHandled = true;

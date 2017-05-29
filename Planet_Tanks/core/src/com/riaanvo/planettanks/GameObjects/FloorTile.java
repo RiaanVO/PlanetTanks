@@ -14,7 +14,7 @@ public class FloorTile extends GameObject {
     private ModelInstance mFloorTile;
     private com.riaanvo.planettanks.GameObjects.CameraController mCameraController;
 
-    public FloorTile(Model floorTile, Vector3 position){
+    public FloorTile(Model floorTile, Vector3 position) {
         mCameraController = com.riaanvo.planettanks.GameObjects.CameraController.get();
         mFloorTile = new ModelInstance(floorTile);
         mFloorTile.transform.rotate(Vector3.X, -90);

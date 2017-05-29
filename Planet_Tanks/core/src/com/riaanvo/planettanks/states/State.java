@@ -15,37 +15,20 @@ public abstract class State {
     protected boolean isLoaded;
     protected boolean waitForLoading = true;
 
-    public State(){
+    public State() {
         mGameStateManager = GameStateManager.get();
         mContentManager = ContentManager.get();
         isLoaded = false;
     }
 
-    public void Update(float deltaTime){
-        if(waitForLoading && !isLoaded){
-            if(!isLoaded()) return;
-        }
-        update(deltaTime);
-    }
-
-    protected abstract void update(float deltaTime);
-
-    public void Render(SpriteBatch spriteBatch, ModelBatch modelBatch){
-        if(waitForLoading && !isLoaded){
-            if(!isLoaded()) return;
-        }
-        render(spriteBatch, modelBatch);
-    }
-
-    protected abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
-
     protected abstract void loaded();
 
-    protected boolean isLoaded(){
-        if(!isLoaded){
-            if(mContentManager.assetManagerUpdate()){
+    protected boolean isLoaded() {
+        if (!isLoaded) {
+            if (mContentManager.assetManagerUpdate()) {
                 isLoaded = true;
                 loaded();
+                initialiseInput();
             } else {
                 return false;
             }
@@ -53,10 +36,30 @@ public abstract class State {
         return true;
     }
 
-    protected void setWaitForLoading(boolean shouldWait){
-        waitForLoading = shouldWait;
-        if(!waitForLoading && !isLoaded) isLoaded();
+    public void Update(float deltaTime) {
+        if (waitForLoading && !isLoaded) {
+            if (!isLoaded()) return;
+        }
+        update(deltaTime);
     }
+
+    protected abstract void update(float deltaTime);
+
+    public void Render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        if (waitForLoading && !isLoaded) {
+            if (!isLoaded()) return;
+        }
+        render(spriteBatch, modelBatch);
+    }
+
+    protected abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
+
+    protected void setWaitForLoading(boolean shouldWait) {
+        waitForLoading = shouldWait;
+        if (!waitForLoading && !isLoaded) isLoaded();
+    }
+
+    public abstract void initialiseInput();
 
     public abstract void dispose();
 }

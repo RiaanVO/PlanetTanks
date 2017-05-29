@@ -29,20 +29,20 @@ public class TankController {
     private GameObjectManager mGameObjectManager;
     private CameraController mCameraController;
 
-    public TankController(Model tankBase, Model tankTurret, ColorAttribute tankColour){
+    public TankController(Model tankBase, Model tankTurret, ColorAttribute tankColour) {
         mCameraController = CameraController.get();
         mGameObjectManager = GameObjectManager.get();
 
         mTankBase = new ModelInstance(tankBase);
-        if(tankColour != null) mTankBase.materials.get(0).set(tankColour);
+        if (tankColour != null) mTankBase.materials.get(0).set(tankColour);
         mTankTurret = new ModelInstance(tankTurret);
 
         bulletStartOffset = 1.1f;
         bulletStartHeight = 0.8f;
     }
 
-    public void shoot(){
-        if(aimingDirection == null) return;
+    public void shoot() {
+        if (aimingDirection == null) return;
         Vector3 startingPosition = mParent.getPosition().cpy();
         startingPosition.y = bulletStartHeight;
         startingPosition.add(aimingDirection.cpy().scl(bulletStartOffset));
@@ -50,50 +50,50 @@ public class TankController {
     }
 
 
-    public void renderTank(SpriteBatch spriteBatch, ModelBatch modelBatch){
+    public void renderTank(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
         modelBatch.render(mTankBase, mCameraController.getEnvironment());
         modelBatch.render(mTankTurret, mCameraController.getEnvironment());
         modelBatch.end();
     }
 
-    public void setBodyDirection(Vector3 direction){
+    public void setBodyDirection(Vector3 direction) {
         float changeInOrientation = mParent.calculateOrientation(direction) - bodyOrientation;
         mTankBase.transform.rotate(Vector3.Y, changeInOrientation);
         bodyOrientation = mParent.calculateOrientation(direction);
     }
 
-    public void setTurretDirection(Vector3 newDirection){
+    public void setTurretDirection(Vector3 newDirection) {
         aimingDirection = newDirection.cpy();
         float newOrientation = mParent.calculateOrientation(aimingDirection);
         rotateTurret(newOrientation);
     }
 
-    public void setPosition(Vector3 newPosition){
+    public void setPosition(Vector3 newPosition) {
         mTankBase.transform.setTranslation(newPosition);
         mTankTurret.transform.setTranslation(newPosition);
     }
 
-    public void setParent(com.riaanvo.planettanks.GameObjects.GameObject parent){
+    public void setParent(com.riaanvo.planettanks.GameObjects.GameObject parent) {
         mParent = parent;
     }
 
-    public float getTurretOrientation(){
+    public float getTurretOrientation() {
         return turretOrientation;
     }
 
-    public void setTurretOrientation(float newOrientation){
+    public void setTurretOrientation(float newOrientation) {
         rotateTurret(newOrientation);
         aimingDirection = mParent.calculateDirection(turretOrientation);
     }
 
-    private void rotateTurret(float newOrientation){
+    private void rotateTurret(float newOrientation) {
         float changeInOrientation = newOrientation - turretOrientation;
         mTankTurret.transform.rotate(Vector3.Y, changeInOrientation);
-        if(newOrientation > 360){
+        if (newOrientation > 360) {
             newOrientation -= 360;
         }
-        if(newOrientation < 0){
+        if (newOrientation < 0) {
             newOrientation += 360;
         }
         turretOrientation = newOrientation;

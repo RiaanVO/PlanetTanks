@@ -12,8 +12,9 @@ import java.util.LinkedList;
 
 public class GameObjectManager {
     private static GameObjectManager sGameObjectManager;
-    public static GameObjectManager get(){
-        if(sGameObjectManager == null) sGameObjectManager = new GameObjectManager();
+
+    public static GameObjectManager get() {
+        if (sGameObjectManager == null) sGameObjectManager = new GameObjectManager();
         return sGameObjectManager;
     }
 
@@ -21,11 +22,11 @@ public class GameObjectManager {
     private LinkedList<GameObject> mNewGameObjects = new LinkedList<GameObject>();
     private LinkedList<GameObject> mDeadGameObjects = new LinkedList<GameObject>();
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         mGameObjects.addAll(mNewGameObjects);
         mNewGameObjects.clear();
 
-        for(GameObject gameObject : mGameObjects){
+        for (GameObject gameObject : mGameObjects) {
             gameObject.update(deltaTime);
         }
 
@@ -33,21 +34,21 @@ public class GameObjectManager {
         mDeadGameObjects.clear();
     }
 
-    public void render(SpriteBatch spriteBatch, ModelBatch modelBatch){
-        for(GameObject gameObject : mGameObjects){
+    public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        for (GameObject gameObject : mGameObjects) {
             gameObject.render(spriteBatch, modelBatch);
         }
     }
 
-    public void addGameObject(GameObject gameObject){
+    public void addGameObject(GameObject gameObject) {
         mNewGameObjects.add(gameObject);
     }
 
-    public void removeGameObject(GameObject gameObject){
+    public void removeGameObject(GameObject gameObject) {
         mDeadGameObjects.add(gameObject);
     }
 
-    public void clearGameObjects(){
+    public void clearGameObjects() {
         mGameObjects.clear();
         mNewGameObjects.clear();
         mDeadGameObjects.clear();

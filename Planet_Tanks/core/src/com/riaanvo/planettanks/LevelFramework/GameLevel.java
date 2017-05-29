@@ -7,29 +7,37 @@ package com.riaanvo.planettanks.LevelFramework;
 public class GameLevel {
     private String mLevelName;
     private int[][] mLevelMap;
+    private boolean mUnlocked;
+    private boolean mUserGenerated;
 
-    public GameLevel(String levelName, int[][] levelMap){
+    public GameLevel(String levelName, int[][] levelMap, boolean unlocked, boolean userGenerated) {
         mLevelName = levelName;
         mLevelMap = levelMap;
+        mUnlocked = unlocked;
+        mUserGenerated = userGenerated;
     }
 
-    public String getLevelName(){
+    public String getLevelName() {
         return mLevelName;
     }
 
-    public void setLevelName(String newName){
+    public void setLevelName(String newName) {
         mLevelName = newName;
     }
 
-    public void setLevelMap(int[][] newLevelMap){
+    public void setLevelMap(int[][] newLevelMap) {
         mLevelMap = newLevelMap;
     }
 
-    public int[][] getLevelMap(){
+    public int[][] getLevelMap() {
         return mLevelMap;
     }
 
-    public boolean isLevel(String levelName){
+    public boolean isLevel(String levelName) {
         return mLevelName.equals(levelName);
+    }
+
+    public boolean isUnlocked(){
+        return mUnlocked;
     }
 }

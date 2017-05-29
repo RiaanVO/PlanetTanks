@@ -14,7 +14,7 @@ public class BoxCollider extends Collider {
     private Vector3 mHalfSize;
 
 
-    public BoxCollider(GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size){
+    public BoxCollider(GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size) {
         mColliderType = ColliderType.BOX;
         mGameObject = gameObject;
         mTag = tag;
@@ -23,39 +23,39 @@ public class BoxCollider extends Collider {
         mBoundingBox = new BoundingBox(getMinBound(), getMaxBound());
     }
 
-    public void updatePosition(){
+    public void updatePosition() {
         mBoundingBox.set(getMinBound(), getMaxBound());
     }
 
-    public void setSize(Vector3 newSize){
+    public void setSize(Vector3 newSize) {
         mSize = newSize;
         mHalfSize = newSize.cpy().scl(0.5f);
     }
 
     @Override
     public boolean intersectsWith(Collider other) {
-        switch (other.mColliderType){
+        switch (other.mColliderType) {
             case BOX:
-                return intersects(((BoxCollider)other).getBoundingBox(), mBoundingBox);
+                return intersects(((BoxCollider) other).getBoundingBox(), mBoundingBox);
             case SPHERE:
-                return intersects(mBoundingBox, ((SphereCollider)other).getBoundingSphere());
+                return intersects(mBoundingBox, ((SphereCollider) other).getBoundingSphere());
         }
         return false;
     }
 
-    public Vector3 getMinBound(){
+    public Vector3 getMinBound() {
         return mGameObject.getPosition().cpy().add(mOffset).sub(mHalfSize);
     }
 
-    public Vector3 getMaxBound(){
+    public Vector3 getMaxBound() {
         return mGameObject.getPosition().cpy().add(mOffset).add(mHalfSize);
     }
 
-    public BoundingBox getBoundingBox(){
+    public BoundingBox getBoundingBox() {
         return mBoundingBox;
     }
 
-    public Vector3 getSize(){
+    public Vector3 getSize() {
         return mSize;
     }
 }

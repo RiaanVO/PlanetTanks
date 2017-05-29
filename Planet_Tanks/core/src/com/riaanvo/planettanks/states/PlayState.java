@@ -2,26 +2,14 @@ package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
-import com.riaanvo.planettanks.GameObjects.BasicEnemy;
 import com.riaanvo.planettanks.GameObjects.CameraController;
-import com.riaanvo.planettanks.GameObjects.FloorTile;
-import com.riaanvo.planettanks.GameObjects.Player;
-import com.riaanvo.planettanks.GameObjects.SimpleSpikes;
-import com.riaanvo.planettanks.GameObjects.TankController;
-import com.riaanvo.planettanks.GameObjects.WallSegment;
-import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 import com.riaanvo.planettanks.managers.LevelManager;
 
@@ -42,37 +30,7 @@ public class PlayState extends State {
 
     private Touchpad aimingTouchpad;
 
-    private int[][] floorMap = {
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,1,1,1,1,1,1,1,1,0},
-            {0,1,1,1,1,1,1,1,1,0},
-            {0,1,1,1,1,1,1,1,1,0},
-            {0,1,1,2,2,2,1,1,1,0},
-            {0,1,1,1,1,1,1,1,1,0},
-            {0,0,0,0,0,0,0,0,0,0}
-    };
-
-    private int[][] wallMap = {
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,0,0,1,1,1,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1}
-    };
-
-    private int[][] entityMap = {
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,1,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0}
-    };
-
-    public PlayState(){
+    public PlayState() {
         mLevelManager = LevelManager.get();
         mGameObjectManager = GameObjectManager.get();
         mCameraController = CameraController.get();
@@ -96,8 +54,8 @@ public class PlayState extends State {
         mStage.act();
 
         mLevelManager.update(deltaTime);
-        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
-            mGameStateManager.pop();
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
         }
     }
 
@@ -115,9 +73,7 @@ public class PlayState extends State {
         //setupPlayerInput();
     }
 
-    private void setupPlayerInput(){
-        Gdx.input.setInputProcessor(mStage);
-
+    private void setupPlayerInput() {
         touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", mContentManager.getTexture(Constants.TOUCHPAD_BACKGROUND));
         touchpadSkin.add("touchKnob", mContentManager.getTexture(Constants.TOUCHPAD_KNOB));
@@ -130,11 +86,11 @@ public class PlayState extends State {
         float deadZoneRadius = 10f;
         movementTouchpad = new Touchpad(deadZoneRadius, touchpadStyle);
         movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
-        movementTouchpad.setScale(2,2);
+        movementTouchpad.setScale(2, 2);
 
         aimingTouchpad = new Touchpad(deadZoneRadius, touchpadStyle);
         aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
-        aimingTouchpad.setScale(2,2);
+        aimingTouchpad.setScale(2, 2);
 
         mStage.addActor(movementTouchpad);
         mStage.addActor(aimingTouchpad);
@@ -142,12 +98,17 @@ public class PlayState extends State {
     }
 
     @Override
+    public void initialiseInput() {
+        if(mStage == null) return;
+        Gdx.input.setInputProcessor(mStage);
+    }
+
+    @Override
     public void dispose() {
         mStage.dispose();
         LevelManager.get().unloadLevel();
-        CollisionManager.get().dispose();
 
-        if(touchpadSkin != null)
+        if (touchpadSkin != null)
             touchpadSkin.dispose();
     }
 
