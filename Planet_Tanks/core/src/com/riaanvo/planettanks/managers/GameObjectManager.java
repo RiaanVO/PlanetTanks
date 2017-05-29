@@ -2,7 +2,7 @@ package com.riaanvo.planettanks.managers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.riaanvo.planettanks.Objects.GameObject;
+import com.riaanvo.planettanks.GameObjects.GameObject;
 
 import java.util.LinkedList;
 

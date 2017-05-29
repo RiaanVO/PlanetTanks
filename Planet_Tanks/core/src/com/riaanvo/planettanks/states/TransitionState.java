@@ -14,7 +14,9 @@ import com.riaanvo.planettanks.managers.ContentManager;
 
 public class TransitionState extends State {
     public enum  TransitionType {
-      BLACK_FADE_REPLACE
+        BLACK_FADE_REPLACE,
+        BLACK_FADE_ADD,
+        BLACK_FADE_REMOVE
     }
 
     private Stage mStage;
@@ -35,8 +37,11 @@ public class TransitionState extends State {
         mNextState = nextState;
         mType = type;
 
+        mTimer = 0;
         switch (mType){
             case BLACK_FADE_REPLACE: blackFadeReplaceInit(); break;
+            case BLACK_FADE_ADD: blackFadeAddInit(); break;
+            case BLACK_FADE_REMOVE: blackFadeRemoveInit(); break;
         }
     }
 
@@ -45,6 +50,8 @@ public class TransitionState extends State {
         mTimer += deltaTime;
         switch (mType){
             case BLACK_FADE_REPLACE: blackFadeReplaceUpdate(); break;
+            case BLACK_FADE_ADD: blackFadeAddUpdate(); break;
+            case BLACK_FADE_REMOVE: blackFadeRemoveUpdate(); break;
         }
     }
 
@@ -57,6 +64,8 @@ public class TransitionState extends State {
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         switch (mType){
             case BLACK_FADE_REPLACE: blackFadeReplaceRender(spriteBatch, modelBatch); break;
+            case BLACK_FADE_ADD: blackFadeAddRender(spriteBatch, modelBatch); break;
+            case BLACK_FADE_REMOVE: blackFadeRemoveRender(spriteBatch, modelBatch); break;
         }
     }
 
@@ -64,6 +73,8 @@ public class TransitionState extends State {
     protected void loaded(){
         switch (mType){
             case BLACK_FADE_REPLACE: blackFadeReplaceLoaded(); break;
+            case BLACK_FADE_ADD: blackFadeAddLoaded(); break;
+            case BLACK_FADE_REMOVE: blackFadeRemoveLoaded(); break;
         }
     }
 
@@ -73,18 +84,18 @@ public class TransitionState extends State {
     }
 
     private void blackFadeReplaceInit(){
-        mTimer = 0;
         mMaxTime = 1;
         mContentManager.loadTexture(Constants.BLACK_TEXTURE);
     }
-
+    private void blackFadeReplaceLoaded(){
+        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+    }
     private void blackFadeReplaceUpdate(){
         if(mTimer > mMaxTime){
             mGameStateManager.pop(); //Remove this transition state
             mGameStateManager.setState(mNextState); //Replace the previous state with the new one
         }
     }
-
     private void blackFadeReplaceRender(SpriteBatch spriteBatch, ModelBatch modelBatch){
         float alpha;
         if(mTimer < mMaxTime / 2){
@@ -102,9 +113,66 @@ public class TransitionState extends State {
         spriteBatch.setColor(0, 0, 0, 1);
     }
 
-    private void blackFadeReplaceLoaded(){
+
+    private void blackFadeAddInit(){
+        mMaxTime = 1;
+        mContentManager.loadTexture(Constants.BLACK_TEXTURE);
+    }
+    private void blackFadeAddLoaded(){
         blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+    }
+    private void blackFadeAddUpdate(){
+        if(mTimer > mMaxTime){
+            //mGameStateManager.pop(); //Remove this transition state
+            mGameStateManager.setState(mNextState); //Replace the previous state with the new one
+        }
+    }
+    private void blackFadeAddRender(SpriteBatch spriteBatch, ModelBatch modelBatch){
+        float alpha;
+        if(mTimer < mMaxTime / 2){
+            mPreviousState.Render(spriteBatch, modelBatch);
+            alpha = mTimer / (mMaxTime / 2);
+        } else {
+            mNextState.Render(spriteBatch, modelBatch);
+            alpha = 1 - (mTimer - mMaxTime/2)/(mMaxTime/2);
+        }
+        if(blackFadeTexture == null) return;
+        spriteBatch.setColor(0, 0, 0, alpha);
+        spriteBatch.begin();
+        spriteBatch.draw(blackFadeTexture, 0, 0, mStage.getWidth(), mStage.getHeight());
+        spriteBatch.end();
+        spriteBatch.setColor(0, 0, 0, 1);
     }
 
 
+
+    private void blackFadeRemoveInit(){
+        mMaxTime = 1;
+        mContentManager.loadTexture(Constants.BLACK_TEXTURE);
+    }
+    private void blackFadeRemoveLoaded(){
+        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+    }
+    private void blackFadeRemoveUpdate(){
+        if(mTimer > mMaxTime){
+            //mGameStateManager.pop(); //Remove this transition state
+            mGameStateManager.setState(mNextState); //Replace the previous state with the new one
+        }
+    }
+    private void blackFadeRemoveRender(SpriteBatch spriteBatch, ModelBatch modelBatch){
+        float alpha;
+        if(mTimer < mMaxTime / 2){
+            mPreviousState.Render(spriteBatch, modelBatch);
+            alpha = mTimer / (mMaxTime / 2);
+        } else {
+            mNextState.Render(spriteBatch, modelBatch);
+            alpha = 1 - (mTimer - mMaxTime/2)/(mMaxTime/2);
+        }
+        if(blackFadeTexture == null) return;
+        spriteBatch.setColor(0, 0, 0, alpha);
+        spriteBatch.begin();
+        spriteBatch.draw(blackFadeTexture, 0, 0, mStage.getWidth(), mStage.getHeight());
+        spriteBatch.end();
+        spriteBatch.setColor(0, 0, 0, 1);
+    }
 }

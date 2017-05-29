@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -171,7 +171,6 @@ public class Player extends LivingGameObject {
     @Override
     protected void handelDeath() {
         if(!deathHandled) {
-            System.out.println("Player is dead");
             mGameObjectManager.removeGameObject(this);
             mCollisionManager.removeCollider(mBaseSphereCollider);
             deathHandled = true;

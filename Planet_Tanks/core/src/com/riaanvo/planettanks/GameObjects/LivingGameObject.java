@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 /**
  * Created by riaanvo on 24/5/17.

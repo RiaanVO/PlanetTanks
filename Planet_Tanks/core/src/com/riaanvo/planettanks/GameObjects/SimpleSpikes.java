@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -16,10 +16,10 @@ import java.util.LinkedList;
  * Created by riaanvo on 26/5/17.
  */
 
-public class SimpleSpikes extends GameObject{
+public class SimpleSpikes extends GameObject {
     private ModelInstance mSpikesSpikes;
     private ModelInstance mSpikesBase;
-    private CameraController mCameraController;
+    private com.riaanvo.planettanks.GameObjects.CameraController mCameraController;
     private CollisionManager mCollisionManager;
     private BoxCollider mBoxCollider;
 
@@ -36,7 +36,7 @@ public class SimpleSpikes extends GameObject{
     private int hitDamage;
 
     public SimpleSpikes(Model spikesBase, Model spikesSpikes, Vector3 position){
-        mCameraController = CameraController.get();
+        mCameraController = com.riaanvo.planettanks.GameObjects.CameraController.get();
         mCollisionManager = CollisionManager.get();
         mSpikesBase = new ModelInstance(spikesBase);
         mSpikesSpikes = new ModelInstance(spikesSpikes);

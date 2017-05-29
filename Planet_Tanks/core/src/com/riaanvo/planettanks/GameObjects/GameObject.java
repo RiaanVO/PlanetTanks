@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;

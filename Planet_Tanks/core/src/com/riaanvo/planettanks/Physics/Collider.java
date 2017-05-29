@@ -2,7 +2,7 @@ package com.riaanvo.planettanks.Physics;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.riaanvo.planettanks.Objects.GameObject;
+import com.riaanvo.planettanks.GameObjects.GameObject;
 
 /**
  * Created by riaanvo on 22/5/17.

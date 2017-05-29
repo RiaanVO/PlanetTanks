@@ -70,19 +70,19 @@ public class MainMenuState extends State{
             }
         });
 
-        mLevelSelectButton = new TextButton("Level Select", mSkin);
+        mLevelSelectButton = new TextButton("GameLevel Select", mSkin);
         mLevelSelectButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Level select pressed");
+                System.out.println("GameLevel select pressed");
             }
         });
 
-        mLevelEditorButton = new TextButton("Level Editor", mSkin);
+        mLevelEditorButton = new TextButton("GameLevel Editor", mSkin);
         mLevelEditorButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Level editor pressed");
+                System.out.println("GameLevel editor pressed");
             }
         });
 

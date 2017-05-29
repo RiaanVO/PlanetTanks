@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -14,7 +14,7 @@ import com.riaanvo.planettanks.managers.GameObjectManager;
  */
 
 public class TankController {
-    private GameObject mParent;
+    private com.riaanvo.planettanks.GameObjects.GameObject mParent;
     private ModelInstance mTankBase;
     private ModelInstance mTankTurret;
 
@@ -46,7 +46,7 @@ public class TankController {
         Vector3 startingPosition = mParent.getPosition().cpy();
         startingPosition.y = bulletStartHeight;
         startingPosition.add(aimingDirection.cpy().scl(bulletStartOffset));
-        mGameObjectManager.addGameObject(new Shell(ContentManager.get().getShell(), startingPosition, aimingDirection));
+        mGameObjectManager.addGameObject(new com.riaanvo.planettanks.GameObjects.Shell(ContentManager.get().getShell(), startingPosition, aimingDirection));
     }
 
 
@@ -74,7 +74,7 @@ public class TankController {
         mTankTurret.transform.setTranslation(newPosition);
     }
 
-    public void setParent(GameObject parent){
+    public void setParent(com.riaanvo.planettanks.GameObjects.GameObject parent){
         mParent = parent;
     }
 

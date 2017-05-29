@@ -1,45 +1,36 @@
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
-import com.riaanvo.planettanks.Objects.BasicEnemy;
-import com.riaanvo.planettanks.Objects.CameraController;
-import com.riaanvo.planettanks.Objects.FloorTile;
-import com.riaanvo.planettanks.Objects.GameObject;
-import com.riaanvo.planettanks.Objects.Player;
-import com.riaanvo.planettanks.Objects.SimpleSpikes;
-import com.riaanvo.planettanks.Objects.TankController;
-import com.riaanvo.planettanks.Objects.WallSegment;
+import com.riaanvo.planettanks.GameObjects.BasicEnemy;
+import com.riaanvo.planettanks.GameObjects.CameraController;
+import com.riaanvo.planettanks.GameObjects.FloorTile;
+import com.riaanvo.planettanks.GameObjects.Player;
+import com.riaanvo.planettanks.GameObjects.SimpleSpikes;
+import com.riaanvo.planettanks.GameObjects.TankController;
+import com.riaanvo.planettanks.GameObjects.WallSegment;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
-
-import java.util.LinkedList;
+import com.riaanvo.planettanks.managers.LevelManager;
 
 /**
  * Created by riaanvo on 9/5/17.
  */
 
 public class PlayState extends State {
-    private Player player;
+    private LevelManager mLevelManager;
     private CameraController mCameraController;
     private GameObjectManager mGameObjectManager;
 
@@ -82,9 +73,9 @@ public class PlayState extends State {
     };
 
     public PlayState(){
+        mLevelManager = LevelManager.get();
         mGameObjectManager = GameObjectManager.get();
         mCameraController = CameraController.get();
-        mCameraController.CreatePerspective(45, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 1f, 300f, new Vector3(0,0,0), new Vector3(0,20,10));
 
         mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
 
@@ -101,67 +92,24 @@ public class PlayState extends State {
     @Override
     protected void update(float deltaTime) {
         mGameObjectManager.update(deltaTime);
-
         mCameraController.update(deltaTime);
-
         mStage.act();
+
+        mLevelManager.update(deltaTime);
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            mGameStateManager.pop();
+        }
     }
 
     @Override
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         mGameObjectManager.render(spriteBatch, modelBatch);
-
         mStage.draw();
     }
 
     @Override
     protected void loaded() {
-
-        ColorAttribute playerColour = new ColorAttribute(ColorAttribute.Diffuse, Color.BLUE);
-        TankController playerTank = new TankController(mContentManager.getModel(Constants.BASIC_TANK_BODY_MODEL), mContentManager.getModel(Constants.BASIC_TANK_TURRET_MODEL), playerColour);
-        player = new Player(playerTank);
-        player.setPosition(new Vector3(5,0,5));
-        mGameObjectManager.addGameObject(player);
-        mCameraController.setTrackingObject(player);
-
-
-        Model floorPlane = mContentManager.getFloorPlane();
-        TextureAttribute textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, mContentManager.getTexture(Constants.FLOOR_TEXTURE));
-        floorPlane.materials.get(0).set(textureAttribute);
-
-        for(int z = 0; z < floorMap.length; z++){
-            for(int x = 0; x < floorMap[0].length; x ++){
-                Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, 0, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
-                if(floorMap[z][x] == 1){
-                    mGameObjectManager.addGameObject(new FloorTile(floorPlane, position));
-                } else if(floorMap[z][x] == 2){
-                    mGameObjectManager.addGameObject(new SimpleSpikes(mContentManager.getModel(Constants.SIMPLE_SPIKES_BASE), mContentManager.getModel(Constants.SIMPLE_SPIKES_SPIKES), position));
-                }
-            }
-        }
-
-        for(int z = 0; z < wallMap.length; z++){
-            for(int x = 0; x < wallMap[0].length; x ++){
-                if(wallMap[z][x] == 1){
-                    Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, Constants.TILE_SIZE/2, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
-                    mGameObjectManager.addGameObject(new WallSegment(mContentManager.getWallSegment(), position, new Vector3(Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE)));
-                }
-            }
-        }
-
-        for(int z = 0; z < entityMap.length; z++){
-            for(int x = 0; x < entityMap[0].length; x ++){
-                if(entityMap[z][x] == 1){
-                    Vector3 position = new Vector3(Constants.TILE_SIZE/2 + Constants.TILE_SIZE * x, 0, Constants.TILE_SIZE/2 + Constants.TILE_SIZE * z);
-
-                    ColorAttribute enemyColour = new ColorAttribute(ColorAttribute.Diffuse, Color.RED);
-                    TankController enemyTank = new TankController(mContentManager.getModel(Constants.BASIC_TANK_BODY_MODEL), mContentManager.getModel(Constants.BASIC_TANK_TURRET_MODEL), enemyColour);
-                    BasicEnemy enemy = new BasicEnemy(enemyTank);
-                    enemy.setPosition(position);
-                    mGameObjectManager.addGameObject(enemy);
-                }
-            }
-        }
+        mLevelManager.LoadLevel(0);
 
         mStage = new Stage(new ScreenViewport());
         //setupPlayerInput();
@@ -190,14 +138,13 @@ public class PlayState extends State {
 
         mStage.addActor(movementTouchpad);
         mStage.addActor(aimingTouchpad);
-        player.setTouchPads(movementTouchpad, aimingTouchpad);
+        mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
     }
 
     @Override
     public void dispose() {
         mStage.dispose();
-        mGameObjectManager.clearGameObjects();
-        CollisionManager.get().clearColliders();
+        LevelManager.get().unloadLevel();
         CollisionManager.get().dispose();
 
         if(touchpadSkin != null)

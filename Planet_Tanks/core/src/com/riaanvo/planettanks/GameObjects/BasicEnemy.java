@@ -1,4 +1,4 @@
-package com.riaanvo.planettanks.Objects;
+package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -7,6 +7,7 @@ import com.riaanvo.planettanks.Physics.Collider;
 import com.riaanvo.planettanks.Physics.SphereCollider;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
+import com.riaanvo.planettanks.managers.LevelManager;
 
 import java.util.LinkedList;
 
@@ -32,6 +33,8 @@ public class BasicEnemy extends LivingGameObject {
     private float mMinTimeBetweenShots;
     private float mShotTimer;
 
+    private int pointsOnKilled;
+
     public BasicEnemy(TankController tankController) {
         super();
         mTankController = tankController;
@@ -51,6 +54,8 @@ public class BasicEnemy extends LivingGameObject {
         mShotTimer = 0;
         aimingSpeed = 10f; //180f;
         aimingThreshold = 5f;
+
+        pointsOnKilled = 100;
 
         playerInRange = false;
         aimingAtPlayer = false;
@@ -126,10 +131,10 @@ public class BasicEnemy extends LivingGameObject {
     @Override
     protected void handelDeath() {
         if(!deathHandled) {
-            System.out.println("Enemy is dead");
             GameObjectManager.get().removeGameObject(this);
             mCollisionManager.removeCollider(mBaseSphereCollider);
             deathHandled = true;
+            LevelManager.get().EnemyKilled(pointsOnKilled);
         }
     }
 
@@ -141,7 +146,7 @@ public class BasicEnemy extends LivingGameObject {
         mSearchSphereCollider.updatePosition();
     }
 
-    public void setTarget(LivingGameObject target){
+    public void setTarget(LivingGameObject target) {
         //mTarget = target;
     }
 

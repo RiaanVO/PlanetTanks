@@ -3,7 +3,7 @@ package com.riaanvo.planettanks.managers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.riaanvo.planettanks.Objects.CameraController;
+import com.riaanvo.planettanks.GameObjects.CameraController;
 import com.riaanvo.planettanks.Physics.BoxCollider;
 import com.riaanvo.planettanks.Physics.Collider;
 import com.riaanvo.planettanks.Physics.SphereCollider;
