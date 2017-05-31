@@ -2,6 +2,7 @@ package com.riaanvo.planettanks.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.Main;
 
 public class DesktopLauncher {
@@ -9,10 +10,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Planet Tanks";
 
-		int width = 900;
-		int height = width / 16 * 9;
-		config.height = height;
-		config.width = width;
+		config.height = (int)Constants.VIRTUAL_SCREEN_HEIGHT;
+		config.width = (int)Constants.VIRTUAL_SCREEN_WIDTH;
 		new LwjglApplication(new Main(), config);
 	}
 }

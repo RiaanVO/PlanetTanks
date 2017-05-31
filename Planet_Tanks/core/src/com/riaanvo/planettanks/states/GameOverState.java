@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.managers.LevelManager;
@@ -84,7 +86,7 @@ public class GameOverState extends State {
 
     @Override
     protected void loaded() {
-        mStage = new Stage(new ScreenViewport());
+        mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
 
         mTable = new Table();
         mTable.setWidth(mStage.getWidth());
@@ -101,8 +103,9 @@ public class GameOverState extends State {
         mReplayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
+                //mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
                 LevelManager.get().RestartLevel();
+                mGameStateManager.pop();
             }
         });
 
@@ -111,7 +114,8 @@ public class GameOverState extends State {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 mGameStateManager.removeState(1);
-                mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
+                //mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
+                mGameStateManager.pop();
             }
         });
 

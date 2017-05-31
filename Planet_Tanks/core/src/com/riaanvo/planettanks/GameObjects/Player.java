@@ -40,7 +40,7 @@ public class Player extends LivingGameObject {
         mTankController.setParent(this);
         mTankController.setTurretDirection(new Vector3(0,0,1));
 
-        speed = 5f;
+        speed = 2.5f;
 
         mCollisionManager = CollisionManager.get();
         float colliderRadius = 0.8f;
@@ -59,7 +59,7 @@ public class Player extends LivingGameObject {
         setTag("Player");
         setHealth(3);
 
-        mMinTimeBetweenShots = 0.8f;
+        mMinTimeBetweenShots = 0.1f;//0.8f;
         mShotTimer = 0;
     }
 
@@ -98,10 +98,14 @@ public class Player extends LivingGameObject {
 
         mShotTimer += deltaTime;
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-            if(mShotTimer > mMinTimeBetweenShots){
-                mShotTimer = 0;
-                mTankController.shoot();
-            }
+            shoot();
+        }
+    }
+
+    public void shoot(){
+        if(mShotTimer > mMinTimeBetweenShots){
+            mShotTimer = 0;
+            mTankController.shoot();
         }
     }
 

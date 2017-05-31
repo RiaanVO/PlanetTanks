@@ -80,6 +80,7 @@ public class GameStateManager {
 
     public void removeState(int index){
         if (index < mStates.size()) {
+            mStates.get(index).dispose();
             mStates.remove(index);
         }
     }

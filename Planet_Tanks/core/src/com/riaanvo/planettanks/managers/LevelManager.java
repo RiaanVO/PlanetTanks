@@ -60,16 +60,20 @@ public class LevelManager {
     private boolean endDelayOver;
     private int playerScore;
 
+    private boolean levelToLoadSet;
+
     private LevelManager() {
         mGameStateManager = GameStateManager.get();
         mGameObjectManager = GameObjectManager.get();
         mContentManager = ContentManager.get();
         mCameraController = CameraController.get();
 
-        showEndScreenDelay = 1;
+        levelToLoadSet = false;
+
+        showEndScreenDelay = 0.5f;
         delayTimer = 0;
 
-        String demo1Name = "DemoLevel1";
+        //String demo1Name = "DemoLevel1";
         int[][] demo1Map = {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                 {1, 0, 0, 0, 0, 3, 3, 3, 3, 1},
@@ -79,9 +83,8 @@ public class LevelManager {
                 {1, 0, 0, 0, 0, 3, 3, 3, 3, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
-        levels.add(new GameLevel(demo1Name, demo1Map, true, false));
 
-        String demo2Name = "DemoLevel2";
+        //String demo2Name = "DemoLevel2";
         int[][] demo2Map = {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                 {1, 0, 0, 0, 0, 3, 3, 3, 3, 0, 1, 3, 4, 3, 1, 0, 0, 0, 0, 4, 0, 0, 1},
@@ -91,7 +94,14 @@ public class LevelManager {
                 {1, 0, 0, 0, 0, 3, 3, 3, 3, 0, 1, 3, 4, 3, 1, 0, 0, 0, 0, 4, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
-        levels.add(new GameLevel(demo2Name, demo2Map, true, false));
+
+        for(int i = 0; i < 18; i ++){
+            if(i % 2 == 0){
+                levels.add(new GameLevel(i + "", demo1Map, true, false));
+            } else {
+                levels.add(new GameLevel(i + "", demo2Map, false, false));
+            }
+        }
 
         currentLevelIndex = 0;
     }
@@ -231,13 +241,6 @@ public class LevelManager {
         startingNumEnemies++;
     }
 
-    public GameLevel getLevel(String levelName) {
-        for (GameLevel level : levels) {
-            if (level.isLevel(levelName)) return level;
-        }
-        return null;
-    }
-
     public void unloadLevel() {
         GameObjectManager.get().clearGameObjects();
         CollisionManager.get().clearColliders();
@@ -260,11 +263,43 @@ public class LevelManager {
         LoadLevel(currentLevelIndex + 1);
     }
 
+    public GameLevel getLevel(String levelName) {
+        for (GameLevel level : levels) {
+            if (level.isLevel(levelName)) return level;
+        }
+        return null;
+    }
+
+    public GameLevel getLevel(int index){
+        if(index < levels.size()){
+            return levels.get(index);
+        }
+        return null;
+    }
+
     public String getLevelName(){
         String s = "";
         if(currentLevel != null){
             s += currentLevel.getLevelName();
         }
         return s;
+    }
+
+    public int getNumLevels(){
+        return levels.size();
+    }
+
+    public void setLevelToLoad(int levelIndex){
+        currentLevelIndex = levelIndex;
+        levelToLoadSet = true;
+    }
+
+    public boolean isLevelToLoadSet(){
+        return levelToLoadSet;
+    }
+
+    public void loadSetLevel(){
+        levelToLoadSet = false;
+        LoadLevel(currentLevelIndex);
     }
 }

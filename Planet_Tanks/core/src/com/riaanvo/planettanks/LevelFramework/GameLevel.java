@@ -40,4 +40,8 @@ public class GameLevel {
     public boolean isUnlocked(){
         return mUnlocked;
     }
+
+    public boolean isUserGenerated(){
+        return mUserGenerated;
+    }
 }

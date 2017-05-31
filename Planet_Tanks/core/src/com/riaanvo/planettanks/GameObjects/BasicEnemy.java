@@ -52,7 +52,7 @@ public class BasicEnemy extends LivingGameObject {
 
         mMinTimeBetweenShots = 0.1f; //1.5f;
         mShotTimer = 0;
-        aimingSpeed = 10f; //180f;
+        aimingSpeed = 90f;//180f; //10f; //
         aimingThreshold = 5f;
 
         pointsOnKilled = 100;

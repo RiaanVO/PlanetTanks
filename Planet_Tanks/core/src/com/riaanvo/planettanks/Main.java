@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
-import com.riaanvo.planettanks.states.SplashScreenState;
+import com.riaanvo.planettanks.states.MainMenuState;
+import com.riaanvo.planettanks.states.PlayState;
 
 public class Main extends ApplicationAdapter {
     private ModelBatch mModelBatch;
@@ -34,9 +35,10 @@ public class Main extends ApplicationAdapter {
         isLoaded = false;
 
         //Initialise the first screen
-        mGameStateManager.push(new SplashScreenState());
-        //mGameStateManager.push(new MainMenuState());
-        //mGameStateManager.push(new PlayState());
+        //mGameStateManager.push(new SplashScreenState());
+        mGameStateManager.push(new MainMenuState());
+        mGameStateManager.push(new PlayState());
+        //mGameStateManager.push(new LevelEditorState());
     }
 
     @Override

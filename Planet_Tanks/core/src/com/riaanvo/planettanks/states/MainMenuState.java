@@ -12,7 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.riaanvo.planettanks.Constants;
 
 /**
@@ -47,13 +48,13 @@ public class MainMenuState extends State {
 
     @Override
     protected void loaded() {
-        mStage = new Stage(new ScreenViewport());
+        mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
 
         mTable = new Table();
-        mTable.setWidth(mStage.getWidth());
+        mTable.debug();
+        mTable.setFillParent(true);
         mTable.align(Align.center);
-
-        mTable.setPosition(0, Gdx.graphics.getHeight() / 2);
+        mTable.setPosition(0, 0);
 
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
@@ -64,7 +65,9 @@ public class MainMenuState extends State {
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.push(new TransitionState(new PlayState(), TransitionState.TransitionType.BLACK_FADE_ADD));
+                //mGameStateManager.push(new TransitionState(new PlayState(), TransitionState.TransitionType.BLACK_FADE_ADD));
+                mGameStateManager.push(new LevelSelectState());
+                //mGameStateManager.push(new PlayState());
             }
         });
 
@@ -72,7 +75,7 @@ public class MainMenuState extends State {
         mLevelEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("GameLevel editor pressed");
+                mGameStateManager.push(new LevelEditorState());
             }
         });
 
@@ -95,10 +98,9 @@ public class MainMenuState extends State {
         mBackgroundImage = new Image(mContentManager.getTexture(Constants.MAIN_MENU_BACKGROUND));
         mBackgroundImage.setPosition(0, 0);
         mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
-
         mStage.addActor(mBackgroundImage);
+
         mStage.addActor(mTable);
-        //Gdx.input.setInputProcessor(mStage);
     }
 
     @Override

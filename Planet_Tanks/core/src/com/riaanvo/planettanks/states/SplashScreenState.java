@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.riaanvo.planettanks.Constants;
 
 /**
@@ -20,7 +22,7 @@ public class SplashScreenState extends State {
     private float duration = 3;
 
     public SplashScreenState() {
-        mStage = new Stage();
+        mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
 
         //Load required textures and fonts
         mContentManager.loadTexture(Constants.SPLASH_BACKGROUND);
@@ -33,7 +35,8 @@ public class SplashScreenState extends State {
         duration -= deltaTime;
         if (duration < 0 && !hasTransitioned) {
             hasTransitioned = true;
-            mGameStateManager.push(new TransitionState(new MainMenuState(), TransitionState.TransitionType.BLACK_FADE_REPLACE));
+//            mGameStateManager.push(new TransitionState(new MainMenuState(), TransitionState.TransitionType.BLACK_FADE_REPLACE));
+            mGameStateManager.setState(new MainMenuState());
         }
     }
 

@@ -15,7 +15,7 @@ import java.util.LinkedList;
  */
 
 public class CollisionManager {
-    private static final boolean debugColliders = true;
+    private static final boolean debugColliders = false;
 
     private static CollisionManager sCollisionManager;
 
