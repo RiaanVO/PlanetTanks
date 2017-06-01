@@ -36,7 +36,9 @@ public class GameObjectManager {
 
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         for (GameObject gameObject : mGameObjects) {
-            gameObject.render(spriteBatch, modelBatch);
+            if(gameObject.isVisible()) {
+                gameObject.render(spriteBatch, modelBatch);
+            }
         }
     }
 

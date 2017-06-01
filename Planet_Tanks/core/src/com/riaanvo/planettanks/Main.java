@@ -6,11 +6,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
+import com.riaanvo.planettanks.states.LevelSelectState;
 import com.riaanvo.planettanks.states.MainMenuState;
-import com.riaanvo.planettanks.states.PlayState;
 
 public class Main extends ApplicationAdapter {
     private ModelBatch mModelBatch;
@@ -29,7 +30,7 @@ public class Main extends ApplicationAdapter {
         mContentManager = ContentManager.get();
 
         //For frame rate debugging
-        mContentManager.loadBitmapFont(Constants.DEFAULT_FONT);
+        mContentManager.loadSkin(Constants.SKIN_KEY);
         mContentManager.loadTexture(Constants.BLACK_TEXTURE); // used for transitions
 
         isLoaded = false;
@@ -37,7 +38,8 @@ public class Main extends ApplicationAdapter {
         //Initialise the first screen
         //mGameStateManager.push(new SplashScreenState());
         mGameStateManager.push(new MainMenuState());
-        mGameStateManager.push(new PlayState());
+        mGameStateManager.push(new LevelSelectState());
+        //mGameStateManager.push(new PlayState());
         //mGameStateManager.push(new LevelEditorState());
     }
 
@@ -69,8 +71,8 @@ public class Main extends ApplicationAdapter {
 
     private void loaded() {
         isLoaded = true;
-        debugFont = mContentManager.getBitmapFont(Constants.DEFAULT_FONT);
-        System.out.println("Debug font loaded");
+        Skin skin = mContentManager.getSkin(Constants.SKIN_KEY);
+        debugFont = skin.getFont(Constants.DEFAULT_FONT);
     }
 
     @Override

@@ -26,7 +26,6 @@ public class GameOverState extends State {
 
     private Stage mStage;
     private Skin mSkin;
-    private Table mTable;
 
     private Label mTitle;
     private TextButton mReplayButton;
@@ -52,15 +51,14 @@ public class GameOverState extends State {
 
     @Override
     protected void update(float deltaTime) {
-        if(mPlayState != null){
-            mPlayState.Update(deltaTime);
-        }
-
         if(!transitionedIn){
             fadeInTimer += deltaTime;
             if(fadeInTimer >= fadeInTime){
                 fadeInTimer = fadeInTime;
                 transitionedIn = true;
+            }
+            if(mPlayState != null){
+                mPlayState.Update(deltaTime);
             }
         } else {
             mStage.act(deltaTime);
@@ -87,23 +85,16 @@ public class GameOverState extends State {
     @Override
     protected void loaded() {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
-
-        mTable = new Table();
-        mTable.setWidth(mStage.getWidth());
-        mTable.align(Align.center);
-
-        mTable.setPosition(0, Gdx.graphics.getHeight() / 2);
-
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        mTitle = new Label("Game Over", mSkin);
-        mTitle.setFontScale(4);
+        mTitle = new Label("GAME OVER!", mSkin, "title");
+        mTitle.setFontScale(2);
+        mTitle.setAlignment(Align.center);
 
         mReplayButton = new TextButton("Restart", mSkin);
         mReplayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
                 LevelManager.get().RestartLevel();
                 mGameStateManager.pop();
             }
@@ -114,16 +105,24 @@ public class GameOverState extends State {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 mGameStateManager.removeState(1);
-                //mGameStateManager.push(new TransitionState(null, TransitionState.TransitionType.BLACK_FADE_REMOVE));
                 mGameStateManager.pop();
             }
         });
 
-        mTable.add(mTitle).spaceBottom(20);
+
+        Table mTable = new Table();
+        mTable.setTransform(true);
+        mTable.padBottom(20f);
+        mTable.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
+
+        float buttonWidth = 180;
+        float buttonHeight = 80;
+
+        mTable.add(mTitle).pad(10f);
         mTable.row();
-        mTable.add(mReplayButton).spaceBottom(10);
+        mTable.add(mReplayButton).pad(10f).width(buttonWidth).height(buttonHeight);
         mTable.row();
-        mTable.add(mMainMenuButton).spaceBottom(10);
+        mTable.add(mMainMenuButton).pad(10f).width(buttonWidth).height(buttonHeight);
 
         blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
 

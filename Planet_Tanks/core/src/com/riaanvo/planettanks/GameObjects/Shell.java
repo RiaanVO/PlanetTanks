@@ -75,9 +75,10 @@ public class Shell extends LivingGameObject {
         direction.nor();
         Vector3 moveAdjustment = direction.cpy().scl(deltaTime * speed);
         Vector3 newPosition = moveAdjustment.cpy().add(getPosition());
-
         mBaseSphereCollider.setPosition(newPosition);
-        if (mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL).size() > 0) {
+
+        LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL);
+        if(collisions.size() > 0){
             Vector3 xMoveAdjustment = moveAdjustment.cpy();
             xMoveAdjustment.z = 0;
             Vector3 zMoveAdjustment = moveAdjustment.cpy();
@@ -86,18 +87,20 @@ public class Shell extends LivingGameObject {
             mXTestCollider.adjustPosition(xMoveAdjustment);
             mZTestCollider.adjustPosition(zMoveAdjustment);
 
-            if (mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.WALL).size() > 0) {
+
+            if(mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)){
                 newPosition.x = getPosition().x - xMoveAdjustment.x;
                 moveDirection.x = -moveDirection.x;
                 mCurrentBounceCount++;
             }
-
-            if (mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.WALL).size() > 0) {
+            if(mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)){
                 newPosition.z = getPosition().z - zMoveAdjustment.z;
                 moveDirection.z = -moveDirection.z;
                 mCurrentBounceCount++;
             }
         }
+
+        if (mCurrentBounceCount > mMaxBounceCount) return;
 
         setPosition(newPosition);
         rotateShell(direction);
@@ -130,7 +133,7 @@ public class Shell extends LivingGameObject {
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
-        modelBatch.render(mShell, mCameraController.getEnvironment());
+        modelBatch.render(mShell);//, mCameraController.getEnvironment());
         modelBatch.end();
 
         mCollisionManager.renderCollider(mBaseSphereCollider);

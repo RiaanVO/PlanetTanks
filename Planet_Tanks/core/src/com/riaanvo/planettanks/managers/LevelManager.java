@@ -95,7 +95,7 @@ public class LevelManager {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
 
-        for(int i = 0; i < 18; i ++){
+        for(int i = 1; i < 18; i ++){
             if(i % 2 == 0){
                 levels.add(new GameLevel(i + "", demo1Map, true, false));
             } else {

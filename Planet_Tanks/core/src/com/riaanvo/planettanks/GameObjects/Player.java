@@ -11,6 +11,8 @@ import com.riaanvo.planettanks.Physics.SphereCollider;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 
+import java.util.LinkedList;
+
 /**
  * Created by riaanvo on 15/5/17.
  */
@@ -59,7 +61,7 @@ public class Player extends LivingGameObject {
         setTag("Player");
         setHealth(3);
 
-        mMinTimeBetweenShots = 0.1f;//0.8f;
+        mMinTimeBetweenShots = 1f;
         mShotTimer = 0;
     }
 
@@ -71,25 +73,23 @@ public class Player extends LivingGameObject {
         }
 
         Vector3 moveDirection = new Vector3();
-        if(movementTouchpad == null) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) moveDirection.z += -1;
             if (Gdx.input.isKeyPressed(Input.Keys.S)) moveDirection.z += 1;
             if (Gdx.input.isKeyPressed(Input.Keys.D)) moveDirection.x += 1;
             if (Gdx.input.isKeyPressed(Input.Keys.A)) moveDirection.x += -1;
-        } else {
-            moveDirection.x += movementTouchpad.getKnobPercentX()*1;
-            moveDirection.z += movementTouchpad.getKnobPercentY()*(-1);
+        if(movementTouchpad != null) {
+            moveDirection.x += movementTouchpad.getKnobPercentX() * 1;
+            moveDirection.z += movementTouchpad.getKnobPercentY() * (-1);
         }
         if(moveDirection.x != 0 || moveDirection.z != 0) move(moveDirection, deltaTime);
 
 
         Vector3 aimDirection = new Vector3();
-        if(aimingTouchpad == null) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) aimDirection.z += -1;
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) aimDirection.z += 1;
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) aimDirection.x += 1;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) aimDirection.x += -1;
-        } else {
+        if(aimingTouchpad != null) {
             aimDirection.x += aimingTouchpad.getKnobPercentX() * 1;
             aimDirection.z += aimingTouchpad.getKnobPercentY() * (-1);
         }
@@ -113,34 +113,27 @@ public class Player extends LivingGameObject {
         direction.nor();
         Vector3 moveAdjustment = direction.cpy().scl(deltaTime * speed);
         Vector3 newPosition = moveAdjustment.cpy().add(getPosition());
-
         mBaseSphereCollider.setPosition(newPosition);
-
-        Vector3 xMoveAdjustment = moveAdjustment.cpy();
-        xMoveAdjustment.z = 0;
-        Vector3 zMoveAdjustment = moveAdjustment.cpy();
-        zMoveAdjustment.x = 0;
-
-        mXTestCollider.adjustPosition(xMoveAdjustment);
-        mZTestCollider.adjustPosition(zMoveAdjustment);
 
         boolean moveX = true;
         boolean moveZ = true;
 
-        if(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL).size() > 0){
-            if(mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.WALL). size() > 0){
-                moveX = false;
-            }
-            if(mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.WALL). size() > 0){
-                moveZ = false;
-            }
-        }
+        LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL);
+        collisions.addAll(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.ENTITIES));
+        if(collisions.size() > 0){
+            Vector3 xMoveAdjustment = moveAdjustment.cpy();
+            xMoveAdjustment.z = 0;
+            Vector3 zMoveAdjustment = moveAdjustment.cpy();
+            zMoveAdjustment.x = 0;
 
-        if(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.ENTITIES).size() > 0){
-            if(mCollisionManager.getCollisions(mXTestCollider, Collider.ColliderTag.ENTITIES). size() > 0){
+            mXTestCollider.adjustPosition(xMoveAdjustment);
+            mZTestCollider.adjustPosition(zMoveAdjustment);
+
+
+            if(mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)){
                 moveX = false;
             }
-            if(mCollisionManager.getCollisions(mZTestCollider, Collider.ColliderTag.ENTITIES). size() > 0){
+            if(mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)){
                 moveZ = false;
             }
         }

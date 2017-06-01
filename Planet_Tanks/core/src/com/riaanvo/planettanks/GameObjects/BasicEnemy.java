@@ -50,9 +50,9 @@ public class BasicEnemy extends LivingGameObject {
         setTag("BasicEnemy");
         setHealth(1);
 
-        mMinTimeBetweenShots = 0.1f; //1.5f;
+        mMinTimeBetweenShots = 1f;
         mShotTimer = 0;
-        aimingSpeed = 90f;//180f; //10f; //
+        aimingSpeed = 90f;
         aimingThreshold = 5f;
 
         pointsOnKilled = 100;

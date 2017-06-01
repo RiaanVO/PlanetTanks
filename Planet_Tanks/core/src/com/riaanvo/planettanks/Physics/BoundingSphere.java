@@ -10,10 +10,12 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 public class BoundingSphere {
     private Vector3 mCenter;
     private float mRadius;
+    private float mRadius2;
 
     public BoundingSphere(Vector3 center, float radius) {
         mCenter = center;
         mRadius = radius;
+        mRadius2 = radius * radius;
     }
 
     public boolean intersects(BoundingSphere other) {
@@ -25,32 +27,43 @@ public class BoundingSphere {
 
     //http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx
     public boolean intersects(BoundingBox other) {
-        float dmin = 0;
-        Vector3 center = mCenter;
-        Vector3 bmin = new Vector3();
-        other.getMin(bmin);
-        Vector3 bmax = new Vector3();
-        other.getMax(bmax);
+        if(roughSphereIntersectsCheck(other)){
+            float dmin = 0;
+            Vector3 center = mCenter;
+            Vector3 bmin = new Vector3();
+            other.getMin(bmin);
+            Vector3 bmax = new Vector3();
+            other.getMax(bmax);
 
-        if (center.x < bmin.x) {
-            dmin += Math.pow(center.x - bmin.x, 2);
-        } else if (center.x > bmax.x) {
-            dmin += Math.pow(center.x - bmax.x, 2);
+            if (center.x < bmin.x) {
+                dmin += Math.pow(center.x - bmin.x, 2);
+            } else if (center.x > bmax.x) {
+                dmin += Math.pow(center.x - bmax.x, 2);
+            }
+
+            if (center.y < bmin.y) {
+                dmin += Math.pow(center.y - bmin.y, 2);
+            } else if (center.y > bmax.y) {
+                dmin += Math.pow(center.y - bmax.y, 2);
+            }
+
+            if (center.z < bmin.z) {
+                dmin += Math.pow(center.z - bmin.z, 2);
+            } else if (center.z > bmax.z) {
+                dmin += Math.pow(center.z - bmax.z, 2);
+            }
+
+            return dmin <= Math.pow(mRadius, 2);
+        } else {
+            return false;
         }
+    }
 
-        if (center.y < bmin.y) {
-            dmin += Math.pow(center.y - bmin.y, 2);
-        } else if (center.y > bmax.y) {
-            dmin += Math.pow(center.y - bmax.y, 2);
-        }
-
-        if (center.z < bmin.z) {
-            dmin += Math.pow(center.z - bmin.z, 2);
-        } else if (center.z > bmax.z) {
-            dmin += Math.pow(center.z - bmax.z, 2);
-        }
-
-        return dmin <= Math.pow(mRadius, 2);
+    private boolean roughSphereIntersectsCheck(BoundingBox other){
+        float otherRadius2 = (float) (Math.pow(other.getWidth()/2 , 2) + Math.pow(other.getHeight()/2 , 2) + Math.pow(other.getDepth()/2 , 2));
+        float minNoCollidingDistance = mRadius2 + otherRadius2 + mRadius;
+        float actualDistance2 = Vector3.dst2(mCenter.x , mCenter.y, mCenter.z, other.getCenterX(), other.getCenterY(), other.getCenterZ());
+        return actualDistance2 <= minNoCollidingDistance;
     }
 
     public void setCenter(Vector3 newCenter) {
@@ -63,6 +76,7 @@ public class BoundingSphere {
 
     public void setRadius(float newRadius) {
         mRadius = newRadius;
+        mRadius2 = mRadius * mRadius;
     }
 
     public float getRadius() {

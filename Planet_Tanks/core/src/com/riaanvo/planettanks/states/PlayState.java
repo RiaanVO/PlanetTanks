@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -30,9 +33,11 @@ public class PlayState extends State {
     //UI controls
     private Stage mStage;
     private Touchpad.TouchpadStyle touchpadStyle;
-    private Skin touchpadSkin;
+    private Skin mSkin;
     private Touchpad movementTouchpad;
     private Touchpad aimingTouchpad;
+    private TextButton mainMenuButton;
+    private TextButton fireButton;
 
     public PlayState() {
         mLevelManager = LevelManager.get();
@@ -47,8 +52,8 @@ public class PlayState extends State {
         mContentManager.loadModel(Constants.SIMPLE_SPIKES_SPIKES);
         mContentManager.loadModel(Constants.SIMPLE_SPIKES_BASE);
 
-        mContentManager.loadTexture(Constants.TOUCHPAD_BACKGROUND);
-        mContentManager.loadTexture(Constants.TOUCHPAD_KNOB);
+//        mContentManager.loadTexture(Constants.TOUCHPAD_BACKGROUND);
+//        mContentManager.loadTexture(Constants.TOUCHPAD_KNOB);
 
     }
 
@@ -81,51 +86,63 @@ public class PlayState extends State {
 
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
 
-        touchpadSkin = new Skin();//mContentManager.getSkin(Constants.SKIN_KEY);
-        //if(touchpadSkin.getDrawable("touchBackground") == null || touchpadSkin.getDrawable("touchKnob") == null) {
-            touchpadSkin.add("touchBackground", mContentManager.getTexture(Constants.TOUCHPAD_BACKGROUND));
-            touchpadSkin.add("touchKnob", mContentManager.getTexture(Constants.TOUCHPAD_KNOB));
-        //}
+        mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
+//        mSkin.add("touchBackground", mContentManager.getTexture(Constants.TOUCHPAD_BACKGROUND));
+//        mSkin.add("touchKnob", mContentManager.getTexture(Constants.TOUCHPAD_KNOB));
+//
+//        touchpadStyle = new Touchpad.TouchpadStyle();
+//        touchpadStyle.background = mSkin.getDrawable("touchBackground");
+//        touchpadStyle.knob = mSkin.getDrawable("touchKnob");
+//
+//        float touchpadSize = 200f;
+//        float touchpadPadding = 15;
+//        float touchpadDeadZone = 10f;
+//        movementTouchpad = new Touchpad(touchpadDeadZone, touchpadStyle);
+//        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+//
+//        aimingTouchpad = new Touchpad(touchpadDeadZone, touchpadStyle);
+//        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
 
-        touchpadStyle = new Touchpad.TouchpadStyle();
-        touchpadStyle.background = touchpadSkin.getDrawable("touchBackground");
-        touchpadStyle.knob = touchpadSkin.getDrawable("touchKnob");
 
-        float touchpadSize = 200f;
-        float touchpadPadding = 15;
-
-        movementTouchpad = new Touchpad(10f, touchpadStyle);
-        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
-
-        aimingTouchpad = new Touchpad(50f, touchpadStyle);
-        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
-        aimingTouchpad.addListener(new ActorGestureListener(){
+        float buttonPadding = 100f;
+        mainMenuButton = new TextButton("PAUSE", mContentManager.getSkin(Constants.SKIN_KEY));
+        mainMenuButton.setBounds(0, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
+        mainMenuButton.addListener(new ClickListener(){
             @Override
-            public void tap(InputEvent event, float x, float y, int count, int button) {
-                super.tap(event, x, y, count, button);
+            public void clicked(InputEvent event, float x, float y) {
+                mGameStateManager.pop();
+            }
+        });
+
+        fireButton = new TextButton("FIRE", mContentManager.getSkin(Constants.SKIN_KEY));
+        fireButton.setBounds(mStage.getWidth() - buttonPadding, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
+        fireButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 mLevelManager.getPlayer().shoot();
             }
         });
 
-        mStage.addActor(movementTouchpad);
-        mStage.addActor(aimingTouchpad);
+
+        mStage.addActor(mainMenuButton);
+        mStage.addActor(fireButton);
+
+//        mStage.addActor(movementTouchpad);
+//        mStage.addActor(aimingTouchpad);
     }
 
     @Override
     public void initialiseInput() {
         if(mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
-        mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
+        //mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
     }
 
     @Override
     public void dispose() {
         mStage.dispose();
-        touchpadSkin.dispose();
         LevelManager.get().unloadLevel();
 
-        if (touchpadSkin != null)
-            touchpadSkin.dispose();
     }
 
 

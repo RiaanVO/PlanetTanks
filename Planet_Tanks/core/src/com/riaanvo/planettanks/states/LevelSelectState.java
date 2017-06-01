@@ -58,18 +58,20 @@ public class LevelSelectState extends State {
 
     @Override
     protected void loaded() {
-        maxNumPages = (mLevelManager.getNumLevels() / 8) + 1;
-        currentPage = 1;
-
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
+
+        maxNumPages = (mLevelManager.getNumLevels() / 8) + 1;
+        currentPage = 1;
 
         mainbranch = new VerticalGroup();
         topActions = new HorizontalGroup();
         midActions = new HorizontalGroup();
         levelsContainer = new Table();
 
-        mTitle = new Label("Select Level", mSkin);
+        mTitle = new Label("Select Level", mSkin, Constants.TITLE_FONT);
+        mTitle.setFontScale(2);
+        mTitle.setAlignment(Align.center);
 
         mainMenuButton = new TextButton("Main Menu", mSkin);
         mainMenuButton.addListener(new ClickListener() {
@@ -111,7 +113,7 @@ public class LevelSelectState extends State {
                 public void clicked(InputEvent event, float x, float y) {
                     TextButton button = (TextButton)event.getListenerActor();
                     if(button != null){
-                        if(button.isDisabled()) return;;
+                        if(button.isDisabled()) return;
                         int index = Integer.parseInt(button.getText() + "") - 1;
                         startLevel(index);
                     }
@@ -179,7 +181,7 @@ public class LevelSelectState extends State {
             if(level.isUserGenerated()){
                 button.setColor(Color.BLUE);
             } else {
-                button.setColor(Color.GREEN);
+                //button.setColor(Color.GREEN);
             }
             button.setDisabled(false);
         } else {

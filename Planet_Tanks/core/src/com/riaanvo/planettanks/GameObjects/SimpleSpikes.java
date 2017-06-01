@@ -35,6 +35,9 @@ public class SimpleSpikes extends GameObject {
     private float spikeAngleDamageThreshold;
     private int hitDamage;
 
+    private int colliderCheckMaxDelay;
+    private int colliderCheckDelay;
+
     public SimpleSpikes(Model spikesBase, Model spikesSpikes, Vector3 position) {
         mCameraController = com.riaanvo.planettanks.GameObjects.CameraController.get();
         mCollisionManager = CollisionManager.get();
@@ -60,6 +63,9 @@ public class SimpleSpikes extends GameObject {
         hitDamage = 10;
         spikeAngleDamageThreshold = 60;
 
+        colliderCheckMaxDelay = 5;
+        colliderCheckDelay = 0;
+
         positionSpikes();
     }
 
@@ -83,7 +89,11 @@ public class SimpleSpikes extends GameObject {
 
         if (!waiting) {
             if (transitionAngle > spikeAngleDamageThreshold && transitionAngle < 360 - spikeAngleDamageThreshold) {
-                checkDamageCollisions(Collider.ColliderTag.ENTITIES);
+                colliderCheckDelay ++;
+                if(colliderCheckDelay > colliderCheckMaxDelay) {
+                    checkDamageCollisions(Collider.ColliderTag.ENTITIES);
+                    colliderCheckDelay = 0;
+                }
             }
         }
 
@@ -116,7 +126,7 @@ public class SimpleSpikes extends GameObject {
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
-        modelBatch.render(mSpikesBase, mCameraController.getEnvironment());
+        modelBatch.render(mSpikesBase);//, mCameraController.getEnvironment());
         modelBatch.render(mSpikesSpikes, mCameraController.getEnvironment());
         modelBatch.end();
 

@@ -46,13 +46,28 @@ public class CollisionManager {
     }
 
     public LinkedList<Collider> getCollisions(Collider baseCollider, Collider.ColliderTag testTag) {
-        LinkedList<Collider> collsions = new LinkedList<Collider>();
+        LinkedList<Collider> collisions = new LinkedList<Collider>();
         for (Collider other : mColliders) {
             if ((other.hasTag(testTag) || testTag == Collider.ColliderTag.ALL) && baseCollider != other) {
-                if (baseCollider.intersectsWith(other)) collsions.add(other);
+                if (baseCollider.intersectsWith(other)) collisions.add(other);
             }
         }
-        return collsions;
+        return collisions;
+    }
+
+//    public LinkedList<Collider> getCollisionsInList(Collider baseCollider, LinkedList<Collider> others){
+//        LinkedList<Collider> collisions = new LinkedList<Collider>();
+//        for(Collider other : others){
+//            if (baseCollider.intersectsWith(other)) collisions.add(other);
+//        }
+//        return collisions;
+//    }
+
+    public boolean getCollisionsInListBoolean(Collider baseCollider, LinkedList<Collider> others) {
+        for (Collider other : others) {
+            if (baseCollider.intersectsWith(other)) return true;
+        }
+        return false;
     }
 
     public void renderCollider(Collider collider) {

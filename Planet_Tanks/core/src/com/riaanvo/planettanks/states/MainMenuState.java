@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,7 +25,6 @@ public class MainMenuState extends State {
 
     private Stage mStage;
     private Skin mSkin;
-    private Table mTable;
 
     private Label mTitle;
     private TextButton mPlayButton;
@@ -49,25 +49,24 @@ public class MainMenuState extends State {
     @Override
     protected void loaded() {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
-
-        mTable = new Table();
-        mTable.debug();
-        mTable.setFillParent(true);
-        mTable.align(Align.center);
-        mTable.setPosition(0, 0);
-
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        mTitle = new Label("Planet Tanks", mSkin);
-        mTitle.setFontScale(4);
+
+        mBackgroundImage = new Image(mContentManager.getTexture(Constants.MAIN_MENU_BACKGROUND));
+        mBackgroundImage.setPosition(0, 0);
+        mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
+        //mStage.addActor(mBackgroundImage);
+
+        mTitle = new Label("Planet Tanks", mSkin, "title");
+        mTitle.setFontScale(2);
+        mTitle.setAlignment(Align.center);
+
 
         mPlayButton = new TextButton("Play", mSkin);
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //mGameStateManager.push(new TransitionState(new PlayState(), TransitionState.TransitionType.BLACK_FADE_ADD));
                 mGameStateManager.push(new LevelSelectState());
-                //mGameStateManager.push(new PlayState());
             }
         });
 
@@ -87,18 +86,25 @@ public class MainMenuState extends State {
             }
         });
 
-        mTable.add(mTitle).spaceBottom(20);
-        mTable.row();
-        mTable.add(mPlayButton).spaceBottom(10);
-        mTable.row();
-        mTable.add(mLevelEditorButton).spaceBottom(10);
-        mTable.row();
-        mTable.add(mQuitButton);
 
-        mBackgroundImage = new Image(mContentManager.getTexture(Constants.MAIN_MENU_BACKGROUND));
-        mBackgroundImage.setPosition(0, 0);
-        mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
-        mStage.addActor(mBackgroundImage);
+        Table mTable = new Table();
+        mTable.setTransform(true);
+        mTable.padBottom(20f);
+        mTable.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
+
+        float buttonWidth = 180;
+        float buttonHeight = 80;
+
+        mTable.add(mTitle).pad(10f);
+        mTable.row();
+        mTable.add(mPlayButton).pad(10f).width(buttonWidth).height(buttonHeight);
+        mTable.row();
+        mTable.add(mLevelEditorButton).pad(10f).width(buttonWidth).height(buttonHeight);
+        mTable.row();
+        mTable.add(mQuitButton).pad(10f).width(buttonWidth).height(buttonHeight);
+
+        //mTable.debug();
+
 
         mStage.addActor(mTable);
     }

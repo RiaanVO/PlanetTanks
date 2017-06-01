@@ -1,8 +1,10 @@
 package com.riaanvo.planettanks.GameObjects;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.riaanvo.planettanks.Constants;
 
 /**
  * Created by riaanvo on 12/5/17.
@@ -31,11 +33,16 @@ public abstract class GameObject {
         mTag = "GameObject";
     }
 
-
     public abstract void update(float dt);
 
     public abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
 
+
+    //https://xoppa.github.io/blog/3d-frustum-culling-with-libgdx/
+    public boolean isVisible(){
+            Camera cam = CameraController.get().getCamera();
+            return cam.frustum.boundsInFrustum(mPosition, Constants.RENDER_BOUNDS);
+    }
 
     public Vector3 getPosition() {
         return mPosition;
