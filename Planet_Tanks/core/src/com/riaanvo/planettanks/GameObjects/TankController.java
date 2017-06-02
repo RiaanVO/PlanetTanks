@@ -37,7 +37,7 @@ public class TankController {
         if (tankColour != null) mTankBase.materials.get(0).set(tankColour);
         mTankTurret = new ModelInstance(tankTurret);
 
-        bulletStartOffset = 1.1f;
+        bulletStartOffset = 1.5f;
         bulletStartHeight = 0.8f;
     }
 

@@ -14,22 +14,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.managers.LevelManager;
 
 /**
- * Created by riaanvo on 29/5/17.
+ * Created by riaanvo on 1/6/17.
  */
 
-public class LevelCompleteState extends State {
-
+public class PauseState extends State{
     private Stage mStage;
     private Skin mSkin;
-    private Table mTable;
 
     private Label mTitle;
-    private TextButton mNextLevelButton;
+    private TextButton mResumeButton;
     private TextButton mMainMenuButton;
     private Texture blackFadeTexture;
 
@@ -41,17 +38,14 @@ public class LevelCompleteState extends State {
     private float fadeInTime;
     private float fadeInTimer;
 
-    private LevelManager mLevelManager;
-
-    public LevelCompleteState() {
+    public PauseState() {
         mContentManager.loadSkin(Constants.SKIN_KEY);
         mContentManager.loadTexture(Constants.BLACK_TEXTURE);
         mPlayState = mGameStateManager.getState(0);
-        mLevelManager = LevelManager.get();
         alpha = 0.8f;
         transitionedIn = false;
         transitionOut = false;
-        fadeInTime = 0.5f;
+        fadeInTime = 0.2f;
         fadeInTimer = 0f;
     }
 
@@ -63,15 +57,9 @@ public class LevelCompleteState extends State {
                 fadeInTimer = fadeInTime;
                 transitionedIn = true;
             }
-            if(mPlayState != null){
-                mPlayState.Update(deltaTime);
-            }
         } else {
             mStage.act(deltaTime);
             if(transitionOut){
-                if(mPlayState != null){
-                    mPlayState.Update(deltaTime);
-                }
                 fadeInTimer -= deltaTime;
                 if(fadeInTimer < 0){
                     fadeInTimer = 0;
@@ -79,7 +67,6 @@ public class LevelCompleteState extends State {
                 }
             }
         }
-
     }
 
     @Override
@@ -105,20 +92,17 @@ public class LevelCompleteState extends State {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        mTitle = new Label("LEVEL " + mLevelManager.getLevelName() + " COMPLETE!", mSkin, Constants.TITLE_FONT);
+        mTitle = new Label("PAUSED", mSkin, "title");
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
-            mNextLevelButton = new TextButton("NEXT LEVEL", mSkin);
-            mNextLevelButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    mLevelManager.loadNextLevel();
-                    transitionOut = true;
-                    //mGameStateManager.pop();
-                }
-            });
-
+        mResumeButton = new TextButton("RESUME", mSkin);
+        mResumeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                transitionOut = true;
+            }
+        });
 
         mMainMenuButton = new TextButton("MAIN MENU", mSkin);
         mMainMenuButton.addListener(new ClickListener() {
@@ -140,10 +124,8 @@ public class LevelCompleteState extends State {
 
         mTable.add(mTitle).pad(10f);
         mTable.row();
-        if(mLevelManager.isAnotherLevel()) {
-            mTable.add(mNextLevelButton).pad(10f).width(buttonWidth).height(buttonHeight);
-            mTable.row();
-        }
+        mTable.add(mResumeButton).pad(10f).width(buttonWidth).height(buttonHeight);
+        mTable.row();
         mTable.add(mMainMenuButton).pad(10f).width(buttonWidth).height(buttonHeight);
 
         mStage.addActor(mTable);
@@ -154,7 +136,6 @@ public class LevelCompleteState extends State {
         if(mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
     }
-
 
     @Override
     public void dispose() {

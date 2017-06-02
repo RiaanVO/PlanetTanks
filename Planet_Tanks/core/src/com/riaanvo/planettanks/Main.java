@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
-import com.riaanvo.planettanks.states.LevelSelectState;
+import com.riaanvo.planettanks.states.LevelEditorState;
 import com.riaanvo.planettanks.states.MainMenuState;
 
 public class Main extends ApplicationAdapter {
@@ -38,9 +38,9 @@ public class Main extends ApplicationAdapter {
         //Initialise the first screen
         //mGameStateManager.push(new SplashScreenState());
         mGameStateManager.push(new MainMenuState());
-        mGameStateManager.push(new LevelSelectState());
+        //mGameStateManager.push(new LevelSelectState());
         //mGameStateManager.push(new PlayState());
-        //mGameStateManager.push(new LevelEditorState());
+        mGameStateManager.push(new LevelEditorState());
     }
 
     @Override

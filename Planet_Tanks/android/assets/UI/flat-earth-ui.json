@@ -59,6 +59,24 @@ com.badlogic.gdx.graphics.Color: {
 		b: 0
 		a: 1
 	}
+	transparent-color: {
+    	r: 0.3372549
+    	g: 0.8
+    	b: 0.44705883
+    	a: 0.8
+    }
+	transparent-highlight: {
+    	r: 0.42156863
+    	g: 1
+    	b: 0.5552286
+    	a: 0.8
+    }
+    transparent-pressed: {
+    	r: 0.2529412
+    	g: 0.6
+    	b: 0.33313715
+    	a: 0.8
+    }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -245,6 +263,32 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		name: radio-pressed
 		color: pressed
 	}
+
+    button-d: {
+    	name: button
+    	color: gray
+    }
+	button-transparent-c: {
+		name: button
+		color: transparent-color
+	}
+	button-transparent-p: {
+		name: button
+		color: transparent-pressed
+	}
+	button-transparent-h: {
+		name: button
+		color: transparent-highlight
+	}
+
+	touchpad-transparent-c: {
+    	name: touchpad
+    	color: transparent-color
+    }
+    touchpad-transparent-knob-c: {
+    	name: touchpad-knob
+    	color: transparent-color
+    }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
@@ -413,6 +457,15 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		down: button-p
 		over: button-h
 	}
+	transparent: {
+	    font: button
+    	fontColor: white
+    	downFontColor: white
+    	overFontColor: gray
+	    up: button-transparent-c
+	    down: button-transparent-p
+	    over: button-transparent-h
+	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
@@ -434,6 +487,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
 		background: touchpad-c
 		knob: touchpad-knob-c
 	}
+	transparent: {
+    	background: touchpad-transparent-c
+    	knob: touchpad-transparent-knob-c
+    }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
 	default: {

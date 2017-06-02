@@ -55,14 +55,14 @@ public class MainMenuState extends State {
         mBackgroundImage = new Image(mContentManager.getTexture(Constants.MAIN_MENU_BACKGROUND));
         mBackgroundImage.setPosition(0, 0);
         mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
-        //mStage.addActor(mBackgroundImage);
+        mStage.addActor(mBackgroundImage);
 
-        mTitle = new Label("Planet Tanks", mSkin, "title");
+        mTitle = new Label("PLANET TANKS", mSkin, "title");
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
 
-        mPlayButton = new TextButton("Play", mSkin);
+        mPlayButton = new TextButton("PLAY", mSkin);
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -70,7 +70,7 @@ public class MainMenuState extends State {
             }
         });
 
-        mLevelEditorButton = new TextButton("Level Editor", mSkin);
+        mLevelEditorButton = new TextButton("LEVEL EDITOR", mSkin);
         mLevelEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -78,7 +78,7 @@ public class MainMenuState extends State {
             }
         });
 
-        mQuitButton = new TextButton("Quit", mSkin);
+        mQuitButton = new TextButton("QUIT", mSkin);
         mQuitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -102,9 +102,6 @@ public class MainMenuState extends State {
         mTable.add(mLevelEditorButton).pad(10f).width(buttonWidth).height(buttonHeight);
         mTable.row();
         mTable.add(mQuitButton).pad(10f).width(buttonWidth).height(buttonHeight);
-
-        //mTable.debug();
-
 
         mStage.addActor(mTable);
     }

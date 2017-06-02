@@ -32,11 +32,6 @@ public class LevelSelectState extends State {
     private Stage mStage;
     private Skin mSkin;
 
-    private VerticalGroup mainbranch;
-    private HorizontalGroup topActions;
-    private HorizontalGroup midActions;
-    private Table levelsContainer;
-
     private TextButton mainMenuButton;
     private Label mTitle;
 
@@ -58,22 +53,17 @@ public class LevelSelectState extends State {
 
     @Override
     protected void loaded() {
-        mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
-        mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
-
         maxNumPages = (mLevelManager.getNumLevels() / 8) + 1;
         currentPage = 1;
 
-        mainbranch = new VerticalGroup();
-        topActions = new HorizontalGroup();
-        midActions = new HorizontalGroup();
-        levelsContainer = new Table();
+        mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
+        mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        mTitle = new Label("Select Level", mSkin, Constants.TITLE_FONT);
+        mTitle = new Label("SELECT LEVEL", mSkin, Constants.TITLE_FONT);
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
-        mainMenuButton = new TextButton("Main Menu", mSkin);
+        mainMenuButton = new TextButton("BACK", mSkin);
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -120,35 +110,55 @@ public class LevelSelectState extends State {
                 }
             });
         }
-        pageLabel = new Label("pageNumbers", mSkin);
 
-        mainbranch.setFillParent(true);
-        mainbranch.align(Align.center);
+        pageLabel = new Label("", mSkin);
+        pageLabel.setFontScale(2);
 
-        topActions.addActor(mainMenuButton);
-        topActions.addActor(mTitle);
-        mainbranch.addActor(topActions);
+        Table levelsTable = new Table();
+        levelsTable.setTransform(true);
+        levelsTable.padBottom(10f);
+        levelsTable.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
 
-        midActions.addActor(leftArrow);
+        float buttonWidth = 100;
+        float buttonHeight = 100;
 
-        levelsContainer.add(levelButtons[0]);
-        levelsContainer.add(levelButtons[1]);
-        levelsContainer.add(levelButtons[2]);
-        levelsContainer.add(levelButtons[3]);
-        levelsContainer.row();
-        levelsContainer.add(levelButtons[4]);
-        levelsContainer.add(levelButtons[5]);
-        levelsContainer.add(levelButtons[6]);
-        levelsContainer.add(levelButtons[7]);
+        levelsTable.add(levelButtons[0]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[1]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[2]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[3]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.row();
+        levelsTable.add(levelButtons[4]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[5]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[6]).pad(10f).width(buttonWidth).height(buttonHeight);
+        levelsTable.add(levelButtons[7]).pad(10f).width(buttonWidth).height(buttonHeight);
 
-        midActions.addActor(levelsContainer);
-        midActions.addActor(rightArrow);
+        Table levelsContainer = new Table();
+        levelsContainer.setTransform(true);
 
-        mainbranch.addActor(midActions);
+        leftArrow.setTransform(true);
+        leftArrow.getLabel().setFontScale(2);
+        levelsContainer.add(leftArrow).pad(10f).width(buttonWidth).height(buttonHeight);
 
-        mainbranch.addActor(pageLabel);
+        levelsContainer.add(levelsTable);
 
-        mStage.addActor(mainbranch);
+        rightArrow.setTransform(true);
+        rightArrow.getLabel().setFontScale(2);
+        levelsContainer.add(rightArrow).pad(10f).width(buttonWidth).height(buttonHeight);
+
+        Table mainContainer = new Table();
+        mainContainer.align(Align.center);
+        mainContainer.padBottom(20f);
+        mainContainer.setBounds(0, 0, mStage.getWidth(), mStage.getHeight());
+
+        mainContainer.add(mTitle).padBottom(20f);
+        mainContainer.row();
+        mainContainer.add(levelsContainer).padBottom(20f);
+        mainContainer.row();
+        mainContainer.add(pageLabel).padBottom(20f);
+        mainContainer.row();
+        mainContainer.add(mainMenuButton).width(buttonWidth*2).height(buttonHeight/2);
+
+        mStage.addActor(mainContainer);
         setupPage(1);
     }
 

@@ -32,7 +32,6 @@ public class PlayState extends State {
 
     //UI controls
     private Stage mStage;
-    private Touchpad.TouchpadStyle touchpadStyle;
     private Skin mSkin;
     private Touchpad movementTouchpad;
     private Touchpad aimingTouchpad;
@@ -51,10 +50,6 @@ public class PlayState extends State {
 
         mContentManager.loadModel(Constants.SIMPLE_SPIKES_SPIKES);
         mContentManager.loadModel(Constants.SIMPLE_SPIKES_BASE);
-
-//        mContentManager.loadTexture(Constants.TOUCHPAD_BACKGROUND);
-//        mContentManager.loadTexture(Constants.TOUCHPAD_KNOB);
-
     }
 
     @Override
@@ -85,37 +80,29 @@ public class PlayState extends State {
         }
 
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
-
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
-//        mSkin.add("touchBackground", mContentManager.getTexture(Constants.TOUCHPAD_BACKGROUND));
-//        mSkin.add("touchKnob", mContentManager.getTexture(Constants.TOUCHPAD_KNOB));
-//
-//        touchpadStyle = new Touchpad.TouchpadStyle();
-//        touchpadStyle.background = mSkin.getDrawable("touchBackground");
-//        touchpadStyle.knob = mSkin.getDrawable("touchKnob");
-//
-//        float touchpadSize = 200f;
-//        float touchpadPadding = 15;
-//        float touchpadDeadZone = 10f;
-//        movementTouchpad = new Touchpad(touchpadDeadZone, touchpadStyle);
-//        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
-//
-//        aimingTouchpad = new Touchpad(touchpadDeadZone, touchpadStyle);
-//        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
 
+        float touchpadSize = 200f;
+        float touchpadPadding = 30f;
+        float touchpadDeadZone = 10f;
+        movementTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
+        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
 
-        float buttonPadding = 100f;
-        mainMenuButton = new TextButton("PAUSE", mContentManager.getSkin(Constants.SKIN_KEY));
+        aimingTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
+        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+
+        float buttonPadding = 80;
+        mainMenuButton = new TextButton("||", mSkin, "transparent");
         mainMenuButton.setBounds(0, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
         mainMenuButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.pop();
+                mGameStateManager.push(new PauseState());
             }
         });
 
-        fireButton = new TextButton("FIRE", mContentManager.getSkin(Constants.SKIN_KEY));
-        fireButton.setBounds(mStage.getWidth() - buttonPadding, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
+        fireButton = new TextButton("FIRE", mSkin, "transparent");
+        fireButton.setBounds(mStage.getWidth() - (buttonPadding + touchpadPadding), touchpadPadding + touchpadSize, buttonPadding, buttonPadding);
         fireButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -127,15 +114,15 @@ public class PlayState extends State {
         mStage.addActor(mainMenuButton);
         mStage.addActor(fireButton);
 
-//        mStage.addActor(movementTouchpad);
-//        mStage.addActor(aimingTouchpad);
+        mStage.addActor(movementTouchpad);
+        mStage.addActor(aimingTouchpad);
     }
 
     @Override
     public void initialiseInput() {
         if(mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
-        //mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
+        mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
     }
 
     @Override

@@ -50,13 +50,13 @@ public class CameraController {
 
     public void update(float deltaTime) {
         if (trackingObject == null) return;
-        moveCamera();
-    }
-
-    private void moveCamera() {
         Vector3 newPosition = trackingObject.getPosition().cpy();
         newPosition.add(cameraPositionOffset);
-        mCamera.position.set(mCamera.position.cpy().lerp(newPosition, mLerp));
+        moveCamera(mCamera.position.cpy().lerp(newPosition, mLerp));
+    }
+
+    private void moveCamera(Vector3 newPosition) {
+        mCamera.position.set(newPosition);
         mCamera.update();
     }
 
@@ -79,6 +79,10 @@ public class CameraController {
     public void setTrackingObject(GameObject gameObject) {
         trackingObject = gameObject;
         trackingPoint = gameObject.getPosition();
+
+        Vector3 newPosition = trackingObject.getPosition().cpy();
+        newPosition.add(cameraPositionOffset);
+        moveCamera(newPosition);
     }
 
     public Camera getCamera() {

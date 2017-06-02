@@ -36,6 +36,7 @@ public class GameOverState extends State {
     private State mPlayState;
 
     private boolean transitionedIn;
+    private boolean transitionOut;
     private float fadeInTime;
     private float fadeInTimer;
 
@@ -45,6 +46,7 @@ public class GameOverState extends State {
         mPlayState = mGameStateManager.getState(0);
         alpha = 0.8f;
         transitionedIn = false;
+        transitionOut = false;
         fadeInTime = 0.5f;
         fadeInTimer = 0f;
     }
@@ -62,8 +64,17 @@ public class GameOverState extends State {
             }
         } else {
             mStage.act(deltaTime);
+            if(transitionOut){
+                if(mPlayState != null){
+                    mPlayState.Update(deltaTime);
+                }
+                fadeInTimer -= deltaTime;
+                if(fadeInTimer < 0){
+                    fadeInTimer = 0;
+                    mGameStateManager.pop();
+                }
+            }
         }
-
     }
 
     @Override
@@ -75,15 +86,17 @@ public class GameOverState extends State {
         if (blackFadeTexture == null) return;
         spriteBatch.setColor(0, 0, 0, currentAlpha);
         spriteBatch.begin();
-        spriteBatch.draw(blackFadeTexture, 0, 0, mStage.getWidth(), mStage.getHeight());
+        spriteBatch.draw(blackFadeTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.end();
         spriteBatch.setColor(0, 0, 0, 1);
 
-        if(transitionedIn) mStage.draw();
+        if(transitionedIn && !transitionOut) mStage.draw();
     }
 
     @Override
     protected void loaded() {
+        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
@@ -91,16 +104,16 @@ public class GameOverState extends State {
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
-        mReplayButton = new TextButton("Restart", mSkin);
+        mReplayButton = new TextButton("RETRY", mSkin);
         mReplayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LevelManager.get().RestartLevel();
-                mGameStateManager.pop();
+                transitionOut = true;
             }
         });
 
-        mMainMenuButton = new TextButton("Main Menu", mSkin);
+        mMainMenuButton = new TextButton("MAIN MENU", mSkin);
         mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -123,8 +136,6 @@ public class GameOverState extends State {
         mTable.add(mReplayButton).pad(10f).width(buttonWidth).height(buttonHeight);
         mTable.row();
         mTable.add(mMainMenuButton).pad(10f).width(buttonWidth).height(buttonHeight);
-
-        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
 
         mStage.addActor(mTable);
     }

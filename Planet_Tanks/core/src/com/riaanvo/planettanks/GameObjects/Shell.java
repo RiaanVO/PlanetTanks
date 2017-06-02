@@ -49,7 +49,7 @@ public class Shell extends LivingGameObject {
 
         mMaxBounceCount = 1;
         mCurrentBounceCount = 0;
-        speed = 7f;
+        speed = 3.5f;
         setTag("Basic shell");
         setHealth(1);
         hitDamage = 1;

@@ -30,7 +30,7 @@ public class LevelManager {
         WALL,
         PLAYER,
         SPIKES,
-        STATIONARY_ENEMY
+        ENEMY
     }
 
     private static LevelManager sLevelManager;
@@ -200,7 +200,7 @@ public class LevelManager {
             case SPIKES:
                 addSpikes(position);
                 break;
-            case STATIONARY_ENEMY:
+            case ENEMY:
                 addFloor(position);
                 addStationaryEnemy(position);
                 break;

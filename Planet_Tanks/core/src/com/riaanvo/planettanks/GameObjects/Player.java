@@ -61,7 +61,7 @@ public class Player extends LivingGameObject {
         setTag("Player");
         setHealth(3);
 
-        mMinTimeBetweenShots = 1f;
+        mMinTimeBetweenShots = 0.5f;
         mShotTimer = 0;
     }
 

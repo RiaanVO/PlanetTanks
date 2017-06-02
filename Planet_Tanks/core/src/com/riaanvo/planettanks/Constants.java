@@ -19,6 +19,13 @@ public class Constants {
     public static final String TITLE_FONT = "title";
     public static final String DEFAULT_FONT = "font";
 
+    public static final String ENEMY_TILE = "android/assets/UI/LevelEditorTiles/Enemy.png";
+    public static final String WALL_TILE = "android/assets/UI/LevelEditorTiles/Wall.png";
+    public static final String SPIKES_TILE = "android/assets/UI/LevelEditorTiles/Spikes.png";
+    public static final String FLOOR_TILE = "android/assets/UI/LevelEditorTiles/Floor.png";
+    public static final String PLAYER_TILE = "android/assets/UI/LevelEditorTiles/Player.png";
+
+
     public static final String SPLASH_BACKGROUND = "android/assets/Textures/SplashScreenBackground.png";
     public static final String MAIN_MENU_BACKGROUND = "android/assets/Textures/MainMenuBackground.png";
     public static final String BLACK_TEXTURE = "android/assets/Textures/black.png";
@@ -33,6 +40,12 @@ public class Constants {
 //    public static final String TITLE_FONT = "title";
 //    public static final String DEFAULT_FONT = "font";
 //
+//    public static final String ENEMY_TILE = "UI/LevelEditorTiles/Enemy.png";
+//    public static final String WALL_TILE = "UI/LevelEditorTiles/Wall.png";
+//    public static final String SPIKES_TILE = "UI/LevelEditorTiles/Spikes.png";
+//    public static final String FLOOR_TILE = "UI/LevelEditorTiles/Floor.png";
+//    public static final String PLAYER_TILE = "UI/LevelEditorTiles/Player.png";
+//
 //    public static final String SPLASH_BACKGROUND = "Textures/SplashScreenBackground.png";
 //    public static final String MAIN_MENU_BACKGROUND = "Textures/MainMenuBackground.png";
 //    public static final String BLACK_TEXTURE = "Textures/black.png";
@@ -41,4 +54,6 @@ public class Constants {
 //    public static final String BASIC_TANK_TURRET_MODEL = "Models/Tank/BasicTankTurret.obj";
 //    public static final String SIMPLE_SPIKES_SPIKES = "Models/Spikes/SimpleSpikesSpikes.obj";
 //    public static final String SIMPLE_SPIKES_BASE = "Models/Spikes/SimpleSpikesBase.obj";
+
+
 }

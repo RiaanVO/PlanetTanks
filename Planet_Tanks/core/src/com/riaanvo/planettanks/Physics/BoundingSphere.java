@@ -61,9 +61,10 @@ public class BoundingSphere {
 
     private boolean roughSphereIntersectsCheck(BoundingBox other){
         float otherRadius2 = (float) (Math.pow(other.getWidth()/2 , 2) + Math.pow(other.getHeight()/2 , 2) + Math.pow(other.getDepth()/2 , 2));
-        float minNoCollidingDistance = mRadius2 + otherRadius2 + mRadius;
+        float minNoCollidingDistance =  (float)Math.pow (mRadius2 + otherRadius2 , 2);
         float actualDistance2 = Vector3.dst2(mCenter.x , mCenter.y, mCenter.z, other.getCenterX(), other.getCenterY(), other.getCenterZ());
         return actualDistance2 <= minNoCollidingDistance;
+        //return true;
     }
 
     public void setCenter(Vector3 newCenter) {
