@@ -187,15 +187,14 @@ public class LevelSelectState extends State {
 
     private void alterButton(TextButton button, int levelNum, GameLevel level){
         button.setText(levelNum + "");
+        if(level.isUserGenerated()){
+            button.setColor(Color.BLUE);
+        } else {
+            button.setColor(Color.WHITE);
+        }
         if(level.isUnlocked()){
-            if(level.isUserGenerated()){
-                button.setColor(Color.BLUE);
-            } else {
-                //button.setColor(Color.GREEN);
-            }
             button.setDisabled(false);
         } else {
-            button.setColor(Color.GRAY);
             button.setDisabled(true);
         }
     }

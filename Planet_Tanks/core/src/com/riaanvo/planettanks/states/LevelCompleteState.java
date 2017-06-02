@@ -113,9 +113,8 @@ public class LevelCompleteState extends State {
             mNextLevelButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    mLevelManager.loadNextLevel();
+                    mLevelManager.LoadNextLevel();
                     transitionOut = true;
-                    //mGameStateManager.pop();
                 }
             });
 

@@ -43,9 +43,10 @@ public class TankController {
 
     public void shoot() {
         if (aimingDirection == null) return;
+
         Vector3 startingPosition = mParent.getPosition().cpy();
         startingPosition.y = bulletStartHeight;
-        startingPosition.add(aimingDirection.cpy().scl(bulletStartOffset));
+        startingPosition.add(aimingDirection.cpy().nor().scl(bulletStartOffset));
         mGameObjectManager.addGameObject(new com.riaanvo.planettanks.GameObjects.Shell(ContentManager.get().getShell(), startingPosition, aimingDirection));
     }
 

@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
-import com.riaanvo.planettanks.states.LevelEditorState;
 import com.riaanvo.planettanks.states.MainMenuState;
 
 public class Main extends ApplicationAdapter {
@@ -40,7 +39,7 @@ public class Main extends ApplicationAdapter {
         mGameStateManager.push(new MainMenuState());
         //mGameStateManager.push(new LevelSelectState());
         //mGameStateManager.push(new PlayState());
-        mGameStateManager.push(new LevelEditorState());
+        //mGameStateManager.push(new LevelEditorState());
     }
 
     @Override
@@ -73,6 +72,16 @@ public class Main extends ApplicationAdapter {
         isLoaded = true;
         Skin skin = mContentManager.getSkin(Constants.SKIN_KEY);
         debugFont = skin.getFont(Constants.DEFAULT_FONT);
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
     }
 
     @Override

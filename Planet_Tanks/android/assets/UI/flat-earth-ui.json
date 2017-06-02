@@ -77,6 +77,12 @@ com.badlogic.gdx.graphics.Color: {
     	b: 0.33313715
     	a: 0.8
     }
+    light-gray: {
+    		r: 0.55
+    		g: 0.55
+    		b: 0.55
+    		a: 1
+    	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -266,7 +272,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 
     button-d: {
     	name: button
-    	color: gray
+    	color: light-gray
     }
 	button-transparent-c: {
 		name: button
@@ -295,11 +301,13 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		up: button-c
 		down: button-p
 		over: button-h
+		disabled: button-d
 	}
 	close: {
 		up: button-close-c
 		down: button-close-p
 		over: button-close-h
+		disabled: button-d
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
@@ -318,11 +326,33 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		fontColor: color
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		font: button
+		fontColor: white
+		downFontColor: white
+		overFontColor: gray
+		up: button-c
+		down: button-p
+		over: button-h
+		disabled: button-d
+	}
+	transparent: {
+	    font: button
+    	fontColor: white
+    	downFontColor: white
+    	overFontColor: gray
+	    up: button-transparent-c
+	    down: button-transparent-p
+	    over: button-transparent-h
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: {
 		up: button-c
 		down: button-p
 		over: button-h
+		disabled: button-d
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
@@ -334,6 +364,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 		up: button-c
 		down: button-p
 		over: button-h
+		disabled: button-d
 	}
 	check: {
 		imageUp: checkbox-c
@@ -445,26 +476,6 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 	}
 	default-vertical: {
 		handle: splitpane-vertical-c
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-	default: {
-		font: button
-		fontColor: white
-		downFontColor: white
-		overFontColor: gray
-		up: button-c
-		down: button-p
-		over: button-h
-	}
-	transparent: {
-	    font: button
-    	fontColor: white
-    	downFontColor: white
-    	overFontColor: gray
-	    up: button-transparent-c
-	    down: button-transparent-p
-	    over: button-transparent-h
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

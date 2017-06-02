@@ -37,7 +37,6 @@ public abstract class GameObject {
 
     public abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
 
-
     //https://xoppa.github.io/blog/3d-frustum-culling-with-libgdx/
     public boolean isVisible(){
             Camera cam = CameraController.get().getCamera();

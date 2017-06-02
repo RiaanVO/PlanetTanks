@@ -73,11 +73,7 @@ public class PlayState extends State {
 
     @Override
     protected void loaded() {
-        if(mLevelManager.isLevelToLoadSet()){
-            mLevelManager.loadSetLevel();
-        } else {
-            mLevelManager.LoadLevel(0);
-        }
+        mLevelManager.LoadLevel();
 
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);

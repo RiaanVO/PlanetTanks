@@ -10,6 +10,8 @@ public class GameLevel {
     private boolean mUnlocked;
     private boolean mUserGenerated;
 
+    public GameLevel(){};
+
     public GameLevel(String levelName, int[][] levelMap, boolean unlocked, boolean userGenerated) {
         mLevelName = levelName;
         mLevelMap = levelMap;
@@ -41,7 +43,21 @@ public class GameLevel {
         return mUnlocked;
     }
 
+    public void setUnlocked(boolean unlocked){
+        mUnlocked = unlocked;
+    }
+
     public boolean isUserGenerated(){
         return mUserGenerated;
+    }
+
+    public boolean isMatchingLevel(int[][] levelMap){
+        if(levelMap.length != mLevelMap.length || levelMap[0].length != mLevelMap[0].length) return false;
+        for (int z = 0; z < levelMap.length; z++) {
+            for (int x = 0; x < levelMap[0].length; x++) {
+                if(levelMap[z][x] != mLevelMap[z][x]) return false;
+            }
+        }
+        return true;
     }
 }
