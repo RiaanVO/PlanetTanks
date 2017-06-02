@@ -12,7 +12,7 @@ import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
 import com.riaanvo.planettanks.states.MainMenuState;
 
-public class Main extends ApplicationAdapter {
+public class PlanetTanks extends ApplicationAdapter {
     private ModelBatch mModelBatch;
     private SpriteBatch mSpriteBatch;
     private GameStateManager mGameStateManager;
