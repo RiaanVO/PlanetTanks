@@ -2,15 +2,21 @@ package com.riaanvo.planettanks;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
+import com.riaanvo.planettanks.managers.LevelManager;
+import com.riaanvo.planettanks.states.EditorMenuState;
 import com.riaanvo.planettanks.states.MainMenuState;
+import com.riaanvo.planettanks.states.PlayState;
+import com.riaanvo.planettanks.states.SplashScreenState;
 
 public class PlanetTanks extends ApplicationAdapter {
     private ModelBatch mModelBatch;
@@ -26,21 +32,17 @@ public class PlanetTanks extends ApplicationAdapter {
         mModelBatch = new ModelBatch();
         mSpriteBatch = new SpriteBatch();
         mGameStateManager = GameStateManager.get();
-        mContentManager = ContentManager.get();
 
-        //For frame rate debugging
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-        mContentManager.loadTexture(Constants.BLACK_TEXTURE); // used for transitions
+        mContentManager = ContentManager.get();
+        mContentManager.setAssetManager(new AssetManager());
+        //LoadGameAssets();
 
         isLoaded = false;
 
         //Initialise the first screen
-        //mGameStateManager.push(new SplashScreenState());
-        mGameStateManager.push(new MainMenuState());
-        //mGameStateManager.push(new LevelSelectState());
-        //mGameStateManager.push(new PlayState());
-        //mGameStateManager.push(new LevelEditorState());
+        mGameStateManager.push(new SplashScreenState(this));
     }
+
 
     @Override
     public void render() {
@@ -76,12 +78,60 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void pause() {
+
+        PlayState playState;
+
+        try {
+            playState = (PlayState) mGameStateManager.getCurrentState();
+        } catch (ClassCastException e){
+            System.out.println(e.toString());
+            playState = null;
+        } finally {
+
+        }
+
+        if(playState != null){
+            playState.pauseGame();
+        }
         super.pause();
     }
 
     @Override
     public void resume() {
+
+        LoadGameAssets();
+
         super.resume();
+    }
+
+    public void LoadGameAssets(){
+        //Load all game assets
+        //UI assets
+        mContentManager.loadSkin(Constants.SKIN_KEY);
+        mContentManager.loadTexture(Constants.BLACK_TEXTURE);
+
+        //Splash screen assets
+        mContentManager.loadTexture(Constants.SPLASH_BACKGROUND);
+
+        //Main menu assets
+        mContentManager.loadTexture(Constants.MAIN_MENU_BACKGROUND);
+
+        //Game play assets
+        mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
+        mContentManager.loadModel(Constants.BASIC_TANK_BODY_MODEL);
+        mContentManager.loadModel(Constants.BASIC_TANK_TURRET_MODEL);
+        mContentManager.loadModel(Constants.SIMPLE_SPIKES_SPIKES);
+        mContentManager.loadModel(Constants.SIMPLE_SPIKES_BASE);
+
+
+        //Editor assets
+        mContentManager.loadTexture(Constants.FLOOR_TILE);
+        mContentManager.loadTexture(Constants.WALL_TILE);
+        mContentManager.loadTexture(Constants.PLAYER_TILE);
+        mContentManager.loadTexture(Constants.SPIKES_TILE);
+        mContentManager.loadTexture(Constants.ENEMY_TILE);
+
+        mContentManager.CreateBasicModels();
     }
 
     @Override
@@ -91,5 +141,6 @@ public class PlanetTanks extends ApplicationAdapter {
         mGameStateManager.dispose();
         mContentManager.dispose();
         CollisionManager.get().dispose();
+        LevelManager.get().dispose();
     }
 }

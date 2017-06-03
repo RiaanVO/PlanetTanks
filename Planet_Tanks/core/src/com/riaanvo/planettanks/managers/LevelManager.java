@@ -1,6 +1,8 @@
 package com.riaanvo.planettanks.managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -64,8 +66,6 @@ public class LevelManager {
     private boolean loadByIndex;
     private boolean isPlaytest;
 
-    private String storedLevels = "[{class:com.riaanvo.planettanks.LevelFramework.GameLevel,mLevelName:1,mLevelMap:[[1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,3,3,3,3,1],[1,0,0,1,0,0,0,0,0,1],[1,2,0,1,1,1,0,0,4,1],[1,0,0,1,0,0,0,0,0,1],[1,0,0,0,0,3,3,3,3,1],[1,1,1,1,1,1,1,1,1,1]],mUnlocked:true,mUserGenerated:false},{class:com.riaanvo.planettanks.LevelFramework.GameLevel,mLevelName:2,mLevelMap:[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,3,3,3,3,0,1,3,4,3,1,0,0,0,0,4,0,0,1],[1,0,0,1,0,0,0,0,0,0,1,3,3,3,1,0,3,0,0,0,0,0,1],[1,2,0,1,1,1,0,0,4,0,3,3,3,3,3,0,3,1,1,1,1,1,1],[1,0,0,1,0,0,0,0,0,0,1,3,3,3,1,0,3,0,0,0,0,0,1],[1,0,0,0,0,3,3,3,3,0,1,3,4,3,1,0,0,0,0,4,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],mUnlocked:false,mUserGenerated:false}]";
-
     private LevelManager() {
         mGameStateManager = GameStateManager.get();
         mGameObjectManager = GameObjectManager.get();
@@ -100,14 +100,58 @@ public class LevelManager {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
 
-        //levels.add(new GameLevel("1", demo1Map, true, false));
-        //levels.add(new GameLevel("2", demo2Map, false, false));
 
-        System.out.println(levelsToJson());
-        LoadStoredLevels(storedLevels);
-        System.out.println(levelsToJson());
+
+        System.out.println(levelsToJson(levels));
+        LoadCoreLevels();
+        System.out.println(levelsToJson(levels));
+        LoadPlayerLevels();
+        System.out.println(levelsToJson(levels));
+
 
         currentLevelIndex = 0;
+    }
+
+    private void LoadCoreLevels(){
+        FileHandle handle = Gdx.files.internal(Constants.CORE_LEVELS_FILE);
+        if(handle.exists()){
+            levels = LoadStoredLevels(handle.readString());
+        }
+
+        Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
+        String levelsString = prefs.getString(Constants.CORE_LEVELS_KEY, "");
+        if(!levelsString.equals("")){
+            LinkedList<GameLevel> prefLevels =  LoadStoredLevels(levelsString);
+            if(levels.size() != prefLevels.size()) return;
+            for(int i = 0; i < levels.size(); i ++){
+                levels.get(i).setUnlocked(prefLevels.get(i).isUnlocked());
+            }
+        }
+    }
+
+    private void SaveCoreLevels(){
+        Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
+        String coreLevels = levelsToJson(getCoreLevels());
+        System.out.println(coreLevels);
+        prefs.putString(Constants.CORE_LEVELS_KEY, coreLevels);
+        prefs.flush();
+    }
+
+    private void LoadPlayerLevels(){
+        Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
+        String levelsString = prefs.getString(Constants.PLAYER_LEVELS_KEY, "");
+        if(!levelsString.equals("")){
+            levels.addAll(LoadStoredLevels(levelsString));
+        }
+    }
+
+
+    private void SavePlayerLevels(){
+        Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
+        String userLevels = levelsToJson(getUserMadeLevels());
+        System.out.println(userLevels);
+        prefs.putString(Constants.PLAYER_LEVELS_KEY, userLevels);
+        prefs.flush();
     }
 
     public void update(float deltaTime) {
@@ -159,6 +203,12 @@ public class LevelManager {
         return currentLevelIndex < levels.size() - 1 && !isPlaytest;
     }
 
+    public void UnlockNextLevel(){
+        if(isAnotherLevel()){
+            levels.get(currentLevelIndex + 1).setUnlocked(true);
+        }
+    }
+
     public void LoadNextLevel() {
         loadByIndex = true;
         currentLevelIndex += 1;
@@ -200,7 +250,6 @@ public class LevelManager {
         currentLevel = level;
     }
 
-
     public void setLevelToLoad(int levelIndex){
         currentLevelIndex = levelIndex;
         loadByIndex = true;
@@ -210,7 +259,6 @@ public class LevelManager {
         currentLevel = level;
         loadByIndex = false;
     }
-
 
     public void EnemyKilled(int pointsToAdd) {
         currentNumEnemies--;
@@ -317,17 +365,44 @@ public class LevelManager {
         startingNumEnemies++;
     }
 
-    public String levelsToJson(){
-        Json json = new Json();
-        return json.toJson(levels);
+    public void removeLevel(int levelIndex){
+        levels.remove(levelIndex);
     }
 
-    public void LoadStoredLevels(String levelsJson){
-        Json json = new Json();
+    public void removeLevel(GameLevel level){
+        levels.remove(level);
+    }
 
-        levels = json.fromJson(LinkedList.class, levelsJson);
+    public LinkedList<GameLevel> getCoreLevels(){
+        LinkedList<GameLevel> coreLevels = new LinkedList<GameLevel>();
         for(GameLevel level : levels){
-            //System.out.println(level.getLevelName());
+            if(!level.isUserGenerated()) coreLevels.add(level);
         }
+        return coreLevels;
+    }
+
+    public LinkedList<GameLevel> getUserMadeLevels(){
+        LinkedList<GameLevel> userMadeLevels = new LinkedList<GameLevel>();
+
+        for(GameLevel level : levels){
+            if(level.isUserGenerated()) userMadeLevels.add(level);
+        }
+
+        return userMadeLevels;
+    }
+
+    public String levelsToJson(LinkedList<GameLevel> gameLevels){
+        Json json = new Json();
+        return json.toJson(gameLevels);
+    }
+
+    public LinkedList<GameLevel> LoadStoredLevels(String levelsJson){
+        Json json = new Json();
+        return json.fromJson(LinkedList.class, levelsJson);
+    }
+
+    public void dispose(){
+        SavePlayerLevels();
+        SaveCoreLevels();
     }
 }

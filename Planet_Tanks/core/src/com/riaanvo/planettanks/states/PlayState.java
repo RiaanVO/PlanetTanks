@@ -42,14 +42,6 @@ public class PlayState extends State {
         mLevelManager = LevelManager.get();
         mGameObjectManager = GameObjectManager.get();
         mCameraController = CameraController.get();
-
-        mContentManager.loadTexture(Constants.FLOOR_TEXTURE);
-
-        mContentManager.loadModel(Constants.BASIC_TANK_BODY_MODEL);
-        mContentManager.loadModel(Constants.BASIC_TANK_TURRET_MODEL);
-
-        mContentManager.loadModel(Constants.SIMPLE_SPIKES_SPIKES);
-        mContentManager.loadModel(Constants.SIMPLE_SPIKES_BASE);
     }
 
     @Override
@@ -93,7 +85,7 @@ public class PlayState extends State {
         mainMenuButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.push(new PauseState());
+                pauseGame();
             }
         });
 
@@ -112,6 +104,10 @@ public class PlayState extends State {
 
         mStage.addActor(movementTouchpad);
         mStage.addActor(aimingTouchpad);
+    }
+
+    public void pauseGame(){
+        mGameStateManager.push(new PauseState());
     }
 
     @Override

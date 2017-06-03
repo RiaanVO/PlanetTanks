@@ -1,6 +1,7 @@
 package com.riaanvo.planettanks;
 
 import android.os.Bundle;
+import android.os.Debug;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;

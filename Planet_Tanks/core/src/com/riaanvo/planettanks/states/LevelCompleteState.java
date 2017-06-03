@@ -44,8 +44,6 @@ public class LevelCompleteState extends State {
     private LevelManager mLevelManager;
 
     public LevelCompleteState() {
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-        mContentManager.loadTexture(Constants.BLACK_TEXTURE);
         mPlayState = mGameStateManager.getState(0);
         mLevelManager = LevelManager.get();
         alpha = 0.8f;
@@ -105,7 +103,7 @@ public class LevelCompleteState extends State {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        mTitle = new Label("LEVEL " + mLevelManager.getLevelName() + " COMPLETE!", mSkin, Constants.TITLE_FONT);
+        mTitle = new Label("LEVEL " + mLevelManager.getLevelName() + "\nCOMPLETE!", mSkin, Constants.TITLE_FONT);
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
@@ -119,7 +117,7 @@ public class LevelCompleteState extends State {
             });
 
 
-        mMainMenuButton = new TextButton("MAIN MENU", mSkin);
+        mMainMenuButton = new TextButton("QUIT", mSkin);
         mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -140,6 +138,7 @@ public class LevelCompleteState extends State {
         mTable.add(mTitle).pad(10f);
         mTable.row();
         if(mLevelManager.isAnotherLevel()) {
+            mLevelManager.UnlockNextLevel();
             mTable.add(mNextLevelButton).pad(10f).width(buttonWidth).height(buttonHeight);
             mTable.row();
         }

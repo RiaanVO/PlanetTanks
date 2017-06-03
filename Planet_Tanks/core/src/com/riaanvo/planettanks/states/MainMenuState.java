@@ -33,8 +33,7 @@ public class MainMenuState extends State {
     private Image mBackgroundImage;
 
     public MainMenuState() {
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-        mContentManager.loadTexture(Constants.MAIN_MENU_BACKGROUND);
+
     }
 
     @Override
@@ -74,11 +73,12 @@ public class MainMenuState extends State {
         mLevelEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mGameStateManager.push(new LevelEditorState());
+                mGameStateManager.push(new EditorMenuState());
+                //mGameStateManager.push(new LevelEditorState());
             }
         });
 
-        mQuitButton = new TextButton("QUIT", mSkin);
+        mQuitButton = new TextButton("QUIT GAME", mSkin);
         mQuitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

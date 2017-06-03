@@ -47,8 +47,6 @@ public class LevelSelectState extends State {
 
     public LevelSelectState() {
         mLevelManager = LevelManager.get();
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-        mContentManager.loadTexture(Constants.MAIN_MENU_BACKGROUND);
     }
 
     @Override

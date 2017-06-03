@@ -56,13 +56,6 @@ public class LevelEditorState extends State {
 
     public LevelEditorState(){
         mLevelManager = LevelManager.get();
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-
-        mContentManager.loadTexture(Constants.FLOOR_TILE);
-        mContentManager.loadTexture(Constants.WALL_TILE);
-        mContentManager.loadTexture(Constants.PLAYER_TILE);
-        mContentManager.loadTexture(Constants.SPIKES_TILE);
-        mContentManager.loadTexture(Constants.ENEMY_TILE);
 
         hasPlayer = false;
         levelEdited = false;

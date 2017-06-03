@@ -65,8 +65,9 @@ public class ContentManager {
     }
 
     private ContentManager() {
-        mAssetManager = new AssetManager();
+    }
 
+    public void CreateBasicModels(){
         modelBuilder = new ModelBuilder();
         Material shellMat = new Material(ColorAttribute.createDiffuse(Color.RED));
         shell = modelBuilder.createBox(0.2f, 0.2f, 0.5f, shellMat, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
@@ -78,6 +79,10 @@ public class ContentManager {
         floorPlane = createPlaneModel(Constants.TILE_SIZE, Constants.TILE_SIZE, floorMat, 0, 0, 1, 1);
         ColorAttribute colorAttr = new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE);
         floorPlane.materials.get(0).set(colorAttr);
+    }
+
+    public void setAssetManager(AssetManager assetManager){
+        mAssetManager = assetManager;
     }
 
     public void loadModel(String key) {
@@ -130,9 +135,13 @@ public class ContentManager {
 
     public void dispose() {
         mAssetManager.dispose();
-
         shell.dispose();
         floorPlane.dispose();
         wallSegment.dispose();
+
+        mAssetManager = null;
+        shell = null;
+        floorPlane = null;
+        wallSegment = null;
     }
 }

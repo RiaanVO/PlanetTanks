@@ -85,6 +85,10 @@ public class GameStateManager {
         }
     }
 
+    public State getCurrentState(){
+        return mStates.getFirst();
+    }
+
     public void dispose() {
         while (mStates.size() != 0) {
             pop();

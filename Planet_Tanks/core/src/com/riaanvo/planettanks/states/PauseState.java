@@ -39,8 +39,6 @@ public class PauseState extends State{
     private float fadeInTimer;
 
     public PauseState() {
-        mContentManager.loadSkin(Constants.SKIN_KEY);
-        mContentManager.loadTexture(Constants.BLACK_TEXTURE);
         mPlayState = mGameStateManager.getState(0);
         alpha = 0.8f;
         transitionedIn = false;
@@ -104,7 +102,7 @@ public class PauseState extends State{
             }
         });
 
-        mMainMenuButton = new TextButton("MAIN MENU", mSkin);
+        mMainMenuButton = new TextButton("QUIT", mSkin);
         mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -141,5 +139,6 @@ public class PauseState extends State{
     public void dispose() {
         if(mStage == null) return;
         mStage.dispose();
+
     }
 }

@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.riaanvo.planettanks.Constants;
+import com.riaanvo.planettanks.PlanetTanks;
 
 /**
  * Created by riaanvo on 9/5/17.
@@ -19,24 +21,33 @@ public class SplashScreenState extends State {
 
     private Image backgroundImage;
 
-    private float duration = 3;
+    private float duration = 1;
+    private boolean allAssetsLoaded;
 
-    public SplashScreenState() {
+    private PlanetTanks mPlanetTanks;
+
+    public SplashScreenState(PlanetTanks planetTanks) {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
 
-        //Load required textures and fonts
+        //Splash screen assets
         mContentManager.loadTexture(Constants.SPLASH_BACKGROUND);
 
+        //Load required textures and fonts
         hasTransitioned = false;
+        allAssetsLoaded = false;
+        mPlanetTanks = planetTanks;
     }
 
     @Override
     protected void update(float deltaTime) {
-        duration -= deltaTime;
-        if (duration < 0 && !hasTransitioned) {
-            hasTransitioned = true;
-//            mGameStateManager.push(new TransitionState(new MainMenuState(), TransitionState.TransitionType.BLACK_FADE_REPLACE));
-            mGameStateManager.setState(new MainMenuState());
+        if(allAssetsLoaded){
+            duration -= deltaTime;
+            if (duration < 0 && !hasTransitioned) {
+                hasTransitioned = true;
+                mGameStateManager.setState(new MainMenuState());
+            }
+        } else {
+            allAssetsLoaded = mContentManager.assetManagerUpdate();
         }
     }
 
@@ -50,8 +61,11 @@ public class SplashScreenState extends State {
         backgroundImage = new Image(mContentManager.getTexture(Constants.SPLASH_BACKGROUND));
         backgroundImage.setPosition(0, 0);
         backgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
-
         mStage.addActor(backgroundImage);
+
+        mPlanetTanks.LoadGameAssets();
+
+        allAssetsLoaded = false;
     }
 
     @Override

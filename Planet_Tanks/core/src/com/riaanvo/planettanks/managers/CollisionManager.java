@@ -55,14 +55,6 @@ public class CollisionManager {
         return collisions;
     }
 
-//    public LinkedList<Collider> getCollisionsInList(Collider baseCollider, LinkedList<Collider> others){
-//        LinkedList<Collider> collisions = new LinkedList<Collider>();
-//        for(Collider other : others){
-//            if (baseCollider.intersectsWith(other)) collisions.add(other);
-//        }
-//        return collisions;
-//    }
-
     public boolean getCollisionsInListBoolean(Collider baseCollider, LinkedList<Collider> others) {
         for (Collider other : others) {
             if (baseCollider.intersectsWith(other)) return true;
@@ -126,6 +118,9 @@ public class CollisionManager {
     }
 
     public void dispose() {
-        shapeRenderer.dispose();
+        if(shapeRenderer != null) {
+            shapeRenderer.dispose();
+            shapeRenderer = null;
+        }
     }
 }
