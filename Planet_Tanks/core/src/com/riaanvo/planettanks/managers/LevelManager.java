@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.managers;
 
 import com.badlogic.gdx.Gdx;
@@ -101,7 +117,6 @@ public class LevelManager {
         };
 
 
-
         System.out.println(levelsToJson(levels));
         LoadCoreLevels();
         System.out.println(levelsToJson(levels));
@@ -112,24 +127,24 @@ public class LevelManager {
         currentLevelIndex = 0;
     }
 
-    private void LoadCoreLevels(){
+    private void LoadCoreLevels() {
         FileHandle handle = Gdx.files.internal(Constants.CORE_LEVELS_FILE);
-        if(handle.exists()){
+        if (handle.exists()) {
             levels = LoadStoredLevels(handle.readString());
         }
 
         Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
         String levelsString = prefs.getString(Constants.CORE_LEVELS_KEY, "");
-        if(!levelsString.equals("")){
-            LinkedList<GameLevel> prefLevels =  LoadStoredLevels(levelsString);
-            if(levels.size() != prefLevels.size()) return;
-            for(int i = 0; i < levels.size(); i ++){
+        if (!levelsString.equals("")) {
+            LinkedList<GameLevel> prefLevels = LoadStoredLevels(levelsString);
+            if (levels.size() != prefLevels.size()) return;
+            for (int i = 0; i < levels.size(); i++) {
                 levels.get(i).setUnlocked(prefLevels.get(i).isUnlocked());
             }
         }
     }
 
-    private void SaveCoreLevels(){
+    private void SaveCoreLevels() {
         Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
         String coreLevels = levelsToJson(getCoreLevels());
         System.out.println(coreLevels);
@@ -137,16 +152,16 @@ public class LevelManager {
         prefs.flush();
     }
 
-    private void LoadPlayerLevels(){
+    private void LoadPlayerLevels() {
         Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
         String levelsString = prefs.getString(Constants.PLAYER_LEVELS_KEY, "");
-        if(!levelsString.equals("")){
+        if (!levelsString.equals("")) {
             levels.addAll(LoadStoredLevels(levelsString));
         }
     }
 
 
-    private void SavePlayerLevels(){
+    private void SavePlayerLevels() {
         Preferences prefs = Gdx.app.getPreferences(Constants.PREFERENCES_KEY);
         String userLevels = levelsToJson(getUserMadeLevels());
         System.out.println(userLevels);
@@ -190,7 +205,7 @@ public class LevelManager {
         mGameStateManager.push(new LevelCompleteState());
     }
 
-    public void RestartLevel(){
+    public void RestartLevel() {
         LoadLevel();
     }
 
@@ -203,8 +218,8 @@ public class LevelManager {
         return currentLevelIndex < levels.size() - 1 && !isPlaytest;
     }
 
-    public void UnlockNextLevel(){
-        if(isAnotherLevel()){
+    public void UnlockNextLevel() {
+        if (isAnotherLevel()) {
             levels.get(currentLevelIndex + 1).setUnlocked(true);
         }
     }
@@ -216,7 +231,7 @@ public class LevelManager {
     }
 
     public void LoadLevel() {
-        if(loadByIndex){
+        if (loadByIndex) {
             loadLevel(levels.get(currentLevelIndex));
         } else {
             loadLevel(currentLevel);
@@ -227,7 +242,7 @@ public class LevelManager {
         unloadLevel();
         mCameraController.CreatePerspective(45, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 1f, 300f, new Vector3(0, 0, 0), new Vector3(0, 20, 10));
 
-        if(!level.isUnlocked()) level.setUnlocked(true);
+        if (!level.isUnlocked()) level.setUnlocked(true);
 
         playerDead = false;
         levelCleared = false;
@@ -250,12 +265,12 @@ public class LevelManager {
         currentLevel = level;
     }
 
-    public void setLevelToLoad(int levelIndex){
+    public void setLevelToLoad(int levelIndex) {
         currentLevelIndex = levelIndex;
         loadByIndex = true;
     }
 
-    public void setLevelToLoad(GameLevel level){
+    public void setLevelToLoad(GameLevel level) {
         currentLevel = level;
         loadByIndex = false;
     }
@@ -265,13 +280,13 @@ public class LevelManager {
         playerScore += pointsToAdd;
     }
 
-    public void setIsPlaytest(boolean playtest){
+    public void setIsPlaytest(boolean playtest) {
         isPlaytest = playtest;
     }
 
-    public boolean addLevel(GameLevel newLevel){
-        for(GameLevel level : levels){
-            if(level.isMatchingLevel(newLevel.getLevelMap())) {
+    public boolean addLevel(GameLevel newLevel) {
+        for (GameLevel level : levels) {
+            if (level.isMatchingLevel(newLevel.getLevelMap())) {
                 return false;
             }
         }
@@ -290,22 +305,22 @@ public class LevelManager {
         return null;
     }
 
-    public GameLevel getLevel(int index){
-        if(index < levels.size()){
+    public GameLevel getLevel(int index) {
+        if (index < levels.size()) {
             return levels.get(index);
         }
         return null;
     }
 
-    public String getLevelName(){
+    public String getLevelName() {
         String s = "";
-        if(currentLevel != null){
+        if (currentLevel != null) {
             s += currentLevel.getLevelName();
         }
         return s;
     }
 
-    public int getNumLevels(){
+    public int getNumLevels() {
         return levels.size();
     }
 
@@ -365,43 +380,43 @@ public class LevelManager {
         startingNumEnemies++;
     }
 
-    public void removeLevel(int levelIndex){
+    public void removeLevel(int levelIndex) {
         levels.remove(levelIndex);
     }
 
-    public void removeLevel(GameLevel level){
+    public void removeLevel(GameLevel level) {
         levels.remove(level);
     }
 
-    public LinkedList<GameLevel> getCoreLevels(){
+    public LinkedList<GameLevel> getCoreLevels() {
         LinkedList<GameLevel> coreLevels = new LinkedList<GameLevel>();
-        for(GameLevel level : levels){
-            if(!level.isUserGenerated()) coreLevels.add(level);
+        for (GameLevel level : levels) {
+            if (!level.isUserGenerated()) coreLevels.add(level);
         }
         return coreLevels;
     }
 
-    public LinkedList<GameLevel> getUserMadeLevels(){
+    public LinkedList<GameLevel> getUserMadeLevels() {
         LinkedList<GameLevel> userMadeLevels = new LinkedList<GameLevel>();
 
-        for(GameLevel level : levels){
-            if(level.isUserGenerated()) userMadeLevels.add(level);
+        for (GameLevel level : levels) {
+            if (level.isUserGenerated()) userMadeLevels.add(level);
         }
 
         return userMadeLevels;
     }
 
-    public String levelsToJson(LinkedList<GameLevel> gameLevels){
+    public String levelsToJson(LinkedList<GameLevel> gameLevels) {
         Json json = new Json();
         return json.toJson(gameLevels);
     }
 
-    public LinkedList<GameLevel> LoadStoredLevels(String levelsJson){
+    public LinkedList<GameLevel> LoadStoredLevels(String levelsJson) {
         Json json = new Json();
         return json.fromJson(LinkedList.class, levelsJson);
     }
 
-    public void dispose(){
+    public void dispose() {
         SavePlayerLevels();
         SaveCoreLevels();
     }

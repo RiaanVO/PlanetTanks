@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
@@ -46,7 +62,7 @@ public class EditorMenuState extends State {
 
     private LinkedList<GameLevel> userMadeLevels;
 
-    public EditorMenuState(){
+    public EditorMenuState() {
         mLevelManager = LevelManager.get();
     }
 
@@ -95,8 +111,8 @@ public class EditorMenuState extends State {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Button button = (Button) event.getListenerActor();
-                if(button == null) return;
-                if(button.isDisabled()) return;
+                if (button == null) return;
+                if (button.isDisabled()) return;
 
                 mLevelManager.setIsPlaytest(true);
                 int levelIndex = (currentPage - 1) * numLevelsPerPage + levelButtonsGroup.getCheckedIndex();
@@ -114,16 +130,16 @@ public class EditorMenuState extends State {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Button button = (Button) event.getListenerActor();
-                if(button == null) return;
-                if(button.isDisabled()) return;
+                if (button == null) return;
+                if (button.isDisabled()) return;
 
                 int levelIndex = (currentPage - 1) * numLevelsPerPage + levelButtonsGroup.getCheckedIndex();
                 mLevelManager.removeLevel(userMadeLevels.get(levelIndex));
                 userMadeLevels.remove(levelIndex);
 
-                if((currentPage - 1) * (numLevelsPerPage) >= userMadeLevels.size()){
+                if ((currentPage - 1) * (numLevelsPerPage) >= userMadeLevels.size()) {
                     currentPage--;
-                    if(currentPage < 1) currentPage = 1;
+                    if (currentPage < 1) currentPage = 1;
                 }
                 setupPage(currentPage);
 
@@ -136,8 +152,8 @@ public class EditorMenuState extends State {
         leftArrow.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentPage --;
-                if(currentPage < 1){
+                currentPage--;
+                if (currentPage < 1) {
                     currentPage = 1;
                 }
                 setupPage(currentPage);
@@ -148,14 +164,13 @@ public class EditorMenuState extends State {
         rightArrow.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentPage ++;
-                if(currentPage > maxNumPages){
+                currentPage++;
+                if (currentPage > maxNumPages) {
                     currentPage = maxNumPages;
                 }
                 setupPage(currentPage);
             }
         });
-
 
 
         levelButtonsGroup = new ButtonGroup();
@@ -165,7 +180,7 @@ public class EditorMenuState extends State {
 
         levelButtons = new LinkedList<ImageTextButton>();
 
-        for(int i = 0; i < numLevelsPerPage; i ++){
+        for (int i = 0; i < numLevelsPerPage; i++) {
             ImageTextButton button = new ImageTextButton("", skin, "radio");
             button.addListener(new ClickListener() {
                 @Override
@@ -185,11 +200,10 @@ public class EditorMenuState extends State {
         levelsTable.defaults().expandX().left();
         levelsTable.align(Align.center);
         levelsTable.add(levelsLabel).pad(10f);
-        for(int i = 0; i < levelButtons.size(); i ++){
+        for (int i = 0; i < levelButtons.size(); i++) {
             levelsTable.row();
             levelsTable.add(levelButtons.get(i)).pad(2).width(buttonWidth).height(buttonHeight);
         }
-
 
 
         Table optionsContainer = new Table();
@@ -204,13 +218,13 @@ public class EditorMenuState extends State {
 
         leftArrow.setTransform(true);
         leftArrow.getLabel().setFontScale(2);
-        middleContainer.add(leftArrow).pad(10f).width(buttonWidth/2).height(buttonHeight*2);
+        middleContainer.add(leftArrow).pad(10f).width(buttonWidth / 2).height(buttonHeight * 2);
 
         middleContainer.add(levelsTable);
 
         rightArrow.setTransform(true);
         rightArrow.getLabel().setFontScale(2);
-        middleContainer.add(rightArrow).pad(10f).width(buttonWidth/2).height(buttonHeight*2);
+        middleContainer.add(rightArrow).pad(10f).width(buttonWidth / 2).height(buttonHeight * 2);
 
         middleContainer.add(optionsContainer);
 
@@ -232,18 +246,18 @@ public class EditorMenuState extends State {
         setupPage(1);
     }
 
-    private void setupPage(int pageNumber){
+    private void setupPage(int pageNumber) {
         currentPage = pageNumber;
         maxNumPages = (userMadeLevels.size() / numLevelsPerPage) + 1;
-        if(userMadeLevels.size() % numLevelsPerPage == 0 && maxNumPages != 1) maxNumPages--;
+        if (userMadeLevels.size() % numLevelsPerPage == 0 && maxNumPages != 1) maxNumPages--;
 
         int numLevels = userMadeLevels.size();
         int startingLevelIndex = numLevelsPerPage * (currentPage - 1);
         int endingLevelIndex = startingLevelIndex + numLevelsPerPage - 1;
 
-        for(int i = startingLevelIndex; i <= endingLevelIndex; i ++){
+        for (int i = startingLevelIndex; i <= endingLevelIndex; i++) {
             int buttonIndex = i - startingLevelIndex;
-            if(i >= numLevels){
+            if (i >= numLevels) {
                 levelButtons.get(buttonIndex).setVisible(false);
             } else {
                 levelButtons.get(buttonIndex).setVisible(true);
@@ -257,12 +271,12 @@ public class EditorMenuState extends State {
         pageLabel.setText("( " + currentPage + " / " + maxNumPages + " )");
     }
 
-    private boolean levelSelected(){
-        if(levelButtonsGroup.getAllChecked().size == 0) return false;
+    private boolean levelSelected() {
+        if (levelButtonsGroup.getAllChecked().size == 0) return false;
         return true;
     }
 
-    private void alterButtonStates(){
+    private void alterButtonStates() {
         deleteButton.setDisabled(!levelSelected());
         playButton.setDisabled(!levelSelected());
     }
@@ -279,7 +293,7 @@ public class EditorMenuState extends State {
 
     @Override
     public void initialiseInput() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
         userMadeLevels = mLevelManager.getUserMadeLevels();
         setupPage(1);
@@ -287,7 +301,7 @@ public class EditorMenuState extends State {
 
     @Override
     public void dispose() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         mStage.dispose();
         mLevelManager.setIsPlaytest(false);
     }

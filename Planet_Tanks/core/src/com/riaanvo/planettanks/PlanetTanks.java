@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -26,7 +42,7 @@ public class PlanetTanks extends ApplicationAdapter {
     private boolean isLoaded;
     private BitmapFont debugFont;
 
-    public PlanetTanks(IActivityRequestHandler handler){
+    public PlanetTanks(IActivityRequestHandler handler) {
         mAdManager = AdManager.get();
         mAdManager.setHandler(handler);
     }
@@ -83,12 +99,12 @@ public class PlanetTanks extends ApplicationAdapter {
         PlayState playState;
         try {
             playState = (PlayState) mGameStateManager.getCurrentState();
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             System.out.println(e.toString());
             playState = null;
         }
 
-        if(playState != null){
+        if (playState != null) {
             playState.pauseGame();
         }
         super.pause();
@@ -100,7 +116,7 @@ public class PlanetTanks extends ApplicationAdapter {
         super.resume();
     }
 
-    public void LoadGameAssets(){
+    public void LoadGameAssets() {
         //Load all game assets
         //UI assets
         mContentManager.loadSkin(Constants.SKIN_KEY);

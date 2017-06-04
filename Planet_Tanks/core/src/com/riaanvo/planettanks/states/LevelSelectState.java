@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
@@ -6,17 +22,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.LevelFramework.GameLevel;
 import com.riaanvo.planettanks.managers.LevelManager;
@@ -73,8 +86,8 @@ public class LevelSelectState extends State {
         leftArrow.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentPage --;
-                if(currentPage < 1){
+                currentPage--;
+                if (currentPage < 1) {
                     currentPage = 1;
                 }
                 setupPage(currentPage);
@@ -85,8 +98,8 @@ public class LevelSelectState extends State {
         rightArrow.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentPage ++;
-                if(currentPage > maxNumPages){
+                currentPage++;
+                if (currentPage > maxNumPages) {
                     currentPage = maxNumPages;
                 }
                 setupPage(currentPage);
@@ -94,14 +107,14 @@ public class LevelSelectState extends State {
         });
 
         levelButtons = new TextButton[8];
-        for(int i = 0; i < levelButtons.length; i ++){
+        for (int i = 0; i < levelButtons.length; i++) {
             levelButtons[i] = new TextButton("?", mSkin);
             levelButtons[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    TextButton button = (TextButton)event.getListenerActor();
-                    if(button != null){
-                        if(button.isDisabled()) return;
+                    TextButton button = (TextButton) event.getListenerActor();
+                    if (button != null) {
+                        if (button.isDisabled()) return;
                         int index = Integer.parseInt(button.getText() + "") - 1;
                         startLevel(index);
                     }
@@ -115,7 +128,7 @@ public class LevelSelectState extends State {
         Table levelsTable = new Table();
         levelsTable.setTransform(true);
         levelsTable.padBottom(10f);
-        levelsTable.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
+        levelsTable.setBounds(0, 0, mStage.getWidth(), mStage.getHeight());
 
         float buttonWidth = 100;
         float buttonHeight = 100;
@@ -154,22 +167,22 @@ public class LevelSelectState extends State {
         mainContainer.row();
         mainContainer.add(pageLabel).padBottom(20f);
         mainContainer.row();
-        mainContainer.add(mainMenuButton).width(buttonWidth*2).height(buttonHeight/2);
+        mainContainer.add(mainMenuButton).width(buttonWidth * 2).height(buttonHeight / 2);
 
         mStage.addActor(mainContainer);
         setupPage(1);
     }
 
-    private void setupPage(int pageNumber){
+    private void setupPage(int pageNumber) {
         currentPage = pageNumber;
 
         int numLevels = mLevelManager.getNumLevels();
         int startingLevelIndex = 8 * (currentPage - 1);
         int endingLevelIndex = startingLevelIndex + 7;
 
-        for(int i = startingLevelIndex; i <= endingLevelIndex; i ++){
+        for (int i = startingLevelIndex; i <= endingLevelIndex; i++) {
             int buttonIndex = i - startingLevelIndex;
-            if(i >= numLevels){
+            if (i >= numLevels) {
                 levelButtons[buttonIndex].setVisible(false);
             } else {
                 levelButtons[buttonIndex].setVisible(true);
@@ -183,21 +196,21 @@ public class LevelSelectState extends State {
         pageLabel.setText("( " + currentPage + " / " + maxNumPages + " )");
     }
 
-    private void alterButton(TextButton button, int levelNum, GameLevel level){
+    private void alterButton(TextButton button, int levelNum, GameLevel level) {
         button.setText(levelNum + "");
-        if(level.isUserGenerated()){
+        if (level.isUserGenerated()) {
             button.setColor(Color.BLUE);
         } else {
             button.setColor(Color.WHITE);
         }
-        if(level.isUnlocked()){
+        if (level.isUnlocked()) {
             button.setDisabled(false);
         } else {
             button.setDisabled(true);
         }
     }
 
-    private void startLevel(int levelIndex){
+    private void startLevel(int levelIndex) {
         mLevelManager.setLevelToLoad(levelIndex);
         mGameStateManager.setState(new PlayState());
     }
@@ -214,13 +227,13 @@ public class LevelSelectState extends State {
 
     @Override
     public void initialiseInput() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
     }
 
     @Override
     public void dispose() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         mStage.dispose();
     }
 }

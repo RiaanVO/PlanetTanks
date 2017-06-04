@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
@@ -8,21 +24,17 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.LevelFramework.GameLevel;
 import com.riaanvo.planettanks.managers.LevelManager;
@@ -54,7 +66,7 @@ public class LevelEditorState extends State {
 
     private boolean levelEdited;
 
-    public LevelEditorState(){
+    public LevelEditorState() {
         mLevelManager = LevelManager.get();
 
         hasPlayer = false;
@@ -118,7 +130,7 @@ public class LevelEditorState extends State {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 TextButton button = (TextButton) event.getListenerActor();
-                if(button != null) {
+                if (button != null) {
                     if (button.isDisabled()) {
                         errorMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
                         errorDialog.show(mStage);
@@ -141,19 +153,18 @@ public class LevelEditorState extends State {
         });
 
 
-
         saveButton = new TextButton("SAVE", skin);
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 TextButton button = (TextButton) event.getListenerActor();
-                if(button != null){
-                    if(button.isDisabled()) {
+                if (button != null) {
+                    if (button.isDisabled()) {
                         errorMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
                         errorDialog.show(mStage);
                         return;
                     }
-                    if(!mLevelManager.addLevel(editorToLevel())){
+                    if (!mLevelManager.addLevel(editorToLevel())) {
                         errorMessage.setText("Level already exists");
                         errorDialog.show(mStage);
                         System.out.println("Level already exists");
@@ -164,15 +175,13 @@ public class LevelEditorState extends State {
         });
 
 
-
-
         typeButtonGroup = new ButtonGroup();
         typeButtonGroup.setMinCheckCount(1);
         typeButtonGroup.setMaxCheckCount(1);
         typeButtonGroup.setUncheckLast(true);
 
         typeButtons = new LinkedList<ImageTextButton>();
-        for(int i = 0; i < LevelManager.LevelMapTiles.values().length; i ++){
+        for (int i = 0; i < LevelManager.LevelMapTiles.values().length; i++) {
             String s = LevelManager.LevelMapTiles.values()[i].name();
             ImageTextButton button = new ImageTextButton(s, skin, "radio");
             typeButtons.add(button);
@@ -184,7 +193,7 @@ public class LevelEditorState extends State {
         Table typeButtonTable = new Table();
         typeButtonTable.setTransform(true);
         typeButtonTable.defaults().expandX().left();
-        for(ImageTextButton button : typeButtons){
+        for (ImageTextButton button : typeButtons) {
             typeButtonTable.add(button).pad(typeButtonPad);
             typeButtonTable.row();
         }
@@ -198,8 +207,8 @@ public class LevelEditorState extends State {
         levelMapButtons = new LinkedList<ImageButton>();
         levelMap = new int[levelHeight][levelWidth];
 
-        for(int y = 0; y < levelHeight; y++){
-            for(int x = 0; x < levelWidth; x++){
+        for (int y = 0; y < levelHeight; y++) {
+            for (int x = 0; x < levelWidth; x++) {
                 ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
                 buttonStyle.up = skin.getDrawable("button-c");
                 buttonStyle.down = skin.getDrawable("button-p");
@@ -212,8 +221,8 @@ public class LevelEditorState extends State {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         ImageButton button = (ImageButton) event.getListenerActor();
-                        if(button != null){
-                            if(button.isDisabled()) return;
+                        if (button != null) {
+                            if (button.isDisabled()) return;
                             setButtonType(button, LevelManager.LevelMapTiles.values()[typeButtonGroup.getCheckedIndex()]);
                             updateButtonsDisabled(isValidLevel());
                         }
@@ -223,7 +232,7 @@ public class LevelEditorState extends State {
                 levelMapButtons.add(imgButton);
                 levelMapTable.add(imgButton).pad(levelTilePad).width(levelTileSize).height(levelTileSize);
 
-                if(y == 0 || y == levelHeight - 1 || x == 0 || x == levelWidth - 1) {
+                if (y == 0 || y == levelHeight - 1 || x == 0 || x == levelWidth - 1) {
                     imgButton.setDisabled(true);
                     setButtonType(imgButton, LevelManager.LevelMapTiles.WALL);
                 } else {
@@ -258,7 +267,7 @@ public class LevelEditorState extends State {
 
         Table mainRoot = new Table();
         mainRoot.align(Align.center);
-        mainRoot.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
+        mainRoot.setBounds(0, 0, mStage.getWidth(), mStage.getHeight());
         mainRoot.padBottom(20f);
         mainRoot.add(optionButtonsContainer);
         mainRoot.row();
@@ -267,16 +276,16 @@ public class LevelEditorState extends State {
         mStage.addActor(mainRoot);
     }
 
-    private void setButtonType(ImageButton button, LevelManager.LevelMapTiles type){
+    private void setButtonType(ImageButton button, LevelManager.LevelMapTiles type) {
         int buttonIndex = levelMapButtons.indexOf(button);
         int x = buttonIndex % levelWidth;
         int y = buttonIndex / levelWidth;
         int typeIndex = LevelManager.LevelMapTiles.valueOf(type.name()).ordinal();
 
-        if(type == LevelManager.LevelMapTiles.PLAYER){
+        if (type == LevelManager.LevelMapTiles.PLAYER) {
             handlePlayerPlacement(buttonIndex);
         } else {
-            if(getButtonType(button) == LevelManager.LevelMapTiles.PLAYER){
+            if (getButtonType(button) == LevelManager.LevelMapTiles.PLAYER) {
                 hasPlayer = false;
             }
         }
@@ -289,24 +298,24 @@ public class LevelEditorState extends State {
         levelMap[y][x] = typeIndex;
     }
 
-    private boolean isValidLevel(){
-        if(!hasPlayer) return false;
+    private boolean isValidLevel() {
+        if (!hasPlayer) return false;
         int enemyCode = LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.ENEMY.name()).ordinal();
-        for(int y = 0; y < levelHeight; y++) {
-            for(int x = 0; x < levelWidth; x++){
-                if(levelMap[y][x] == enemyCode) return true;
+        for (int y = 0; y < levelHeight; y++) {
+            for (int x = 0; x < levelWidth; x++) {
+                if (levelMap[y][x] == enemyCode) return true;
             }
         }
         return false;
     }
 
-    private void updateButtonsDisabled(boolean isViable){
+    private void updateButtonsDisabled(boolean isViable) {
         saveButton.setDisabled(!isViable);
         playTestButton.setDisabled(!isViable);
     }
 
-    private void handlePlayerPlacement(int buttonIndex){
-        if(hasPlayer){
+    private void handlePlayerPlacement(int buttonIndex) {
+        if (hasPlayer) {
             ImageButton button = levelMapButtons.get(currentPlayerButtonIndex);
             int typeIndex = LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.FLOOR.name()).ordinal();
             TextureRegionDrawable image = tileImages[typeIndex];
@@ -323,30 +332,30 @@ public class LevelEditorState extends State {
         currentPlayerButtonIndex = buttonIndex;
     }
 
-    private int levelMapIntOf(LevelManager.LevelMapTiles type){
+    private int levelMapIntOf(LevelManager.LevelMapTiles type) {
         return LevelManager.LevelMapTiles.valueOf(type.name()).ordinal();
     }
 
-    private LevelManager.LevelMapTiles getButtonType(ImageButton button){
+    private LevelManager.LevelMapTiles getButtonType(ImageButton button) {
         int buttonIndex = levelMapButtons.indexOf(button);
         int x = buttonIndex % levelWidth;
         int y = buttonIndex / levelWidth;
         return LevelManager.LevelMapTiles.values()[levelMap[y][x]];
     }
 
-    private void clearLevel(){
+    private void clearLevel() {
         hasPlayer = false;
-        for(int y = 1; y < levelHeight - 1; y++) {
-            for(int x = 1; x < levelWidth - 1; x++){
+        for (int y = 1; y < levelHeight - 1; y++) {
+            for (int x = 1; x < levelWidth - 1; x++) {
                 setButtonType(levelMapButtons.get(y * levelWidth + x), LevelManager.LevelMapTiles.FLOOR);
             }
         }
     }
 
-    private GameLevel editorToLevel(){
+    private GameLevel editorToLevel() {
         int[][] newLevelMap = new int[levelHeight][levelWidth];
-        for(int y = 0; y < levelHeight; y++){
-            for(int x = 0; x < levelWidth; x++){
+        for (int y = 0; y < levelHeight; y++) {
+            for (int x = 0; x < levelWidth; x++) {
                 newLevelMap[y][x] = levelMap[y][x];
             }
         }
@@ -366,7 +375,7 @@ public class LevelEditorState extends State {
 
     @Override
     public void initialiseInput() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
     }
 

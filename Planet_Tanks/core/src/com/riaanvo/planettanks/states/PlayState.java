@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
@@ -6,18 +22,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.GameObjects.CameraController;
-import com.riaanvo.planettanks.GameObjects.Player;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 import com.riaanvo.planettanks.managers.LevelManager;
 
@@ -82,7 +94,7 @@ public class PlayState extends State {
         float buttonPadding = 80;
         mainMenuButton = new TextButton("||", mSkin, "transparent");
         mainMenuButton.setBounds(0, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
-        mainMenuButton.addListener(new ClickListener(){
+        mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pauseGame();
@@ -91,7 +103,7 @@ public class PlayState extends State {
 
         fireButton = new TextButton("FIRE", mSkin, "transparent");
         fireButton.setBounds(mStage.getWidth() - (buttonPadding + touchpadPadding), touchpadPadding + touchpadSize, buttonPadding, buttonPadding);
-        fireButton.addListener(new ClickListener(){
+        fireButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 mLevelManager.getPlayer().shoot();
@@ -106,13 +118,13 @@ public class PlayState extends State {
         mStage.addActor(aimingTouchpad);
     }
 
-    public void pauseGame(){
+    public void pauseGame() {
         mGameStateManager.push(new PauseState());
     }
 
     @Override
     public void initialiseInput() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
         mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
     }

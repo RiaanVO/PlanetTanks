@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.LevelFramework;
 
 /**
@@ -10,7 +26,9 @@ public class GameLevel {
     private boolean mUnlocked;
     private boolean mUserGenerated;
 
-    public GameLevel(){};
+    public GameLevel() {
+    }
+
 
     public GameLevel(String levelName, int[][] levelMap, boolean unlocked, boolean userGenerated) {
         mLevelName = levelName;
@@ -39,23 +57,24 @@ public class GameLevel {
         return mLevelName.equals(levelName);
     }
 
-    public boolean isUnlocked(){
+    public boolean isUnlocked() {
         return mUnlocked;
     }
 
-    public void setUnlocked(boolean unlocked){
+    public void setUnlocked(boolean unlocked) {
         mUnlocked = unlocked;
     }
 
-    public boolean isUserGenerated(){
+    public boolean isUserGenerated() {
         return mUserGenerated;
     }
 
-    public boolean isMatchingLevel(int[][] levelMap){
-        if(levelMap.length != mLevelMap.length || levelMap[0].length != mLevelMap[0].length) return false;
+    public boolean isMatchingLevel(int[][] levelMap) {
+        if (levelMap.length != mLevelMap.length || levelMap[0].length != mLevelMap[0].length)
+            return false;
         for (int z = 0; z < levelMap.length; z++) {
             for (int x = 0; x < levelMap[0].length; x++) {
-                if(levelMap[z][x] != mLevelMap[z][x]) return false;
+                if (levelMap[z][x] != mLevelMap[z][x]) return false;
             }
         }
         return true;

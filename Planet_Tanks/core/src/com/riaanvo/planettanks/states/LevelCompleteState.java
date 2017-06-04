@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.states;
 
 import com.badlogic.gdx.Gdx;
@@ -14,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.managers.LevelManager;
 
@@ -55,23 +70,23 @@ public class LevelCompleteState extends State {
 
     @Override
     protected void update(float deltaTime) {
-        if(!transitionedIn){
+        if (!transitionedIn) {
             fadeInTimer += deltaTime;
-            if(fadeInTimer >= fadeInTime){
+            if (fadeInTimer >= fadeInTime) {
                 fadeInTimer = fadeInTime;
                 transitionedIn = true;
             }
-            if(mPlayState != null){
+            if (mPlayState != null) {
                 mPlayState.Update(deltaTime);
             }
         } else {
             mStage.act(deltaTime);
-            if(transitionOut){
-                if(mPlayState != null){
+            if (transitionOut) {
+                if (mPlayState != null) {
                     mPlayState.Update(deltaTime);
                 }
                 fadeInTimer -= deltaTime;
-                if(fadeInTimer < 0){
+                if (fadeInTimer < 0) {
                     fadeInTimer = 0;
                     mGameStateManager.pop();
                 }
@@ -82,7 +97,7 @@ public class LevelCompleteState extends State {
 
     @Override
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
-        if(mPlayState != null){
+        if (mPlayState != null) {
             mPlayState.render(spriteBatch, modelBatch);
         }
         float currentAlpha = alpha * (fadeInTimer / fadeInTime);
@@ -93,7 +108,7 @@ public class LevelCompleteState extends State {
         spriteBatch.end();
         spriteBatch.setColor(0, 0, 0, 1);
 
-        if(transitionedIn && !transitionOut) mStage.draw();
+        if (transitionedIn && !transitionOut) mStage.draw();
     }
 
     @Override
@@ -107,14 +122,14 @@ public class LevelCompleteState extends State {
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
-            mNextLevelButton = new TextButton("NEXT LEVEL", mSkin);
-            mNextLevelButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    mLevelManager.LoadNextLevel();
-                    transitionOut = true;
-                }
-            });
+        mNextLevelButton = new TextButton("NEXT LEVEL", mSkin);
+        mNextLevelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                mLevelManager.LoadNextLevel();
+                transitionOut = true;
+            }
+        });
 
 
         mMainMenuButton = new TextButton("QUIT", mSkin);
@@ -130,14 +145,14 @@ public class LevelCompleteState extends State {
         Table mTable = new Table();
         mTable.setTransform(true);
         mTable.padBottom(20f);
-        mTable.setBounds(0,0, mStage.getWidth(), mStage.getHeight());
+        mTable.setBounds(0, 0, mStage.getWidth(), mStage.getHeight());
 
         float buttonWidth = 180;
         float buttonHeight = 80;
 
         mTable.add(mTitle).pad(10f);
         mTable.row();
-        if(mLevelManager.isAnotherLevel()) {
+        if (mLevelManager.isAnotherLevel()) {
             mLevelManager.UnlockNextLevel();
             mTable.add(mNextLevelButton).pad(10f).width(buttonWidth).height(buttonHeight);
             mTable.row();
@@ -149,14 +164,14 @@ public class LevelCompleteState extends State {
 
     @Override
     public void initialiseInput() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
     }
 
 
     @Override
     public void dispose() {
-        if(mStage == null) return;
+        if (mStage == null) return;
         mStage.dispose();
     }
 }

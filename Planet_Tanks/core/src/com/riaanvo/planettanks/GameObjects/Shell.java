@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -78,7 +94,7 @@ public class Shell extends LivingGameObject {
         mBaseSphereCollider.setPosition(newPosition);
 
         LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL);
-        if(collisions.size() > 0){
+        if (collisions.size() > 0) {
             Vector3 xMoveAdjustment = moveAdjustment.cpy();
             xMoveAdjustment.z = 0;
             Vector3 zMoveAdjustment = moveAdjustment.cpy();
@@ -88,12 +104,12 @@ public class Shell extends LivingGameObject {
             mZTestCollider.adjustPosition(zMoveAdjustment);
 
 
-            if(mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)){
+            if (mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)) {
                 newPosition.x = getPosition().x - xMoveAdjustment.x;
                 moveDirection.x = -moveDirection.x;
                 mCurrentBounceCount++;
             }
-            if(mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)){
+            if (mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)) {
                 newPosition.z = getPosition().z - zMoveAdjustment.z;
                 moveDirection.z = -moveDirection.z;
                 mCurrentBounceCount++;

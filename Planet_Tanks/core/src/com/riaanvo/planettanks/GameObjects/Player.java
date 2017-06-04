@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.Gdx;
@@ -36,11 +52,11 @@ public class Player extends LivingGameObject {
     private float mShotTimer;
 
 
-    public Player(TankController tankController){
+    public Player(TankController tankController) {
         super();
         mTankController = tankController;
         mTankController.setParent(this);
-        mTankController.setTurretDirection(new Vector3(0,0,1));
+        mTankController.setTurretDirection(new Vector3(0, 0, 1));
 
         speed = 2.5f;
 
@@ -67,49 +83,50 @@ public class Player extends LivingGameObject {
 
     @Override
     public void update(float deltaTime) {
-        if(isDead()){
+        if (isDead()) {
             handelDeath();
             return;
         }
 
         Vector3 moveDirection = new Vector3();
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) moveDirection.z += -1;
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) moveDirection.z += 1;
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) moveDirection.x += 1;
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) moveDirection.x += -1;
-        if(movementTouchpad != null) {
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) moveDirection.z += -1;
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) moveDirection.z += 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) moveDirection.x += 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) moveDirection.x += -1;
+        if (movementTouchpad != null) {
             moveDirection.x += movementTouchpad.getKnobPercentX() * 1;
             moveDirection.z += movementTouchpad.getKnobPercentY() * (-1);
         }
-        if(moveDirection.x != 0 || moveDirection.z != 0) move(moveDirection, deltaTime);
+        if (moveDirection.x != 0 || moveDirection.z != 0) move(moveDirection, deltaTime);
 
 
         Vector3 aimDirection = new Vector3();
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) aimDirection.z += -1;
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) aimDirection.z += 1;
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) aimDirection.x += 1;
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) aimDirection.x += -1;
-        if(aimingTouchpad != null) {
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) aimDirection.z += -1;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) aimDirection.z += 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) aimDirection.x += 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) aimDirection.x += -1;
+        if (aimingTouchpad != null) {
             aimDirection.x += aimingTouchpad.getKnobPercentX() * 1;
             aimDirection.z += aimingTouchpad.getKnobPercentY() * (-1);
         }
-        if(aimDirection.x != 0 || aimDirection.z != 0) mTankController.setTurretDirection(aimDirection);
+        if (aimDirection.x != 0 || aimDirection.z != 0)
+            mTankController.setTurretDirection(aimDirection);
 
 
         mShotTimer += deltaTime;
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             shoot();
         }
     }
 
-    public void shoot(){
-        if(mShotTimer > mMinTimeBetweenShots){
+    public void shoot() {
+        if (mShotTimer > mMinTimeBetweenShots) {
             mShotTimer = 0;
             mTankController.shoot();
         }
     }
 
-    private void move(Vector3 direction, float deltaTime){
+    private void move(Vector3 direction, float deltaTime) {
         direction.nor();
         Vector3 moveAdjustment = direction.cpy().scl(deltaTime * speed);
         Vector3 newPosition = moveAdjustment.cpy().add(getPosition());
@@ -120,7 +137,7 @@ public class Player extends LivingGameObject {
 
         LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.WALL);
         collisions.addAll(mCollisionManager.getCollisions(mBaseSphereCollider, Collider.ColliderTag.ENTITIES));
-        if(collisions.size() > 0){
+        if (collisions.size() > 0) {
             Vector3 xMoveAdjustment = moveAdjustment.cpy();
             xMoveAdjustment.z = 0;
             Vector3 zMoveAdjustment = moveAdjustment.cpy();
@@ -130,16 +147,16 @@ public class Player extends LivingGameObject {
             mZTestCollider.adjustPosition(zMoveAdjustment);
 
 
-            if(mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)){
+            if (mCollisionManager.getCollisionsInListBoolean(mXTestCollider, collisions)) {
                 moveX = false;
             }
-            if(mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)){
+            if (mCollisionManager.getCollisionsInListBoolean(mZTestCollider, collisions)) {
                 moveZ = false;
             }
         }
 
-        if(!moveX) newPosition.x = getPosition().x;
-        if(!moveZ) newPosition.z = getPosition().z;
+        if (!moveX) newPosition.x = getPosition().x;
+        if (!moveZ) newPosition.z = getPosition().z;
 
         setPosition(newPosition);
         mTankController.setBodyDirection(direction);
@@ -160,14 +177,14 @@ public class Player extends LivingGameObject {
         mZTestCollider.updatePosition();
     }
 
-    public void setTouchPads(Touchpad movement, Touchpad aiming){
+    public void setTouchPads(Touchpad movement, Touchpad aiming) {
         movementTouchpad = movement;
         aimingTouchpad = aiming;
     }
 
     @Override
     protected void handelDeath() {
-        if(!deathHandled) {
+        if (!deathHandled) {
             mGameObjectManager.removeGameObject(this);
             mCollisionManager.removeCollider(mBaseSphereCollider);
             deathHandled = true;

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.Physics;
 
 import com.badlogic.gdx.math.Vector3;
@@ -27,7 +43,7 @@ public class BoundingSphere {
 
     //http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx
     public boolean intersects(BoundingBox other) {
-        if(roughSphereIntersectsCheck(other)){
+        if (roughSphereIntersectsCheck(other)) {
             float dmin = 0;
             Vector3 center = mCenter;
             Vector3 bmin = new Vector3();
@@ -59,10 +75,10 @@ public class BoundingSphere {
         }
     }
 
-    private boolean roughSphereIntersectsCheck(BoundingBox other){
-        float otherRadius2 = (float) (Math.pow(other.getWidth()/2 , 2) + Math.pow(other.getHeight()/2 , 2) + Math.pow(other.getDepth()/2 , 2));
-        float minNoCollidingDistance =  (float)Math.pow (mRadius2 + otherRadius2 , 2);
-        float actualDistance2 = Vector3.dst2(mCenter.x , mCenter.y, mCenter.z, other.getCenterX(), other.getCenterY(), other.getCenterZ());
+    private boolean roughSphereIntersectsCheck(BoundingBox other) {
+        float otherRadius2 = (float) (Math.pow(other.getWidth() / 2, 2) + Math.pow(other.getHeight() / 2, 2) + Math.pow(other.getDepth() / 2, 2));
+        float minNoCollidingDistance = (float) Math.pow(mRadius2 + otherRadius2, 2);
+        float actualDistance2 = Vector3.dst2(mCenter.x, mCenter.y, mCenter.z, other.getCenterX(), other.getCenterY(), other.getCenterZ());
         return actualDistance2 <= minNoCollidingDistance;
         //return true;
     }

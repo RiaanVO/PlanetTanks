@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Riaan Van Onselen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.riaanvo.planettanks.GameObjects;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -38,9 +54,9 @@ public abstract class GameObject {
     public abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
 
     //https://xoppa.github.io/blog/3d-frustum-culling-with-libgdx/
-    public boolean isVisible(){
-            Camera cam = CameraController.get().getCamera();
-            return cam.frustum.boundsInFrustum(mPosition, Constants.RENDER_BOUNDS);
+    public boolean isVisible() {
+        Camera cam = CameraController.get().getCamera();
+        return cam.frustum.boundsInFrustum(mPosition, Constants.RENDER_BOUNDS);
     }
 
     public Vector3 getPosition() {
