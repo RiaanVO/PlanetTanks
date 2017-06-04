@@ -41,6 +41,9 @@ public class EditorMenuState extends State {
     private ButtonGroup levelButtonsGroup;
     private LinkedList<ImageTextButton> levelButtons;
 
+    private TextButton playButton;
+    private TextButton deleteButton;
+
     private LinkedList<GameLevel> userMadeLevels;
 
     public EditorMenuState(){
@@ -86,7 +89,7 @@ public class EditorMenuState extends State {
             }
         });
 
-        final TextButton playButton = new TextButton("PLAY", skin);
+        playButton = new TextButton("PLAY", skin);
         playButton.setDisabled(true);
         playButton.addListener(new ClickListener() {
             @Override
@@ -99,10 +102,13 @@ public class EditorMenuState extends State {
                 int levelIndex = (currentPage - 1) * numLevelsPerPage + levelButtonsGroup.getCheckedIndex();
                 mLevelManager.setLevelToLoad(userMadeLevels.get(levelIndex));
                 mGameStateManager.push(new PlayState());
+
+                levelButtonsGroup.getChecked().setChecked(false);
+                alterButtonStates();
             }
         });
 
-        final TextButton deleteButton = new TextButton("DELETE", skin);
+        deleteButton = new TextButton("DELETE", skin);
         deleteButton.setDisabled(true);
         deleteButton.addListener(new ClickListener() {
             @Override
@@ -122,7 +128,7 @@ public class EditorMenuState extends State {
                 setupPage(currentPage);
 
                 levelButtonsGroup.getChecked().setChecked(false);
-                button.setDisabled(true);
+                alterButtonStates();
             }
         });
 
@@ -164,8 +170,7 @@ public class EditorMenuState extends State {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    deleteButton.setDisabled(!levelSelected());
-                    playButton.setDisabled(!levelSelected());
+                    alterButtonStates();
                 }
             });
             levelButtons.add(button);
@@ -255,6 +260,11 @@ public class EditorMenuState extends State {
     private boolean levelSelected(){
         if(levelButtonsGroup.getAllChecked().size == 0) return false;
         return true;
+    }
+
+    private void alterButtonStates(){
+        deleteButton.setDisabled(!levelSelected());
+        playButton.setDisabled(!levelSelected());
     }
 
     @Override

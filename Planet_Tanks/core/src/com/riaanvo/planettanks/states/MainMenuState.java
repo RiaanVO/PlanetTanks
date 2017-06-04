@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.riaanvo.planettanks.Constants;
+import com.riaanvo.planettanks.managers.AdManager;
 
 /**
  * Created by riaanvo on 9/5/17.
@@ -65,6 +66,7 @@ public class MainMenuState extends State {
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                AdManager.get().showInterstitialAd();
                 mGameStateManager.push(new LevelSelectState());
             }
         });

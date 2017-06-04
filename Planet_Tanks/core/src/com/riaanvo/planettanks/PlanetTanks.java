@@ -8,13 +8,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.riaanvo.planettanks.managers.AdManager;
 import com.riaanvo.planettanks.managers.CollisionManager;
 import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameStateManager;
 import com.riaanvo.planettanks.managers.LevelManager;
-import com.riaanvo.planettanks.states.EditorMenuState;
-import com.riaanvo.planettanks.states.MainMenuState;
 import com.riaanvo.planettanks.states.PlayState;
 import com.riaanvo.planettanks.states.SplashScreenState;
 
@@ -23,9 +21,15 @@ public class PlanetTanks extends ApplicationAdapter {
     private SpriteBatch mSpriteBatch;
     private GameStateManager mGameStateManager;
     private ContentManager mContentManager;
+    private AdManager mAdManager;
 
     private boolean isLoaded;
     private BitmapFont debugFont;
+
+    public PlanetTanks(IActivityRequestHandler handler){
+        mAdManager = AdManager.get();
+        mAdManager.setHandler(handler);
+    }
 
     @Override
     public void create() {
@@ -35,14 +39,12 @@ public class PlanetTanks extends ApplicationAdapter {
 
         mContentManager = ContentManager.get();
         mContentManager.setAssetManager(new AssetManager());
-        //LoadGameAssets();
 
         isLoaded = false;
 
         //Initialise the first screen
         mGameStateManager.push(new SplashScreenState(this));
     }
-
 
     @Override
     public void render() {
@@ -78,16 +80,12 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void pause() {
-
         PlayState playState;
-
         try {
             playState = (PlayState) mGameStateManager.getCurrentState();
         } catch (ClassCastException e){
             System.out.println(e.toString());
             playState = null;
-        } finally {
-
         }
 
         if(playState != null){
@@ -98,9 +96,7 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void resume() {
-
         LoadGameAssets();
-
         super.resume();
     }
 
@@ -142,5 +138,6 @@ public class PlanetTanks extends ApplicationAdapter {
         mContentManager.dispose();
         CollisionManager.get().dispose();
         LevelManager.get().dispose();
+        mAdManager.dispose();
     }
 }
