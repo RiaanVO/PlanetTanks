@@ -27,20 +27,26 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
+/**
+ * This is the main activity that houses the game. It initialises the game and sets it as the view.
+ * Additional this activity contains methods to show interstitial ads to the user. This is done
+ * through the use of a mHandler and interface class to allow communication from the game engine to
+ * this activity.
+ */
+
 public class AndroidLauncher extends AndroidApplication implements IActivityRequestHandler {
-
-    //Actual id
-    //ca-app-pub-6385922239703193~3458503064
-
-    private InterstitialAd mInterstitialAd;
+    public static final String DEBUG_KEY = "PLANET_TANKS_DEBUG";
+    public static final String TEST_AD_KEY = "ca-app-pub-3940256099942544/1033173712";
     private final int SHOW_AD = 0;
-    protected Handler handler;
+    private InterstitialAd mInterstitialAd;
+    protected Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        handler = new Handler() {
+        //Sets up the handler that will manage communication between the game thread an the UI thread
+        mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -48,7 +54,7 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
                         if (mInterstitialAd.isLoaded()) {
                             mInterstitialAd.show();
                         } else {
-                            Log.d("RICKY", "Add not loaded");
+                            Log.d(DEBUG_KEY, "Ad not loaded");
                         }
                         break;
                     }
@@ -56,30 +62,37 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
             }
         };
 
+        //Create the interstitial ad container and set the key
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        //This key is Googles' developer test key
+        //TODO: change the key to the production key in AdMob
+        mInterstitialAd.setAdUnitId(TEST_AD_KEY);
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                // Load the next interstitial.
+                // Load the next interstitial
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
 
         });
 
+        //Set up a request for an ad and send it
         AdRequest request = new AdRequest.Builder().build();
-
         mInterstitialAd.loadAd(request);
 
 
+        //Set up app configuration and initialise the game engine
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useAccelerometer = false;
         config.useCompass = false;
         initialize(new PlanetTanks(this), config);
     }
 
+    /**
+     * Called from the game engine as a means to show an add to the user
+     */
     @Override
     public void showInterstitialAd() {
-        handler.sendEmptyMessage(SHOW_AD);
+        mHandler.sendEmptyMessage(SHOW_AD);
     }
 }

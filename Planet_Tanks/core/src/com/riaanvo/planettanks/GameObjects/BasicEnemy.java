@@ -19,6 +19,7 @@ package com.riaanvo.planettanks.GameObjects;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.Physics.Collider;
 import com.riaanvo.planettanks.Physics.SphereCollider;
 import com.riaanvo.planettanks.managers.CollisionManager;
@@ -28,54 +29,65 @@ import com.riaanvo.planettanks.managers.LevelManager;
 import java.util.LinkedList;
 
 /**
- * Created by riaanvo on 25/5/17.
+ * This class provides all the logic to create and operate a basic stationary enemy tank. It extends
+ * from Living game object and thus is a kill-able object in the game.
  */
 
 public class BasicEnemy extends LivingGameObject {
+    //The controller for the tank model
     private TankController mTankController;
 
+    //Used for collision detection and simple player locating
+    private float mColliderRadius;
+    private Vector3 mColliderOffset;
     private CollisionManager mCollisionManager;
     private SphereCollider mBaseSphereCollider;
-
-
     private SphereCollider mSearchSphereCollider;
-    private Vector3 fireDirection;
-    private boolean playerInRange;
-    private boolean aimingAtPlayer;
-    private boolean clearLineOfFire;
 
-    private float aimingSpeed;
-    private float aimingThreshold;
+    //Used to determine if the tank should fire
+    private Vector3 mFireDirection;
+    private float mPlayerDetectRadius;
+    private boolean mPlayerInRange;
+    private boolean mAimingAtPlayer;
+    private boolean mClearLineOfFire;
     private float mMinTimeBetweenShots;
     private float mShotTimer;
 
-    private int pointsOnKilled;
+    //Used for controlling where the tank is aiming
+    private float mAimingSpeed;
+    private float mAimingThreshold;
+
+    //Used for scoring
+    private int mPointsOnKilled;
 
     public BasicEnemy(TankController tankController) {
         super();
+        setTag(Constants.TAG_BASIC_STATIC_ENEMY);
+        setHealth(1);
+
         mTankController = tankController;
         mTankController.setParent(this);
 
+        //Initialise the colliders and register the main collider with the collision manager
+        mColliderRadius = 0.8f;
+        mColliderOffset = new Vector3(0, 0.5f, 0);
+        mPlayerDetectRadius = 10f;
         mCollisionManager = CollisionManager.get();
-        float colliderRadius = 0.8f;
-        Vector3 colliderOffset = new Vector3(0, 0.5f, 0);
-        mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, colliderOffset, colliderRadius);
+        mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, mColliderOffset, mColliderRadius);
         mCollisionManager.addCollider(mBaseSphereCollider);
-        mSearchSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, colliderOffset, 10f);
+        mSearchSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, mColliderOffset, mPlayerDetectRadius);
 
-        setTag("BasicEnemy");
-        setHealth(1);
-
+        //Set up the base variables used for controlling the tank
+        mPlayerInRange = false;
+        mAimingAtPlayer = false;
+        mClearLineOfFire = true;
         mMinTimeBetweenShots = 1f;
         mShotTimer = 0;
-        aimingSpeed = 90f;
-        aimingThreshold = 5f;
 
-        pointsOnKilled = 100;
+        mAimingSpeed = 90f;
+        mAimingThreshold = 5f;
 
-        playerInRange = false;
-        aimingAtPlayer = false;
-        clearLineOfFire = true;
+        mPointsOnKilled = 100;
     }
 
 
@@ -88,15 +100,18 @@ public class BasicEnemy extends LivingGameObject {
 
         mShotTimer += dt;
 
-
-        if (playerInRange = isPlayerInRange()) {
+        //Check if the player is in range and rotate to face them
+        if (mPlayerInRange = isPlayerInRange()) {
             rotateToTarget(dt);
-            if (aimingAtPlayer = isAimingAtPlayer()) {
-                clearLineOfFire = true;
+            //Check if the tank is aiming at the player
+            if (mAimingAtPlayer = isAimingAtPlayer()) {
+                //TODO: Implement ray-casting to check if there is an obstacle in the way of the shot
+                mClearLineOfFire = true;
             }
         }
 
-        if (playerInRange && aimingAtPlayer && clearLineOfFire) {
+        //Shoot at the player if all the conditions are met and reset the shot timer
+        if (mPlayerInRange && mAimingAtPlayer && mClearLineOfFire) {
             if (mShotTimer > mMinTimeBetweenShots) {
                 mShotTimer = 0;
                 mTankController.shoot();
@@ -105,41 +120,62 @@ public class BasicEnemy extends LivingGameObject {
 
     }
 
+    /**
+     * Checks to see if a game object with the tag of Player is in range of this tank.
+     *
+     * @return is the player in range of the tank
+     */
     private boolean isPlayerInRange() {
+        //Get a list of entity colliders from the collision manager
         LinkedList<Collider> collisions = mCollisionManager.getCollisions(mSearchSphereCollider, Collider.ColliderTag.ENTITIES);
         for (Collider collider : collisions) {
-            if (collider.getGameObject().compareTag("Player")) {
-                fireDirection = collider.getGameObject().getPosition().cpy().sub(getPosition()).nor();
+            //Check if the collider is attached to the player game object and calculate the firing direction
+            if (collider.getGameObject().compareTag(Constants.TAG_PLAYER)) {
+                mFireDirection = collider.getGameObject().getPosition().cpy().sub(getPosition()).nor();
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Rotates the tank turret to the current firing direction
+     *
+     * @param deltaTime The time between each update call
+     */
     private void rotateToTarget(float deltaTime) {
-        float desiredOrientation = calculateOrientation(fireDirection);
-        float changeInOrientation = desiredOrientation - mTankController.getTurretOrientation();
+        //Calculate the change in the tanks orientation and use the shortest turning path
+        float changeInOrientation = calculateOrientation(mFireDirection) - mTankController.getTurretOrientation();
         if (Math.abs(changeInOrientation) > 180) changeInOrientation *= -1;
+
+        //Check if the is aiming at the player. If not use full aiming speed else use a reduced aiming speed
         if (!isAimingAtPlayer()) {
             changeInOrientation /= Math.abs(changeInOrientation);
-            changeInOrientation *= aimingSpeed * deltaTime;
+            changeInOrientation *= mAimingSpeed * deltaTime;
         } else {
             changeInOrientation /= 10;
         }
 
-        float newOrientation = mTankController.getTurretOrientation() + changeInOrientation;
-        mTankController.setTurretOrientation(newOrientation);
+        //set the tanks orientation to the new calculated orientation
+        mTankController.setTurretOrientation(mTankController.getTurretOrientation() + changeInOrientation);
     }
 
+    /**
+     * Checks to see if the tanks current aiming direction is within the aiming threshold for shooting
+     *
+     * @return is the tank aiming at the player
+     */
     private boolean isAimingAtPlayer() {
-        float changeInOrientation = calculateOrientation(fireDirection) - mTankController.getTurretOrientation();
-        return Math.abs(changeInOrientation) < aimingThreshold;
+        //Calculate the change in orientation between the actual aiming direction and the desired aiming direction
+        return Math.abs(calculateOrientation(mFireDirection) - mTankController.getTurretOrientation()) < mAimingThreshold;
     }
 
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        //Draw the tank model
         mTankController.renderTank(spriteBatch, modelBatch);
 
+        //Attempt to draw the colliders
         mCollisionManager.renderCollider(mBaseSphereCollider);
         mCollisionManager.renderCollider(mSearchSphereCollider);
     }
@@ -147,23 +183,23 @@ public class BasicEnemy extends LivingGameObject {
     @Override
     protected void handelDeath() {
         if (!deathHandled) {
+            //Remove from the update and render list
             GameObjectManager.get().removeGameObject(this);
+            //Remove from the collision manager
             mCollisionManager.removeCollider(mBaseSphereCollider);
+            //Notify that tank has been killed and add points
+            LevelManager.get().EnemyKilled(mPointsOnKilled);
             deathHandled = true;
-            LevelManager.get().EnemyKilled(pointsOnKilled);
         }
     }
 
     @Override
     public void setPosition(Vector3 position) {
+        //Set the game objects position and the position of tank controller
         mPosition = position.cpy();
         mTankController.setPosition(position.cpy());
+        //Update the position of the colliders from the new tank position
         mBaseSphereCollider.updatePosition();
         mSearchSphereCollider.updatePosition();
     }
-
-    public void setTarget(LivingGameObject target) {
-        //mTarget = target;
-    }
-
 }

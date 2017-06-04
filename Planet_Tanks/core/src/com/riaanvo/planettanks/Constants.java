@@ -34,6 +34,10 @@ public class Constants {
     public static final String CORE_LEVELS_FILE = "Levels/Levels.txt";
     public static final String CORE_LEVELS_KEY = "CoreLevels";
 
+    //Game Object Tags
+    public static final String TAG_PLAYER = "Player";
+    public static final String TAG_BASIC_STATIC_ENEMY = "BasicStaticEnemy";
+
 //    //Resource constants
 //    public static final String SKIN_KEY = "android/assets/UI/flat-earth-ui.json";
 //    public static final String TITLE_FONT = "title";
