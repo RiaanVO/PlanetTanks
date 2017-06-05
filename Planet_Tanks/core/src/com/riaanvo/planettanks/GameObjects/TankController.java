@@ -26,47 +26,63 @@ import com.riaanvo.planettanks.managers.ContentManager;
 import com.riaanvo.planettanks.managers.GameObjectManager;
 
 /**
- * Created by riaanvo on 25/5/17.
+ * This class manages the model instances of a tank. It updates their location, orientation and
+ * aiming direction. It also provideds a method for the tank to shoot.
  */
 
 public class TankController {
-    private com.riaanvo.planettanks.GameObjects.GameObject mParent;
+
+    private GameObject mParent;
     private ModelInstance mTankBase;
     private ModelInstance mTankTurret;
-
-    private float bodyOrientation;
-    private float turretOrientation;
-
-    private Vector3 aimingDirection;
-
-    private float bulletStartOffset;
-    private float bulletStartHeight;
 
     private GameObjectManager mGameObjectManager;
     private CameraController mCameraController;
 
-    public TankController(Model tankBase, Model tankTurret, ColorAttribute tankColour) {
-        mCameraController = CameraController.get();
-        mGameObjectManager = GameObjectManager.get();
+    private float mBodyOrientation;
+    private float mTurretOrientation;
 
+    private Vector3 mAimingDirection;
+
+    //Used to set the starting position of a shell
+    private float mBulletStartOffset;
+    private float mBulletStartHeight;
+
+
+    public TankController(Model tankBase, Model tankTurret, ColorAttribute tankColour) {
         mTankBase = new ModelInstance(tankBase);
+        //Attempt to apply a colour to the tanks body if a colour is provided
         if (tankColour != null) mTankBase.materials.get(0).set(tankColour);
         mTankTurret = new ModelInstance(tankTurret);
 
-        bulletStartOffset = 1.5f;
-        bulletStartHeight = 0.8f;
+        mCameraController = CameraController.get();
+        mGameObjectManager = GameObjectManager.get();
+
+        mBulletStartOffset = 1.5f;
+        mBulletStartHeight = 0.8f;
     }
 
+    /**
+     * Fires a shell in the tanks current aiming direction.
+     */
     public void shoot() {
-        if (aimingDirection == null) return;
-
+        if (mAimingDirection == null) return;
+        //Uses the parent gameobjects' position and offset values to calculate a starting position
         Vector3 startingPosition = mParent.getPosition().cpy();
-        startingPosition.y = bulletStartHeight;
-        startingPosition.add(aimingDirection.cpy().nor().scl(bulletStartOffset));
-        mGameObjectManager.addGameObject(new com.riaanvo.planettanks.GameObjects.Shell(ContentManager.get().getShell(), startingPosition, aimingDirection));
+        startingPosition.y = mBulletStartHeight;
+        startingPosition.add(mAimingDirection.cpy().nor().scl(mBulletStartOffset));
+
+        //Create a new shell and add it to the game object manager
+        mGameObjectManager.addGameObject(new Shell(ContentManager.get().getShell(), startingPosition, mAimingDirection));
     }
 
 
+    /**
+     * Draws the tanks body and turret
+     *
+     * @param spriteBatch used to render 2D images
+     * @param modelBatch used to render 3D models
+     */
     public void renderTank(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
         modelBatch.render(mTankBase, mCameraController.getEnvironment());
@@ -74,45 +90,70 @@ public class TankController {
         modelBatch.end();
     }
 
+    /**
+     * Sets the orientation of the tanks body based on the direction passed in
+     *
+     * @param direction the tanks body will face
+     */
     public void setBodyDirection(Vector3 direction) {
-        float changeInOrientation = mParent.calculateOrientation(direction) - bodyOrientation;
+        //Calculates and applies the change in rotation
+        float changeInOrientation = mParent.calculateOrientation(direction) - mBodyOrientation;
         mTankBase.transform.rotate(Vector3.Y, changeInOrientation);
-        bodyOrientation = mParent.calculateOrientation(direction);
+        mBodyOrientation = mParent.calculateOrientation(direction);
     }
 
-    public void setTurretDirection(Vector3 newDirection) {
-        aimingDirection = newDirection.cpy();
-        float newOrientation = mParent.calculateOrientation(aimingDirection);
+    /**
+     * Sets the orientation of the tanks turret base on the direction passed in
+     *
+     * @param direction the tanks turret will face
+     */
+    public void setTurretDirection(Vector3 direction) {
+        mAimingDirection = direction.cpy();
+        float newOrientation = mParent.calculateOrientation(mAimingDirection);
         rotateTurret(newOrientation);
     }
 
-    public void setPosition(Vector3 newPosition) {
-        mTankBase.transform.setTranslation(newPosition);
-        mTankTurret.transform.setTranslation(newPosition);
+    /**
+     * Rotates the turret to the orientation provided
+     *
+     * @param orientation that the turret will be rotated to
+     */
+    private void rotateTurret(float orientation) {
+        float changeInOrientation = orientation - mTurretOrientation;
+        mTankTurret.transform.rotate(Vector3.Y, changeInOrientation);
+        if (orientation > 360) {
+            orientation -= 360;
+        }
+        if (orientation < 0) {
+            orientation += 360;
+        }
+        mTurretOrientation = orientation;
     }
 
-    public void setParent(com.riaanvo.planettanks.GameObjects.GameObject parent) {
+    /**
+     * Sets the position of the models
+     *
+     * @param position that the tank model is located
+     */
+    public void setPosition(Vector3 position) {
+        mTankBase.transform.setTranslation(position);
+        mTankTurret.transform.setTranslation(position);
+    }
+
+    public void setParent(GameObject parent) {
         mParent = parent;
     }
 
     public float getTurretOrientation() {
-        return turretOrientation;
+        return mTurretOrientation;
     }
 
-    public void setTurretOrientation(float newOrientation) {
-        rotateTurret(newOrientation);
-        aimingDirection = mParent.calculateDirection(turretOrientation);
-    }
-
-    private void rotateTurret(float newOrientation) {
-        float changeInOrientation = newOrientation - turretOrientation;
-        mTankTurret.transform.rotate(Vector3.Y, changeInOrientation);
-        if (newOrientation > 360) {
-            newOrientation -= 360;
-        }
-        if (newOrientation < 0) {
-            newOrientation += 360;
-        }
-        turretOrientation = newOrientation;
+    /**
+     * Sets the aiming direction and rotates the turret to face the orientation provided
+     * @param orientation
+     */
+    public void setTurretOrientation(float orientation) {
+        rotateTurret(orientation);
+        mAimingDirection = mParent.calculateDirection(mTurretOrientation);
     }
 }

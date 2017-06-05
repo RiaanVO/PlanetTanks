@@ -17,7 +17,7 @@
 package com.riaanvo.planettanks.LevelFramework;
 
 /**
- * Created by riaanvo on 29/5/17.
+ * This class stores all the details used to define a level in the game.
  */
 
 public class GameLevel {
@@ -29,12 +29,28 @@ public class GameLevel {
     public GameLevel() {
     }
 
-
     public GameLevel(String levelName, int[][] levelMap, boolean unlocked, boolean userGenerated) {
         mLevelName = levelName;
         mLevelMap = levelMap;
         mUnlocked = unlocked;
         mUserGenerated = userGenerated;
+    }
+
+    /**
+     * Checks if the level map passed in is the same as the level map stored in this Game level
+     *
+     * @param levelMap that will be tested to see if it is a match to this levels map
+     * @return if the level map passed in is the same as this level map
+     */
+    public boolean isMatchingLevel(int[][] levelMap) {
+        if (levelMap.length != mLevelMap.length || levelMap[0].length != mLevelMap[0].length)
+            return false;
+        for (int z = 0; z < levelMap.length; z++) {
+            for (int x = 0; x < levelMap[0].length; x++) {
+                if (levelMap[z][x] != mLevelMap[z][x]) return false;
+            }
+        }
+        return true;
     }
 
     public String getLevelName() {
@@ -67,16 +83,5 @@ public class GameLevel {
 
     public boolean isUserGenerated() {
         return mUserGenerated;
-    }
-
-    public boolean isMatchingLevel(int[][] levelMap) {
-        if (levelMap.length != mLevelMap.length || levelMap[0].length != mLevelMap[0].length)
-            return false;
-        for (int z = 0; z < levelMap.length; z++) {
-            for (int x = 0; x < levelMap[0].length; x++) {
-                if (levelMap[z][x] != mLevelMap[z][x]) return false;
-            }
-        }
-        return true;
     }
 }

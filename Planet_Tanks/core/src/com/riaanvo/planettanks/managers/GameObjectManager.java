@@ -23,21 +23,36 @@ import com.riaanvo.planettanks.GameObjects.GameObject;
 import java.util.LinkedList;
 
 /**
- * Created by riaanvo on 23/5/17.
+ * This class manages the list of game objects that will be rendered and updated each frame. It is
+ * accessible from anywhere in the game through the use of the singleton pattern.
  */
 
 public class GameObjectManager {
     private static GameObjectManager sGameObjectManager;
 
+    /**
+     * Gets the current instance of the game object manager. Creates one if there isn't an instance
+     *
+     * @return the instance of the game object manager
+     */
     public static GameObjectManager get() {
         if (sGameObjectManager == null) sGameObjectManager = new GameObjectManager();
         return sGameObjectManager;
     }
 
+    //Main list of game objects
     private LinkedList<GameObject> mGameObjects = new LinkedList<GameObject>();
+
+    //Lists to manage adding and removeing game objects from the main list
     private LinkedList<GameObject> mNewGameObjects = new LinkedList<GameObject>();
     private LinkedList<GameObject> mDeadGameObjects = new LinkedList<GameObject>();
 
+    /**
+     * Adds all new game objects to the main list. Calls update of all game objects. Removes game
+     * objects that need to be removed after update.
+     *
+     * @param deltaTime the time since the last update call
+     */
     public void update(float deltaTime) {
         mGameObjects.addAll(mNewGameObjects);
         mNewGameObjects.clear();
@@ -50,6 +65,12 @@ public class GameObjectManager {
         mDeadGameObjects.clear();
     }
 
+    /**
+     * Renders each game object in the main object list that is visible by the camera.
+     *
+     * @param spriteBatch used to render 2D images
+     * @param modelBatch  used to render 3D models
+     */
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         for (GameObject gameObject : mGameObjects) {
             if (gameObject.isVisible()) {
@@ -58,14 +79,28 @@ public class GameObjectManager {
         }
     }
 
+    /**
+     * Adds a game object to the new game objects list. Will be added to the main list on next update
+     *
+     * @param gameObject that will be added
+     */
     public void addGameObject(GameObject gameObject) {
         mNewGameObjects.add(gameObject);
     }
 
+    /**
+     * Adds a game object to the dead game objects list. Will be removed from the main list after
+     * all game objects have been updated
+     *
+     * @param gameObject that will be removed
+     */
     public void removeGameObject(GameObject gameObject) {
         mDeadGameObjects.add(gameObject);
     }
 
+    /**
+     * Clears all lists of game objects
+     */
     public void clearGameObjects() {
         mGameObjects.clear();
         mNewGameObjects.clear();

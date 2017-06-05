@@ -38,8 +38,6 @@ public class BasicEnemy extends LivingGameObject {
     private TankController mTankController;
 
     //Used for collision detection and simple player locating
-    private float mColliderRadius;
-    private Vector3 mColliderOffset;
     private CollisionManager mCollisionManager;
     private SphereCollider mBaseSphereCollider;
     private SphereCollider mSearchSphereCollider;
@@ -69,13 +67,11 @@ public class BasicEnemy extends LivingGameObject {
         mTankController.setParent(this);
 
         //Initialise the colliders and register the main collider with the collision manager
-        mColliderRadius = 0.8f;
-        mColliderOffset = new Vector3(0, 0.5f, 0);
         mPlayerDetectRadius = 10f;
         mCollisionManager = CollisionManager.get();
-        mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, mColliderOffset, mColliderRadius);
+        mBaseSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, Constants.TANK_COLLIDER_OFFSET, Constants.TANK_COLLIDER_RADIUS);
         mCollisionManager.addCollider(mBaseSphereCollider);
-        mSearchSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, mColliderOffset, mPlayerDetectRadius);
+        mSearchSphereCollider = new SphereCollider(this, Collider.ColliderTag.ENTITIES, Constants.TANK_COLLIDER_OFFSET, mPlayerDetectRadius);
 
         //Set up the base variables used for controlling the tank
         mPlayerInRange = false;
@@ -92,17 +88,17 @@ public class BasicEnemy extends LivingGameObject {
 
 
     @Override
-    public void update(float dt) {
+    public void update(float deltaTime) {
         if (isDead()) {
             handelDeath();
             return;
         }
 
-        mShotTimer += dt;
+        mShotTimer += deltaTime;
 
         //Check if the player is in range and rotate to face them
         if (mPlayerInRange = isPlayerInRange()) {
-            rotateToTarget(dt);
+            rotateToTarget(deltaTime);
             //Check if the tank is aiming at the player
             if (mAimingAtPlayer = isAimingAtPlayer()) {
                 //TODO: Implement ray-casting to check if there is an obstacle in the way of the shot
@@ -182,14 +178,14 @@ public class BasicEnemy extends LivingGameObject {
 
     @Override
     protected void handelDeath() {
-        if (!deathHandled) {
+        if (!mDeathHandled) {
             //Remove from the update and render list
             GameObjectManager.get().removeGameObject(this);
             //Remove from the collision manager
             mCollisionManager.removeCollider(mBaseSphereCollider);
             //Notify that tank has been killed and add points
             LevelManager.get().EnemyKilled(mPointsOnKilled);
-            deathHandled = true;
+            mDeathHandled = true;
         }
     }
 

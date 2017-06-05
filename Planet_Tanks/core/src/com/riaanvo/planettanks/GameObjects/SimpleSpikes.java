@@ -29,92 +29,112 @@ import com.riaanvo.planettanks.managers.CollisionManager;
 import java.util.LinkedList;
 
 /**
- * Created by riaanvo on 26/5/17.
+ * This class creates and controls a spike trap game object. The spikes move in a cyclic pattern and
+ * attempt to damage any entity that collides with them.
  */
 
 public class SimpleSpikes extends GameObject {
     private ModelInstance mSpikesSpikes;
     private ModelInstance mSpikesBase;
-    private com.riaanvo.planettanks.GameObjects.CameraController mCameraController;
+
+    private CameraController mCameraController;
     private CollisionManager mCollisionManager;
+
+    //Collider used to check for damage collisions
     private BoxCollider mBoxCollider;
 
-    private float transitionAngle;
-    private float cycleSpeed;
-    private float minWaitTime;
-    private float waitTimer;
-    private Vector3 spikesDownOffset;
-    private Vector3 spikesPosition;
-    private Vector3 startingPosition;
-    private boolean waiting;
+    //Varibles used to control the motion of the spikes
+    private float mTransitionAngle;
+    private float mCycleSpeed;
+    private float mMinWaitTime;
+    private float mWaitTimer;
+    private Vector3 mSpikesDownOffset;
+    private Vector3 mSpikesPosition;
+    private Vector3 mStartingPosition;
+    private boolean mWaiting;
 
-    private float spikeAngleDamageThreshold;
-    private int hitDamage;
+    //Used to control the amount of damage and when the spikes can damage
+    private float mSpikeAngleDamageThreshold;
+    private int mHitDamage;
 
-    private int colliderCheckMaxDelay;
-    private int colliderCheckDelay;
+    //Used to reduce the number of collision checks
+    private int mColliderCheckMaxDelay;
+    private int mColliderCheckDelay;
 
     public SimpleSpikes(Model spikesBase, Model spikesSpikes, Vector3 position) {
-        mCameraController = com.riaanvo.planettanks.GameObjects.CameraController.get();
-        mCollisionManager = CollisionManager.get();
         mSpikesBase = new ModelInstance(spikesBase);
         mSpikesSpikes = new ModelInstance(spikesSpikes);
+
+        mCameraController = CameraController.get();
+        mCollisionManager = CollisionManager.get();
+
+        //Move the spikes base and then set the position of the spikes
         mSpikesBase.transform.setTranslation(position);
         setPosition(position);
 
-        //GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size -- size.cpy().scl(0.5f)
+        //Setup the spikes collider
         float colliderShrink = 0.7f;
-        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.TRAPS, new Vector3(0, Constants.TILE_SIZE / 4, 0), new Vector3(Constants.TILE_SIZE * colliderShrink, Constants.TILE_SIZE / 4, Constants.TILE_SIZE * colliderShrink));
-        CollisionManager.get().addCollider(mBoxCollider);
+        mBoxCollider = new BoxCollider(this, Collider.ColliderTag.TRAPS,
+                new Vector3(0, Constants.TILE_SIZE / 4, 0),
+                new Vector3(Constants.TILE_SIZE * colliderShrink, Constants.TILE_SIZE / 4, Constants.TILE_SIZE * colliderShrink));
 
-        spikesPosition = position.cpy();
-        startingPosition = position.cpy();
-        spikesDownOffset = new Vector3(0, -Constants.TILE_SIZE / 2, 0);
-        transitionAngle = 0;
-        cycleSpeed = 90f;
-        minWaitTime = 3f;
-        waitTimer = 0f;
-        waiting = false;
+        mSpikesPosition = position.cpy();
+        mStartingPosition = position.cpy();
+        mSpikesDownOffset = new Vector3(0, -Constants.TILE_SIZE / 2, 0);
+        mTransitionAngle = 0;
+        mCycleSpeed = 180f;
+        mMinWaitTime = 3f;
+        mWaitTimer = 0f;
+        mWaiting = false;
 
-        hitDamage = 10;
-        spikeAngleDamageThreshold = 60;
+        mHitDamage = 10;
+        mSpikeAngleDamageThreshold = 60;
 
-        colliderCheckMaxDelay = 5;
-        colliderCheckDelay = 0;
+        mColliderCheckMaxDelay = 5;
+        mColliderCheckDelay = 0;
 
         positionSpikes();
     }
 
 
     @Override
-    public void update(float dt) {
-        if (waiting) {
-            waitTimer += dt;
-            if (waitTimer > minWaitTime) {
-                waitTimer = 0;
-                waiting = false;
+    public void update(float deltaTime) {
+        //Check if the spike is in a delay timer
+        if (mWaiting) {
+            //Increment the delay timer and test if it has exceeded the delay time required
+            mWaitTimer += deltaTime;
+            if (mWaitTimer > mMinWaitTime) {
+                mWaitTimer = 0;
+                mWaiting = false;
             }
         } else {
-            transitionAngle += cycleSpeed * dt;
-            if (transitionAngle > 360) {
-                waiting = true;
-                transitionAngle = 0;
+            //Add to the transition based on the speed of angle cycling
+            mTransitionAngle += mCycleSpeed * deltaTime;
+            if (mTransitionAngle > 360) {
+                mWaiting = true;
+                mTransitionAngle = 0;
             }
+            //Move the spikes
             positionSpikes();
         }
 
-        if (!waiting) {
-            if (transitionAngle > spikeAngleDamageThreshold && transitionAngle < 360 - spikeAngleDamageThreshold) {
-                colliderCheckDelay++;
-                if (colliderCheckDelay > colliderCheckMaxDelay) {
-                    checkDamageCollisions(Collider.ColliderTag.ENTITIES);
-                    colliderCheckDelay = 0;
-                }
+        //Check if the collider is in the threshold
+        if (mTransitionAngle > mSpikeAngleDamageThreshold && mTransitionAngle < 360 - mSpikeAngleDamageThreshold) {
+            mColliderCheckDelay++;
+            if (mColliderCheckDelay > mColliderCheckMaxDelay) {
+                //Attempt to damage any entities
+                checkDamageCollisions(Collider.ColliderTag.ENTITIES);
+                mColliderCheckDelay = 0;
             }
         }
-
     }
 
+    /**
+     * Checks to see if the base collider has hit any other colliders of the tag type and attempt
+     * to damage them.
+     *
+     * @param tag of the colliders to check collision with
+     */
     private void checkDamageCollisions(Collider.ColliderTag tag) {
         LinkedList<Collider> collisions = mCollisionManager.getCollisions(mBoxCollider, tag);
         if (collisions.size() > 0) {
@@ -122,27 +142,36 @@ public class SimpleSpikes extends GameObject {
         }
     }
 
+    /**
+     * Check if any collider in the provided list is a living game object and then damage it
+     *
+     * @param others a list of colliders
+     */
     private void damageOtherLivingGameObjects(LinkedList<Collider> others) {
         for (Collider collider : others) {
             LivingGameObject livingGameObject = ((LivingGameObject) collider.getGameObject());
             if (livingGameObject != null) {
-                livingGameObject.takeDamage(hitDamage);
+                livingGameObject.takeDamage(mHitDamage);
             }
         }
     }
 
+    /**
+     * Used to set the position of the spikes and the collider to the current position in the
+     * movement cycle.
+     */
     private void positionSpikes() {
-        float positionScale = (float) Math.cos(Math.toRadians(transitionAngle));
+        float positionScale = (float) Math.cos(Math.toRadians(mTransitionAngle));
         if (positionScale < 0) positionScale = 0;
-        spikesPosition = startingPosition.cpy().add(spikesDownOffset.cpy().scl(positionScale));
-        setPosition(spikesPosition);
+        mSpikesPosition = mStartingPosition.cpy().add(mSpikesDownOffset.cpy().scl(positionScale));
+        setPosition(mSpikesPosition);
         mBoxCollider.updatePosition();
     }
 
     @Override
     public void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
         modelBatch.begin(mCameraController.getCamera());
-        modelBatch.render(mSpikesBase);//, mCameraController.getEnvironment());
+        modelBatch.render(mSpikesBase);
         modelBatch.render(mSpikesSpikes, mCameraController.getEnvironment());
         modelBatch.end();
 

@@ -20,7 +20,9 @@ package com.riaanvo.planettanks.managers;
 import com.riaanvo.planettanks.IActivityRequestHandler;
 
 /**
- * Created by riaanvo on 3/6/17.
+ * This class provides the ability to display an add from anywhere in the game. It uses the
+ * connection between the game engine and the UI thread to display the ads
+ * TODO: implement ad with reward functionality
  */
 
 public class AdManager {
@@ -29,21 +31,33 @@ public class AdManager {
 
     private static AdManager sAdManager;
 
+    /**
+     * Gets the current ad manager and creates one if there isn't already one
+     *
+     * @return the instance of the ad manager
+     */
     public static AdManager get() {
         if (sAdManager == null) sAdManager = new AdManager();
         return sAdManager;
     }
 
-    public void setHandler(IActivityRequestHandler handler) {
-        mHandler = handler;
-    }
-
+    /**
+     * Tells the handler to show an interstitial ad
+     * TODO: implement a way to activate many different interstitial ads
+     */
     public void showInterstitialAd() {
         if (mHandler != null) {
             mHandler.showInterstitialAd();
         }
     }
 
+    public void setHandler(IActivityRequestHandler handler) {
+        mHandler = handler;
+    }
+
+    /**
+     * Remove the reference to the handler
+     */
     public void dispose() {
         mHandler = null;
     }

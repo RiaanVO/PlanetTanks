@@ -23,15 +23,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.riaanvo.planettanks.Constants;
 
 /**
- * Created by riaanvo on 12/5/17.
+ * The superclass to all in game objects. Defines its position, orientation and tag.
  */
 
 public abstract class GameObject {
     protected String mTag;
     protected Vector3 mPosition;
     protected float mOrientation;
-    protected Vector3 mVelocity;
-    protected float mAngularVelocity;
 
     public GameObject() {
         this(Vector3.Zero);
@@ -44,37 +42,42 @@ public abstract class GameObject {
     public GameObject(Vector3 position, float orientation) {
         mPosition = position;
         mOrientation = orientation;
-        mVelocity = Vector3.Zero;
-        mAngularVelocity = 0;
-        mTag = "GameObject";
+        //Apply a default tag unless assigned one
+        mTag = Constants.TAG_DEFAULT;
     }
 
-    public abstract void update(float dt);
+    /**
+     * The update method that will be called on each game object to update its logic
+     *
+     * @param deltaTime the change in time since the last update
+     */
+    public abstract void update(float deltaTime);
 
+    /**
+     * The drawing method that will be called on each game object to draw it in the scene
+     *
+     * @param spriteBatch used for drawing 2D images
+     * @param modelBatch  used for rendering 3D models
+     */
     public abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
 
-    //https://xoppa.github.io/blog/3d-frustum-culling-with-libgdx/
+    /**
+     * Checks if the game object is in the cameras' view
+     * Code adapted from https://xoppa.github.io/blog/3d-frustum-culling-with-libgdx/
+     *
+     * @return if the object is visible to the camera
+     */
     public boolean isVisible() {
         Camera cam = CameraController.get().getCamera();
         return cam.frustum.boundsInFrustum(mPosition, Constants.RENDER_BOUNDS);
     }
 
-    public Vector3 getPosition() {
-        return mPosition;
-    }
-
-    public void setPosition(Vector3 position) {
-        mPosition = position;
-    }
-
-    public float getOrientation() {
-        return mOrientation;
-    }
-
-    public void setOrientation(float orientation) {
-        mOrientation = orientation;
-    }
-
+    /**
+     * Calculates the angle of orientation from a vector using its x and z components
+     *
+     * @param direction vector that will be converted into an orientation.
+     * @return the angle of orientation
+     */
     protected float calculateOrientation(Vector3 direction) {
         float newOrientation;
         if (direction.x != 0) {
@@ -93,6 +96,12 @@ public abstract class GameObject {
         return newOrientation;
     }
 
+    /**
+     * Calculates a vector 3 that points in the direction of the provided orientation
+     *
+     * @param orientation the angle to be converted into a vector
+     * @return a vector3 in the xz plane that points in the direction of the orientation
+     */
     protected Vector3 calculateDirection(float orientation) {
         float castOrientation = Math.abs(orientation);
         boolean negX = false;
@@ -100,6 +109,8 @@ public abstract class GameObject {
         boolean normalCalc = true;
         float x;
         float z;
+
+        //Determine quadrant of unit circle the angle is in and then alter it to the first quadrant
         if (castOrientation > 270) {
             castOrientation = 360 - castOrientation;
             negX = true;
@@ -113,6 +124,7 @@ public abstract class GameObject {
             negZ = true;
         }
 
+        //Calculate the components of the triangle
         if (normalCalc) {
             x = (float) Math.sin(Math.toRadians(castOrientation));
             z = (float) Math.cos(Math.toRadians(castOrientation));
@@ -121,26 +133,11 @@ public abstract class GameObject {
             z = (float) Math.sin(Math.toRadians(castOrientation));
         }
 
+        //Apply the signs to the lengths
         if (negX) x *= -1;
         if (negZ) z *= -1;
 
         return new Vector3(x, 0, z);
-    }
-
-    public Vector3 getVelocity() {
-        return mVelocity;
-    }
-
-    public void setVelocity(Vector3 velocity) {
-        mVelocity = velocity;
-    }
-
-    public float getAngularVelocity() {
-        return mAngularVelocity;
-    }
-
-    public void setAngularVelocity(float angularVelocity) {
-        mAngularVelocity = angularVelocity;
     }
 
     protected void setTag(String newTag) {
@@ -154,4 +151,21 @@ public abstract class GameObject {
     public boolean compareTag(String testTag) {
         return mTag.equals(testTag);
     }
+
+    public Vector3 getPosition() {
+        return mPosition;
+    }
+
+    public void setPosition(Vector3 position) {
+        mPosition = position;
+    }
+
+    public float getOrientation() {
+        return mOrientation;
+    }
+
+    public void setOrientation(float orientation) {
+        mOrientation = orientation;
+    }
+
 }

@@ -26,12 +26,15 @@ import com.riaanvo.planettanks.Physics.Collider;
 import com.riaanvo.planettanks.managers.CollisionManager;
 
 /**
- * Created by riaanvo on 22/5/17.
+ * This class creates and renders a wall segment at the position provided. It also maintains a collider
+ * which other colliders can interact with.
  */
 
 public class WallSegment extends GameObject {
     private ModelInstance mWallSegment;
     private CameraController mCameraController;
+
+    //Collider used to prevent objects from passing through
     private BoxCollider mBoxCollider;
 
     public WallSegment(Model wallSegment, Vector3 position, Vector3 size) {
@@ -40,14 +43,14 @@ public class WallSegment extends GameObject {
         mWallSegment.transform.setTranslation(position);
         setPosition(position);
 
-        //GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size -- size.cpy().scl(0.5f)
+        //Create the box collider at this position and register it with the collision manager
         mBoxCollider = new BoxCollider(this, Collider.ColliderTag.WALL, new Vector3(0, 0, 0), size);
         CollisionManager.get().addCollider(mBoxCollider);
     }
 
 
     @Override
-    public void update(float dt) {
+    public void update(float deltaTime) {
     }
 
     @Override
@@ -56,6 +59,7 @@ public class WallSegment extends GameObject {
         modelBatch.render(mWallSegment, mCameraController.getEnvironment());
         modelBatch.end();
 
+        //Attempt to render the collider
         CollisionManager.get().renderCollider(mBoxCollider);
     }
 }

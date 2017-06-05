@@ -32,22 +32,27 @@ public class GameStateManager {
 
     private static GameStateManager sGameStateManager;
 
+    /**
+     * Gets the current instance of the game state manager. Creates one if there isn't an instance
+     *
+     * @return the instance of the game state manager
+     */
     public static GameStateManager get() {
         if (sGameStateManager == null) sGameStateManager = new GameStateManager();
         return sGameStateManager;
     }
 
     /**
-     * Adds the state to the top of the stack
+     * Adds the state to the start of the list
      *
-     * @param state the state that will be added to the top of the stack
+     * @param state the state that will be added to the start of the list
      */
     public void push(State state) {
         mStates.add(0, state);
     }
 
     /**
-     * Removes the state at the top of the stack
+     * Removes the state at the start of the list if there are any states
      */
     public void pop() {
         if (mStates.size() == 0) return;
@@ -57,9 +62,10 @@ public class GameStateManager {
     }
 
     /**
-     * Removes the current state at the top of the stack and then pushes the new state passed in onto the stack
+     * Removes the current state at the start of the list and then adds the new state passed in at
+     * the start of the list
      *
-     * @param state the state that will be added to the top of the stack
+     * @param state the state that will be added to the start of the list
      */
     public void setState(State state) {
         pop();
@@ -67,7 +73,7 @@ public class GameStateManager {
     }
 
     /**
-     * Call the update method on the state on the top of the stack
+     * Call the update method on the state at the start of the list
      *
      * @param deltaTime the time difference between the last update call
      */
@@ -77,7 +83,7 @@ public class GameStateManager {
     }
 
     /**
-     * Call the render method on the state on the top of the stack
+     * Call the render method on the state at the start of the list
      *
      * @param spriteBatch the sprite batch that will be used to render 2D graphics
      * @param modelBatch  the model batch that will be used to render 3D graphics
@@ -87,6 +93,12 @@ public class GameStateManager {
         mStates.get(0).Render(spriteBatch, modelBatch);
     }
 
+    /**
+     * Gets the state at that position in the list
+     *
+     * @param index position of the desired state
+     * @return the state at that position
+     */
     public State getState(int index) {
         if (index < mStates.size()) {
             return mStates.get(index);
@@ -94,6 +106,11 @@ public class GameStateManager {
         return null;
     }
 
+    /**
+     * Removes the state at the index provided
+     *
+     * @param index position of the state to be removed
+     */
     public void removeState(int index) {
         if (index < mStates.size()) {
             mStates.get(index).dispose();
@@ -101,10 +118,18 @@ public class GameStateManager {
         }
     }
 
+    /**
+     * Gets the state at the start of the list
+     *
+     * @return the state at the start of the list
+     */
     public State getCurrentState() {
         return mStates.getFirst();
     }
 
+    /**
+     * Remove all states from the list
+     */
     public void dispose() {
         while (mStates.size() != 0) {
             pop();

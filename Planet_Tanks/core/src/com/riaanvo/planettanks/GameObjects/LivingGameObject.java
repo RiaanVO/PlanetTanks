@@ -17,14 +17,21 @@
 package com.riaanvo.planettanks.GameObjects;
 
 /**
- * Created by riaanvo on 24/5/17.
+ * This class adds a basic health system onto the game object superclass. Provides methods to take
+ * damage and handle an objects death
  */
 
 public abstract class LivingGameObject extends GameObject {
     protected int mHealth;
-    protected boolean deathHandled = false;
+    protected boolean mDeathHandled = false;
 
+    /**
+     * Applies damage to the health stored in the game object
+     *
+     * @param amount of damage to inflict
+     */
     public void takeDamage(int amount) {
+        //Apply damage if health is > 0
         if (mHealth >= 0) {
             mHealth -= amount;
         }
@@ -42,5 +49,8 @@ public abstract class LivingGameObject extends GameObject {
         return mHealth;
     }
 
+    /**
+     * Used to remove references from the game managers and run any ending code for the game object
+     */
     protected abstract void handelDeath();
 }
