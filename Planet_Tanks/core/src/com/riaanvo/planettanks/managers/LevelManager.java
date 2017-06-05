@@ -142,6 +142,8 @@ public class LevelManager {
         FileHandle handle = Gdx.files.internal(Constants.CORE_LEVELS_FILE);
         if (handle.exists()) {
             mLevels.addAll(LoadStoredLevels(handle.readString()));
+        } else {
+            System.out.println("Failed to load files");
         }
 
         //Get the state of the core levels from the apps preferences
@@ -584,6 +586,5 @@ public class LevelManager {
     public void dispose() {
         SavePlayerLevels();
         SaveCoreLevels();
-        mLevels.clear();
     }
 }

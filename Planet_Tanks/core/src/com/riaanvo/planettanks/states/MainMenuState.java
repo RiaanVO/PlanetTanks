@@ -83,10 +83,10 @@ public class MainMenuState extends State {
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Attempt to show and advert
-                AdManager.get().showInterstitialAd();
                 //Display the level select state
                 mGameStateManager.push(new LevelSelectState());
+                //Attempt to show and advert
+                AdManager.get().showInterstitialAd();
             }
         });
 

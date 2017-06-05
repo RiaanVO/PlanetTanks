@@ -41,6 +41,7 @@ public class PlanetTanks extends ApplicationAdapter {
     private GameStateManager mGameStateManager;
     private ContentManager mContentManager;
     private AdManager mAdManager;
+    private LevelManager mLevelManager;
 
     private boolean mIsLoaded;
     private boolean mIsDebugging;
@@ -110,6 +111,7 @@ public class PlanetTanks extends ApplicationAdapter {
         mIsLoaded = true;
         Skin skin = mContentManager.getSkin(Constants.SKIN_KEY);
         mDebugFont = skin.getFont(Constants.DEFAULT_FONT);
+        mLevelManager = LevelManager.get();
     }
 
     @Override

@@ -12,6 +12,6 @@ public class DesktopLauncher {
 
 		config.height = (int)Constants.VIRTUAL_SCREEN_HEIGHT;
 		config.width = (int)Constants.VIRTUAL_SCREEN_WIDTH;
-		new LwjglApplication(new PlanetTanks(), config);
+		//new LwjglApplication(new PlanetTanks(), config);
 	}
 }
