@@ -20,7 +20,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
 /**
- * Created by riaanvo on 22/5/17.
+ * This class creates a bounding sphere and has the functions to test intersects
+ * with a bounding box and other bounding spheres
  */
 
 public class BoundingSphere {
@@ -34,6 +35,12 @@ public class BoundingSphere {
         mRadius2 = radius * radius;
     }
 
+    /**
+     * Checks if the provided bounding sphere intersects with this bounding sphere
+     *
+     * @param other the other bounding sphere
+     * @return if the bounding sphere intersects this sphere
+     */
     public boolean intersects(BoundingSphere other) {
         Vector3 otherPosition = other.getCenter();
         float distanceBetweenSpheres = Vector3.dst2(mCenter.x, mCenter.y, mCenter.z, otherPosition.x, otherPosition.y, otherPosition.z);
@@ -41,7 +48,13 @@ public class BoundingSphere {
         return distanceBetweenSpheres <= actualDistance2;
     }
 
-    //http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx
+    /**
+     * Checks if the provided bounding box intersect this bounding sphere
+     * Code adapted from http://stackoverflow.com/questions/15247347/collision-detection-between-a-boundingbox-and-a-sphere-in-libgdx
+     *
+     * @param other the bounding box to test against
+     * @return if the bounding box and sphere intersect
+     */
     public boolean intersects(BoundingBox other) {
         if (roughSphereIntersectsCheck(other)) {
             float dmin = 0;
@@ -75,12 +88,18 @@ public class BoundingSphere {
         }
     }
 
+    /**
+     * Checks if the provided bounding box collides with this sphere collider using a rough
+     * bounding sphere. Reduces the number of checks when testing against a bounding box
+     *
+     * @param other the bounding box to test against intersection
+     * @return if this sphere intersects with the rough bounding sphere
+     */
     private boolean roughSphereIntersectsCheck(BoundingBox other) {
         float otherRadius2 = (float) (Math.pow(other.getWidth() / 2, 2) + Math.pow(other.getHeight() / 2, 2) + Math.pow(other.getDepth() / 2, 2));
         float minNoCollidingDistance = (float) Math.pow(mRadius2 + otherRadius2, 2);
         float actualDistance2 = Vector3.dst2(mCenter.x, mCenter.y, mCenter.z, other.getCenterX(), other.getCenterY(), other.getCenterZ());
         return actualDistance2 <= minNoCollidingDistance;
-        //return true;
     }
 
     public void setCenter(Vector3 newCenter) {
@@ -91,6 +110,11 @@ public class BoundingSphere {
         return mCenter;
     }
 
+    /**
+     * Sets the radius and calculates and sets the radius squared
+     *
+     * @param newRadius the new radius to be used
+     */
     public void setRadius(float newRadius) {
         mRadius = newRadius;
         mRadius2 = mRadius * mRadius;

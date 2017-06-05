@@ -26,17 +26,20 @@ import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.PlanetTanks;
 
 /**
- * Created by riaanvo on 9/5/17.
+ * This class creates a splash screen shown at the start of running the application. It extends functionality from
+ * the state superclass. It forces the app to load all the games assets and continues on to the menu
+ * state once all assets have been loaded.
  */
 
 public class SplashScreenState extends State {
     private Stage mStage;
+
+    private Image mBackgroundImage;
+
+    //Used to control when to move to the next screen
+    private float mDuration = 1;
+    private boolean mAllAssetsLoaded;
     private boolean hasTransitioned;
-
-    private Image backgroundImage;
-
-    private float duration = 1;
-    private boolean allAssetsLoaded;
 
     private PlanetTanks mPlanetTanks;
 
@@ -48,20 +51,23 @@ public class SplashScreenState extends State {
 
         //Load required textures and fonts
         hasTransitioned = false;
-        allAssetsLoaded = false;
+        mAllAssetsLoaded = false;
         mPlanetTanks = planetTanks;
     }
 
     @Override
     protected void update(float deltaTime) {
-        if (allAssetsLoaded) {
-            duration -= deltaTime;
-            if (duration < 0 && !hasTransitioned) {
+        if (mAllAssetsLoaded) {
+            mDuration -= deltaTime;
+            //Check if the screen change delay has ended
+            if (mDuration < 0 && !hasTransitioned) {
                 hasTransitioned = true;
+                //Load the main menu screen
                 mGameStateManager.setState(new MainMenuState());
             }
         } else {
-            allAssetsLoaded = mContentManager.assetManagerUpdate();
+            //Check if all assets have been loaded
+            mAllAssetsLoaded = mContentManager.assetManagerUpdate();
         }
     }
 
@@ -72,14 +78,15 @@ public class SplashScreenState extends State {
 
     @Override
     protected void loaded() {
-        backgroundImage = new Image(mContentManager.getTexture(Constants.SPLASH_BACKGROUND));
-        backgroundImage.setPosition(0, 0);
-        backgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
-        mStage.addActor(backgroundImage);
+        //Set up the background image and display it
+        mBackgroundImage = new Image(mContentManager.getTexture(Constants.SPLASH_BACKGROUND));
+        mBackgroundImage.setPosition(0, 0);
+        mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
+        mStage.addActor(mBackgroundImage);
 
+        //Force the game to load all the other assets
         mPlanetTanks.LoadGameAssets();
-
-        allAssetsLoaded = false;
+        mAllAssetsLoaded = false;
     }
 
     @Override

@@ -34,7 +34,9 @@ import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.managers.AdManager;
 
 /**
- * Created by riaanvo on 9/5/17.
+ * This class creates and displays the games main menu. It extends functionality from the state
+ * super class. It allows players to move to the level select screen, editor menu screen or to
+ * quit the application. It also displays an advert to the player
  */
 
 public class MainMenuState extends State {
@@ -49,7 +51,6 @@ public class MainMenuState extends State {
     private Image mBackgroundImage;
 
     public MainMenuState() {
-
     }
 
     @Override
@@ -66,22 +67,25 @@ public class MainMenuState extends State {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-
+        //load and set up the background image
         mBackgroundImage = new Image(mContentManager.getTexture(Constants.MAIN_MENU_BACKGROUND));
         mBackgroundImage.setPosition(0, 0);
         mBackgroundImage.setSize(mStage.getWidth(), mStage.getHeight());
         mStage.addActor(mBackgroundImage);
 
+        //Create the title label
         mTitle = new Label("PLANET TANKS", mSkin, "title");
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
-
+        //Create the menu buttons
         mPlayButton = new TextButton("PLAY", mSkin);
         mPlayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //Attempt to show and advert
                 AdManager.get().showInterstitialAd();
+                //Display the level select state
                 mGameStateManager.push(new LevelSelectState());
             }
         });
@@ -90,8 +94,8 @@ public class MainMenuState extends State {
         mLevelEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //Display the Editor menu state
                 mGameStateManager.push(new EditorMenuState());
-                //mGameStateManager.push(new LevelEditorState());
             }
         });
 
@@ -99,11 +103,13 @@ public class MainMenuState extends State {
         mQuitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //Close the application
                 Gdx.app.exit();
             }
         });
 
 
+        //Set up the table that will hold the UI elements
         Table mTable = new Table();
         mTable.setTransform(true);
         mTable.padBottom(20f);
@@ -112,6 +118,7 @@ public class MainMenuState extends State {
         float buttonWidth = 180;
         float buttonHeight = 80;
 
+        //Add the UI elements to the table
         mTable.add(mTitle).pad(10f);
         mTable.row();
         mTable.add(mPlayButton).pad(10f).width(buttonWidth).height(buttonHeight);

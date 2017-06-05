@@ -32,6 +32,9 @@ import com.riaanvo.planettanks.managers.LevelManager;
 import com.riaanvo.planettanks.states.PlayState;
 import com.riaanvo.planettanks.states.SplashScreenState;
 
+/**
+ * This is the main game engine class. It initialises the graphics and creates the managers.
+ */
 public class PlanetTanks extends ApplicationAdapter {
     private ModelBatch mModelBatch;
     private SpriteBatch mSpriteBatch;
@@ -39,12 +42,14 @@ public class PlanetTanks extends ApplicationAdapter {
     private ContentManager mContentManager;
     private AdManager mAdManager;
 
-    private boolean isLoaded;
-    private BitmapFont debugFont;
+    private boolean mIsLoaded;
+    private boolean mIsDebugging;
+    private BitmapFont mDebugFont;
 
     public PlanetTanks(IActivityRequestHandler handler) {
         mAdManager = AdManager.get();
         mAdManager.setHandler(handler);
+        mIsDebugging = false;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class PlanetTanks extends ApplicationAdapter {
         mContentManager = ContentManager.get();
         mContentManager.setAssetManager(new AssetManager());
 
-        isLoaded = false;
+        mIsLoaded = false;
 
         //Initialise the first screen
         mGameStateManager.push(new SplashScreenState(this));
@@ -64,38 +69,52 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void render() {
+        //Update the game
         update(Gdx.graphics.getDeltaTime());
 
+        //Clear the screen
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        //Render the game
         mGameStateManager.render(mSpriteBatch, mModelBatch);
 
-        if (!isLoaded) {
+        if (!mIsLoaded) {
             if (mContentManager.assetManagerUpdate()) {
                 loaded();
             }
             return;
         }
 
-        mSpriteBatch.begin();
-        debugFont.draw(mSpriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 20);
-        mSpriteBatch.end();
-
+        //Draw the fps if is debugging
+        if (mIsDebugging) {
+            mSpriteBatch.begin();
+            mDebugFont.draw(mSpriteBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 20);
+            mSpriteBatch.end();
+        }
     }
 
+    /**
+     * Update the game state manager
+     *
+     * @param deltaTime the time since last update
+     */
     public void update(float deltaTime) {
         mGameStateManager.update(deltaTime);
     }
 
+    /**
+     * Loads the ui content needed for debugging
+     */
     private void loaded() {
-        isLoaded = true;
+        mIsLoaded = true;
         Skin skin = mContentManager.getSkin(Constants.SKIN_KEY);
-        debugFont = skin.getFont(Constants.DEFAULT_FONT);
+        mDebugFont = skin.getFont(Constants.DEFAULT_FONT);
     }
 
     @Override
     public void pause() {
+        //Check if the play state was the current state
         PlayState playState;
         try {
             playState = (PlayState) mGameStateManager.getCurrentState();
@@ -104,6 +123,7 @@ public class PlanetTanks extends ApplicationAdapter {
             playState = null;
         }
 
+        //Add a pause state if it was
         if (playState != null) {
             playState.pauseGame();
         }
@@ -112,6 +132,7 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void resume() {
+        //Reload all the assets
         LoadGameAssets();
         super.resume();
     }
@@ -148,6 +169,7 @@ public class PlanetTanks extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        //Force all managers to dispose of their contents
         mModelBatch.dispose();
         mSpriteBatch.dispose();
         mGameStateManager.dispose();

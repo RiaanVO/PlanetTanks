@@ -42,37 +42,37 @@ import com.riaanvo.planettanks.managers.LevelManager;
 import java.util.LinkedList;
 
 /**
- * Created by riaanvo on 30/5/17.
+ * This class creates the level editor screen. It extends functionality from the state superclass
+ * This screen allows the player to design their own levels, test them and save them if they want.
  */
 
 public class LevelEditorState extends State {
     private LevelManager mLevelManager;
     private Stage mStage;
 
-    private ButtonGroup typeButtonGroup;
-    private LinkedList<ImageTextButton> typeButtons;
+    //Used to change what type of game object a tile will contain
+    private ButtonGroup mTypeButtonGroup;
+    private LinkedList<ImageTextButton> mTypeButtons;
 
-    private int levelWidth;
-    private int levelHeight;
-    private LinkedList<ImageButton> levelMapButtons;
-    private TextureRegionDrawable[] tileImages;
-    private int[][] levelMap;
+    //Used to create the visual level map
+    private int mLevelWidth;
+    private int mLevelHeight;
+    private LinkedList<ImageButton> mLevelMapButtons;
+    private TextureRegionDrawable[] mTileImages;
+    private int[][] mLevelMap;
 
-    private boolean hasPlayer;
-    private int currentPlayerButtonIndex;
+    //Used to check if the level is a valid level
+    private boolean mHasPlayer;
+    private int mCurrentPlayerButtonIndex;
 
-    private TextButton saveButton;
-    private TextButton playTestButton;
-
-    private boolean levelEdited;
+    private TextButton mSaveButton;
+    private TextButton mPlayTestButton;
 
     public LevelEditorState() {
         mLevelManager = LevelManager.get();
-
-        hasPlayer = false;
-        levelEdited = false;
-        levelWidth = 12;
-        levelHeight = 9;
+        mHasPlayer = false;
+        mLevelWidth = 12;
+        mLevelHeight = 9;
     }
 
     @Override
@@ -80,60 +80,63 @@ public class LevelEditorState extends State {
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         Skin skin = mContentManager.getSkin(Constants.SKIN_KEY);
 
-        tileImages = new TextureRegionDrawable[LevelManager.LevelMapTiles.values().length];
-
-
-        tileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.FLOOR.name()).ordinal()] =
+        //Load the game object icons that will be displayed on the level map
+        mTileImages = new TextureRegionDrawable[LevelManager.LevelMapTiles.values().length];
+        mTileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.FLOOR.name()).ordinal()] =
                 new TextureRegionDrawable(new TextureRegion(mContentManager.getTexture(Constants.FLOOR_TILE)));
 
-        tileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.WALL.name()).ordinal()] =
+        mTileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.WALL.name()).ordinal()] =
                 new TextureRegionDrawable(new TextureRegion(mContentManager.getTexture(Constants.WALL_TILE)));
 
-        tileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.SPIKES.name()).ordinal()] =
+        mTileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.SPIKES.name()).ordinal()] =
                 new TextureRegionDrawable(new TextureRegion(mContentManager.getTexture(Constants.SPIKES_TILE)));
 
-        tileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.PLAYER.name()).ordinal()] =
+        mTileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.PLAYER.name()).ordinal()] =
                 new TextureRegionDrawable(new TextureRegion(mContentManager.getTexture(Constants.PLAYER_TILE)));
 
-        tileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.ENEMY.name()).ordinal()] =
+        mTileImages[LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.ENEMY.name()).ordinal()] =
                 new TextureRegionDrawable(new TextureRegion(mContentManager.getTexture(Constants.ENEMY_TILE)));
 
+        //Create a dialog that can be used to show the user a message
+        final Dialog notificationDialogue = new Dialog("", skin);
+        notificationDialogue.setFillParent(true);
 
-        final Dialog errorDialog = new Dialog("", skin);
-        errorDialog.setFillParent(true);
-
+        //Create the button used to dismiss the dialogue
         TextButton dialogConfirm = new TextButton("OK", skin);
         dialogConfirm.setTransform(true);
         dialogConfirm.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                errorDialog.hide();
+                notificationDialogue.hide();
             }
         });
-        errorDialog.getButtonTable().add(dialogConfirm).pad(30).width(200).height(100);
+        notificationDialogue.getButtonTable().add(dialogConfirm).pad(30).width(200).height(100);
 
-        final Label errorMessage = new Label("Error", skin, Constants.TITLE_FONT);
-        //errorMessage.setFontScale(2);
-        errorDialog.getContentTable().add(errorMessage);
+        //Creat the label that will show the notification text
+        final Label notificationMessage = new Label("Message", skin, Constants.TITLE_FONT);
+        notificationDialogue.getContentTable().add(notificationMessage);
 
-
+        //Create the menu buttons
         TextButton mainMenuButton = new TextButton("BACK", skin);
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //close this screen
                 mGameStateManager.pop();
             }
         });
 
-        playTestButton = new TextButton("PLAY", skin);
-        playTestButton.addListener(new ClickListener() {
+        mPlayTestButton = new TextButton("PLAY", skin);
+        mPlayTestButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 TextButton button = (TextButton) event.getListenerActor();
                 if (button != null) {
+                    //Check if the button is disabled
                     if (button.isDisabled()) {
-                        errorMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
-                        errorDialog.show(mStage);
+                        //Show a notification if the level is incomplete
+                        notificationMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
+                        notificationDialogue.show(mStage);
                         return;
                     }
                     mLevelManager.setIsPlaytest(true);
@@ -153,68 +156,79 @@ public class LevelEditorState extends State {
         });
 
 
-        saveButton = new TextButton("SAVE", skin);
-        saveButton.addListener(new ClickListener() {
+        mSaveButton = new TextButton("SAVE", skin);
+        mSaveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 TextButton button = (TextButton) event.getListenerActor();
                 if (button != null) {
                     if (button.isDisabled()) {
-                        errorMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
-                        errorDialog.show(mStage);
+                        //Show a notification if the level is incomplete
+                        notificationMessage.setText("Level doesn't meet requirements:\nA player and enemy are needed at least");
+                        notificationDialogue.show(mStage);
                         return;
                     }
+                    //test to see if the level was saved and display a message
                     if (!mLevelManager.addLevel(editorToLevel())) {
-                        errorMessage.setText("Level already exists");
-                        errorDialog.show(mStage);
-                        System.out.println("Level already exists");
+                        notificationMessage.setText("Level already exists");
+                        notificationDialogue.show(mStage);
+                    } else {
+                        notificationMessage.setText("Level Saved");
+                        notificationDialogue.show(mStage);
                     }
 
                 }
             }
         });
 
+        //Set up the button group used to control what type of game object to place
+        mTypeButtonGroup = new ButtonGroup();
+        mTypeButtonGroup.setMinCheckCount(1);
+        mTypeButtonGroup.setMaxCheckCount(1);
+        mTypeButtonGroup.setUncheckLast(true);
 
-        typeButtonGroup = new ButtonGroup();
-        typeButtonGroup.setMinCheckCount(1);
-        typeButtonGroup.setMaxCheckCount(1);
-        typeButtonGroup.setUncheckLast(true);
-
-        typeButtons = new LinkedList<ImageTextButton>();
+        //Create and add the type buttons
+        mTypeButtons = new LinkedList<ImageTextButton>();
         for (int i = 0; i < LevelManager.LevelMapTiles.values().length; i++) {
             String s = LevelManager.LevelMapTiles.values()[i].name();
             ImageTextButton button = new ImageTextButton(s, skin, "radio");
-            typeButtons.add(button);
-            typeButtonGroup.add(button);
+            mTypeButtons.add(button);
+            mTypeButtonGroup.add(button);
         }
-        typeButtons.getFirst().setChecked(true);
+        mTypeButtons.getFirst().setChecked(true);
 
+        //Create the table to display the type buttons
         float typeButtonPad = 10f;
         Table typeButtonTable = new Table();
         typeButtonTable.setTransform(true);
         typeButtonTable.defaults().expandX().left();
-        for (ImageTextButton button : typeButtons) {
+        for (ImageTextButton button : mTypeButtons) {
             typeButtonTable.add(button).pad(typeButtonPad);
             typeButtonTable.row();
         }
 
 
+        //Create a table to store an show the levelmap buttons
         float levelTileSize = 50f;
         float levelTilePad = 1f;
         Table levelMapTable = new Table();
         levelMapTable.setTransform(true);
 
-        levelMapButtons = new LinkedList<ImageButton>();
-        levelMap = new int[levelHeight][levelWidth];
+        //Create the buttons list and the level map
+        mLevelMapButtons = new LinkedList<ImageButton>();
+        mLevelMap = new int[mLevelHeight][mLevelWidth];
 
-        for (int y = 0; y < levelHeight; y++) {
-            for (int x = 0; x < levelWidth; x++) {
+        //Populate the buttons list and the level map
+        for (int y = 0; y < mLevelHeight; y++) {
+            for (int x = 0; x < mLevelWidth; x++) {
+                //Set up the button style
                 ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
                 buttonStyle.up = skin.getDrawable("button-c");
                 buttonStyle.down = skin.getDrawable("button-p");
                 buttonStyle.over = skin.getDrawable("button-h");
                 buttonStyle.disabled = skin.getDrawable("button-d");
 
+                //Create an add the button
                 ImageButton imgButton = new ImageButton(skin);
                 imgButton.setStyle(buttonStyle);
                 imgButton.addListener(new ClickListener() {
@@ -223,16 +237,18 @@ public class LevelEditorState extends State {
                         ImageButton button = (ImageButton) event.getListenerActor();
                         if (button != null) {
                             if (button.isDisabled()) return;
-                            setButtonType(button, LevelManager.LevelMapTiles.values()[typeButtonGroup.getCheckedIndex()]);
+                            //Set the image of the button and update the save and play buttons
+                            setButtonType(button, LevelManager.LevelMapTiles.values()[mTypeButtonGroup.getCheckedIndex()]);
                             updateButtonsDisabled(isValidLevel());
                         }
 
                     }
                 });
-                levelMapButtons.add(imgButton);
+                mLevelMapButtons.add(imgButton);
                 levelMapTable.add(imgButton).pad(levelTilePad).width(levelTileSize).height(levelTileSize);
 
-                if (y == 0 || y == levelHeight - 1 || x == 0 || x == levelWidth - 1) {
+                //Disable the buttons along the boarder as they have to be walls
+                if (y == 0 || y == mLevelHeight - 1 || x == 0 || x == mLevelWidth - 1) {
                     imgButton.setDisabled(true);
                     setButtonType(imgButton, LevelManager.LevelMapTiles.WALL);
                 } else {
@@ -242,29 +258,30 @@ public class LevelEditorState extends State {
             levelMapTable.row();
         }
 
-
+        //Update the save and play buttons disabled state
         updateButtonsDisabled(isValidLevel());
 
-
+        //Create a options container and add the buttons
         float optionButtonsPad = 10f;
         float optionButtonsWidth = 100f;
         float optionButtonsHeight = 50f;
         Table optionButtonsContainer = new Table();
         optionButtonsContainer.setTransform(true);
         optionButtonsContainer.add(mainMenuButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
-        optionButtonsContainer.add(playTestButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
-        optionButtonsContainer.add(saveButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
+        optionButtonsContainer.add(mPlayTestButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
+        optionButtonsContainer.add(mSaveButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
         optionButtonsContainer.add(clearButton).pad(optionButtonsPad).width(optionButtonsWidth).height(optionButtonsHeight);
 
 
         //Todo use a scroll pane to store the level map
 
-
+        //Create the editing table and add the types and level map
         Table levelEditingTable = new Table();
         levelEditingTable.setTransform(true);
         levelEditingTable.add(typeButtonTable).padRight(50);
         levelEditingTable.add(levelMapTable);
 
+        //Set up the main table and add it to the scene
         Table mainRoot = new Table();
         mainRoot.align(Align.center);
         mainRoot.setBounds(0, 0, mStage.getWidth(), mStage.getHeight());
@@ -276,87 +293,131 @@ public class LevelEditorState extends State {
         mStage.addActor(mainRoot);
     }
 
+    /**
+     * Sets the buttons image and alters the value stored in the level map that corresponds to this
+     * button
+     * @param button button to be edited
+     * @param type type of game object to be placed there
+     */
     private void setButtonType(ImageButton button, LevelManager.LevelMapTiles type) {
-        int buttonIndex = levelMapButtons.indexOf(button);
-        int x = buttonIndex % levelWidth;
-        int y = buttonIndex / levelWidth;
+        //Calculate the buttons index and the level map coordinates
+        int buttonIndex = mLevelMapButtons.indexOf(button);
+        int x = buttonIndex % mLevelWidth;
+        int y = buttonIndex / mLevelWidth;
         int typeIndex = LevelManager.LevelMapTiles.valueOf(type.name()).ordinal();
 
+        //Check if the button is going to be the player.
         if (type == LevelManager.LevelMapTiles.PLAYER) {
             handlePlayerPlacement(buttonIndex);
         } else {
+            //Check if the change will remove the player
             if (getButtonType(button) == LevelManager.LevelMapTiles.PLAYER) {
-                hasPlayer = false;
+                mHasPlayer = false;
             }
         }
 
-
-        TextureRegionDrawable image = tileImages[typeIndex];
+        //Set the image to be shown on the button
+        TextureRegionDrawable image = mTileImages[typeIndex];
         button.getStyle().imageUp = image;
         button.getStyle().imageDown = image;
 
-        levelMap[y][x] = typeIndex;
+        mLevelMap[y][x] = typeIndex;
     }
 
+    /**
+     * Checks to see if the level has a player and at least one enemy
+     * @return if the level is a playable level
+     */
     private boolean isValidLevel() {
-        if (!hasPlayer) return false;
+        if (!mHasPlayer) return false;
+        //Check if there are any enemies on the map
         int enemyCode = LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.ENEMY.name()).ordinal();
-        for (int y = 0; y < levelHeight; y++) {
-            for (int x = 0; x < levelWidth; x++) {
-                if (levelMap[y][x] == enemyCode) return true;
+        for (int y = 0; y < mLevelHeight; y++) {
+            for (int x = 0; x < mLevelWidth; x++) {
+                if (mLevelMap[y][x] == enemyCode) return true;
             }
         }
         return false;
     }
 
+    /**
+     * Update the play and save buttons disabled state
+     * @param isViable the state of the level
+     */
     private void updateButtonsDisabled(boolean isViable) {
-        saveButton.setDisabled(!isViable);
-        playTestButton.setDisabled(!isViable);
+        mSaveButton.setDisabled(!isViable);
+        mPlayTestButton.setDisabled(!isViable);
     }
 
+    /**
+     * Used to relocate the players' starting position when the player moves the player icon.
+     * @param buttonIndex of the new players position
+     */
     private void handlePlayerPlacement(int buttonIndex) {
-        if (hasPlayer) {
-            ImageButton button = levelMapButtons.get(currentPlayerButtonIndex);
+        //Check if there is a player on the screen
+        if (mHasPlayer) {
+            //Reset the previous players location to a floor tile
+            ImageButton button = mLevelMapButtons.get(mCurrentPlayerButtonIndex);
             int typeIndex = LevelManager.LevelMapTiles.valueOf(LevelManager.LevelMapTiles.FLOOR.name()).ordinal();
-            TextureRegionDrawable image = tileImages[typeIndex];
+            TextureRegionDrawable image = mTileImages[typeIndex];
             button.getStyle().imageUp = image;
             button.getStyle().imageDown = image;
 
-            int x = currentPlayerButtonIndex % levelWidth;
-            int y = currentPlayerButtonIndex / levelWidth;
-            levelMap[y][x] = typeIndex;
-            System.out.println("Player reset: " + levelMap[y][x]);
+            //Set the previous location to a floor tile
+            int x = mCurrentPlayerButtonIndex % mLevelWidth;
+            int y = mCurrentPlayerButtonIndex / mLevelWidth;
+            mLevelMap[y][x] = typeIndex;
         }
 
-        hasPlayer = true;
-        currentPlayerButtonIndex = buttonIndex;
+        //Update the player position tracking variables
+        mHasPlayer = true;
+        mCurrentPlayerButtonIndex = buttonIndex;
     }
 
+    /**
+     * Get the int of the level map type
+     * @param type type to get the int of
+     * @return the index of that type
+     */
     private int levelMapIntOf(LevelManager.LevelMapTiles type) {
         return LevelManager.LevelMapTiles.valueOf(type.name()).ordinal();
     }
 
+    /**
+     * Gets the type of level map tile from a button
+     * @param button
+     * @return
+     */
     private LevelManager.LevelMapTiles getButtonType(ImageButton button) {
-        int buttonIndex = levelMapButtons.indexOf(button);
-        int x = buttonIndex % levelWidth;
-        int y = buttonIndex / levelWidth;
-        return LevelManager.LevelMapTiles.values()[levelMap[y][x]];
+        //Find the buttons coordinates on the level map
+        int buttonIndex = mLevelMapButtons.indexOf(button);
+        int x = buttonIndex % mLevelWidth;
+        int y = buttonIndex / mLevelWidth;
+        return LevelManager.LevelMapTiles.values()[mLevelMap[y][x]];
     }
 
+    /**
+     * Reset all the middle tiles to the floor type
+     */
     private void clearLevel() {
-        hasPlayer = false;
-        for (int y = 1; y < levelHeight - 1; y++) {
-            for (int x = 1; x < levelWidth - 1; x++) {
-                setButtonType(levelMapButtons.get(y * levelWidth + x), LevelManager.LevelMapTiles.FLOOR);
+        mHasPlayer = false;
+        for (int y = 1; y < mLevelHeight - 1; y++) {
+            for (int x = 1; x < mLevelWidth - 1; x++) {
+                setButtonType(mLevelMapButtons.get(y * mLevelWidth + x), LevelManager.LevelMapTiles.FLOOR);
             }
         }
     }
 
+    /**
+     * Create a Game level object from the level map
+     * @return
+     */
     private GameLevel editorToLevel() {
-        int[][] newLevelMap = new int[levelHeight][levelWidth];
-        for (int y = 0; y < levelHeight; y++) {
-            for (int x = 0; x < levelWidth; x++) {
-                newLevelMap[y][x] = levelMap[y][x];
+        //Make a new level map with the current level map
+        int[][] newLevelMap = new int[mLevelHeight][mLevelWidth];
+        for (int y = 0; y < mLevelHeight; y++) {
+            for (int x = 0; x < mLevelWidth; x++) {
+                newLevelMap[y][x] = mLevelMap[y][x];
             }
         }
 
@@ -381,6 +442,7 @@ public class LevelEditorState extends State {
 
     @Override
     public void dispose() {
+        //Set the play mode to normal
         mLevelManager.setIsPlaytest(false);
         mStage.dispose();
     }

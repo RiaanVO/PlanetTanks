@@ -21,7 +21,9 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.riaanvo.planettanks.GameObjects.GameObject;
 
 /**
- * Created by riaanvo on 22/5/17.
+ * This class is the collider super class that is extended into the two types, box collider and
+ * sphere collider. It provides the methods to check for intersection against the different types
+ * of colliders.
  */
 
 public abstract class Collider {
@@ -43,8 +45,20 @@ public abstract class Collider {
     protected ColliderTag mTag;
     protected Vector3 mOffset;
 
+    /**
+     * Used to test if this collider is intersecting with the provided collider
+     *
+     * @param other the other collider to be tested against
+     * @return if the collider is intersecting with the provided collider
+     */
     public abstract boolean intersectsWith(Collider other);
 
+    /**
+     * Checks if the provided tag matches this colliders tag
+     *
+     * @param testTag tag to be tested for
+     * @return if the test tag is the same as this colliders tag
+     */
     public boolean hasTag(ColliderTag testTag) {
         return mTag == testTag;
     }
@@ -53,14 +67,35 @@ public abstract class Collider {
         mOffset = newOffset;
     }
 
+    /**
+     * Checks if the first bounding box intersects the second bounding box
+     *
+     * @param box1 the first bounding box
+     * @param box2 the second bounding box
+     * @return if the bounding boxes intersect
+     */
     protected boolean intersects(BoundingBox box1, BoundingBox box2) {
         return box1.intersects(box2);
     }
 
+    /**
+     * Checks if the bounding box intersects with the bounding sphere
+     *
+     * @param box    the bounding box
+     * @param sphere the bounding sphere
+     * @return
+     */
     protected boolean intersects(BoundingBox box, BoundingSphere sphere) {
         return sphere.intersects(box);
     }
 
+    /**
+     * Checks if the first bounding sphere intersects with the second bounding sphere
+     *
+     * @param sphere1 the first bounding sphere
+     * @param sphere2 the second bounding sphere
+     * @return if the first sphere intersect the second sphere
+     */
     protected boolean intersects(BoundingSphere sphere1, BoundingSphere sphere2) {
         return sphere1.intersects(sphere2);
     }

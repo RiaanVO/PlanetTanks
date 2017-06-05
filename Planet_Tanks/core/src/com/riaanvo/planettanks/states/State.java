@@ -28,21 +28,32 @@ import com.riaanvo.planettanks.managers.GameStateManager;
 public abstract class State {
     protected GameStateManager mGameStateManager;
     protected ContentManager mContentManager;
-    protected boolean isLoaded;
-    protected boolean waitForLoading = true;
+
+    //used to prevent drawing and updating based on loading content
+    protected boolean mIsLoaded;
+    protected boolean mWaitForLoading = true;
 
     public State() {
         mGameStateManager = GameStateManager.get();
         mContentManager = ContentManager.get();
-        isLoaded = false;
+        mIsLoaded = false;
     }
 
+    /**
+     * Called when loading is done. Used to set up any game elements that required assets to be loaded
+     */
     protected abstract void loaded();
 
+    /**
+     * Checks if the asset manager has finished loading and calls loaded and initialise input
+     * once loading is complete
+     *
+     * @return boolean if the content is loaded
+     */
     protected boolean isLoaded() {
-        if (!isLoaded) {
+        if (!mIsLoaded) {
             if (mContentManager.assetManagerUpdate()) {
-                isLoaded = true;
+                mIsLoaded = true;
                 loaded();
                 initialiseInput();
             } else {
@@ -52,30 +63,66 @@ public abstract class State {
         return true;
     }
 
+    /**
+     * Update the state depending on loading. Is called by the Game State Manager
+     *
+     * @param deltaTime the time since last update
+     */
     public void Update(float deltaTime) {
-        if (waitForLoading && !isLoaded) {
+        //Check if the state should wait for loading and is loaded
+        if (mWaitForLoading && !mIsLoaded) {
             if (!isLoaded()) return;
         }
         update(deltaTime);
     }
 
+    /**
+     * The update method that will update all a states components
+     *
+     * @param deltaTime the time since last update
+     */
     protected abstract void update(float deltaTime);
 
+    /**
+     * Render the state depending on loading. Is called by the Game State Manager
+     *
+     * @param spriteBatch used to render 2D images
+     * @param modelBatch  used to render 3D models
+     */
     public void Render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
-        if (waitForLoading && !isLoaded) {
+        //Check if the state should wait for loading and is loaded
+        if (mWaitForLoading && !mIsLoaded) {
             if (!isLoaded()) return;
         }
         render(spriteBatch, modelBatch);
     }
 
+    /**
+     * The render method that will render all the states components
+     *
+     * @param spriteBatch use to render 2D images
+     * @param modelBatch  used to render 3D models
+     */
     protected abstract void render(SpriteBatch spriteBatch, ModelBatch modelBatch);
 
+    /**
+     * Set the wait for loading field
+     *
+     * @param shouldWait boolean state to be set
+     */
     protected void setWaitForLoading(boolean shouldWait) {
-        waitForLoading = shouldWait;
-        if (!waitForLoading && !isLoaded) isLoaded();
+        mWaitForLoading = shouldWait;
+        //If not going to wait, call the loaded method
+        if (!mWaitForLoading && !mIsLoaded) isLoaded();
     }
 
+    /**
+     * Used to re assign the input processor of game engine
+     */
     public abstract void initialiseInput();
 
+    /**
+     * Used to dispose of any graphics and specific state components
+     */
     public abstract void dispose();
 }

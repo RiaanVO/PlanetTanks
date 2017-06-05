@@ -17,9 +17,13 @@
 package com.riaanvo.planettanks;
 
 /**
- * Created by riaanvo on 3/6/17.
+ * This is the interface class used to allow communication between the game engine and the android
+ * application
  */
 
 public interface IActivityRequestHandler {
+    /**
+     * Attempt to show an interstitial ad
+     */
     void showInterstitialAd();
 }

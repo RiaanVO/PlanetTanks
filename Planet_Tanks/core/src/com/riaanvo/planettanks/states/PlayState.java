@@ -34,7 +34,8 @@ import com.riaanvo.planettanks.managers.GameObjectManager;
 import com.riaanvo.planettanks.managers.LevelManager;
 
 /**
- * Created by riaanvo on 9/5/17.
+ * This class creates and displays the levels that the player can play. It extends functionality from
+ * the state superclass. It allows the player to play the levels and interact with the game ojects
  */
 
 public class PlayState extends State {
@@ -45,10 +46,10 @@ public class PlayState extends State {
     //UI controls
     private Stage mStage;
     private Skin mSkin;
-    private Touchpad movementTouchpad;
-    private Touchpad aimingTouchpad;
-    private TextButton mainMenuButton;
-    private TextButton fireButton;
+    private Touchpad mMovementTouchpad;
+    private Touchpad mAimingTouchpad;
+    private TextButton mMainMenuButton;
+    private TextButton mFireButton;
 
     public PlayState() {
         mLevelManager = LevelManager.get();
@@ -58,11 +59,13 @@ public class PlayState extends State {
 
     @Override
     protected void update(float deltaTime) {
+        //Update the game objects, camera, level manager and stage
         mGameObjectManager.update(deltaTime);
         mCameraController.update(deltaTime);
+        mLevelManager.update(deltaTime);
         mStage.act();
 
-        mLevelManager.update(deltaTime);
+        //TODO: remove this pc debugging code
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             mGameStateManager.pop();
         }
@@ -71,39 +74,43 @@ public class PlayState extends State {
 
     @Override
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        //Render all the game objects and the UI
         mGameObjectManager.render(spriteBatch, modelBatch);
         mStage.draw();
     }
 
     @Override
     protected void loaded() {
+        //Load the level to be played
         mLevelManager.LoadLevel();
 
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
+        //Set up the touch pads
         float touchpadSize = 200f;
         float touchpadPadding = 30f;
         float touchpadDeadZone = 10f;
-        movementTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
-        movementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+        mMovementTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
+        mMovementTouchpad.setBounds(touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
 
-        aimingTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
-        aimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
+        mAimingTouchpad = new Touchpad(touchpadDeadZone, mSkin, "transparent");
+        mAimingTouchpad.setBounds(mStage.getWidth() - touchpadSize - touchpadPadding, touchpadPadding, touchpadSize, touchpadSize);
 
+        //Set up the buttons
         float buttonPadding = 80;
-        mainMenuButton = new TextButton("||", mSkin, "transparent");
-        mainMenuButton.setBounds(0, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
-        mainMenuButton.addListener(new ClickListener() {
+        mMainMenuButton = new TextButton("||", mSkin, "transparent");
+        mMainMenuButton.setBounds(0, mStage.getHeight() - buttonPadding, buttonPadding, buttonPadding);
+        mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pauseGame();
             }
         });
 
-        fireButton = new TextButton("FIRE", mSkin, "transparent");
-        fireButton.setBounds(mStage.getWidth() - (buttonPadding + touchpadPadding), touchpadPadding + touchpadSize, buttonPadding, buttonPadding);
-        fireButton.addListener(new ClickListener() {
+        mFireButton = new TextButton("FIRE", mSkin, "transparent");
+        mFireButton.setBounds(mStage.getWidth() - (buttonPadding + touchpadPadding), touchpadPadding + touchpadSize, buttonPadding, buttonPadding);
+        mFireButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 mLevelManager.getPlayer().shoot();
@@ -111,13 +118,16 @@ public class PlayState extends State {
         });
 
 
-        mStage.addActor(mainMenuButton);
-        mStage.addActor(fireButton);
-
-        mStage.addActor(movementTouchpad);
-        mStage.addActor(aimingTouchpad);
+        //Add the touchpads and buttons to the stage
+        mStage.addActor(mMainMenuButton);
+        mStage.addActor(mFireButton);
+        mStage.addActor(mMovementTouchpad);
+        mStage.addActor(mAimingTouchpad);
     }
 
+    /**
+     * Add a pause state on top and pause the game
+     */
     public void pauseGame() {
         mGameStateManager.push(new PauseState());
     }
@@ -126,7 +136,9 @@ public class PlayState extends State {
     public void initialiseInput() {
         if (mStage == null) return;
         Gdx.input.setInputProcessor(mStage);
-        mLevelManager.getPlayer().setTouchPads(movementTouchpad, aimingTouchpad);
+        mStage.act(0.01f);
+        //Pass the touchpads to the player
+        mLevelManager.getPlayer().setTouchPads(mMovementTouchpad, mAimingTouchpad);
     }
 
     @Override
@@ -135,6 +147,4 @@ public class PlayState extends State {
         LevelManager.get().unloadLevel();
 
     }
-
-
 }

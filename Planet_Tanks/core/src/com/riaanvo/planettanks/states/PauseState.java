@@ -33,7 +33,8 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.riaanvo.planettanks.Constants;
 
 /**
- * Created by riaanvo on 1/6/17.
+ * This class creates and displays a simple pause menu to the player. It extends functionality from
+ * the state superclass. It allows the player to pause the game, resume playing or quit to main menu
  */
 
 public class PauseState extends State {
@@ -43,39 +44,42 @@ public class PauseState extends State {
     private Label mTitle;
     private TextButton mResumeButton;
     private TextButton mMainMenuButton;
-    private Texture blackFadeTexture;
 
-    private float alpha;
     private State mPlayState;
 
-    private boolean transitionedIn;
-    private boolean transitionOut;
-    private float fadeInTime;
-    private float fadeInTimer;
+    //Used to control the transitioning
+    private boolean mTransitionedIn;
+    private boolean mTransitionOut;
+    private float mFadeInTime;
+    private float mFadeInTimer;
+    private float mAlpha;
+    private Texture mBlackFadeTexture;
 
     public PauseState() {
         mPlayState = mGameStateManager.getState(0);
-        alpha = 0.8f;
-        transitionedIn = false;
-        transitionOut = false;
-        fadeInTime = 0.2f;
-        fadeInTimer = 0f;
+        mAlpha = 0.8f;
+        mTransitionedIn = false;
+        mTransitionOut = false;
+        mFadeInTime = 0.2f;
+        mFadeInTimer = 0f;
     }
 
     @Override
     protected void update(float deltaTime) {
-        if (!transitionedIn) {
-            fadeInTimer += deltaTime;
-            if (fadeInTimer >= fadeInTime) {
-                fadeInTimer = fadeInTime;
-                transitionedIn = true;
+        if (!mTransitionedIn) {
+            mFadeInTimer += deltaTime;
+            //Check if the state has transitioned in
+            if (mFadeInTimer >= mFadeInTime) {
+                mFadeInTimer = mFadeInTime;
+                mTransitionedIn = true;
             }
         } else {
             mStage.act(deltaTime);
-            if (transitionOut) {
-                fadeInTimer -= deltaTime;
-                if (fadeInTimer < 0) {
-                    fadeInTimer = 0;
+            if (mTransitionOut) {
+                mFadeInTimer -= deltaTime;
+                //Check if the state has transitioned out
+                if (mFadeInTimer < 0) {
+                    mFadeInTimer = 0;
                     mGameStateManager.pop();
                 }
             }
@@ -84,36 +88,42 @@ public class PauseState extends State {
 
     @Override
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        //Render the play state if it is set
         if (mPlayState != null) {
             mPlayState.render(spriteBatch, modelBatch);
         }
-        float currentAlpha = alpha * (fadeInTimer / fadeInTime);
-        if (blackFadeTexture == null) return;
+        //Calculate the alpha
+        float currentAlpha = mAlpha * (mFadeInTimer / mFadeInTime);
+        if (mBlackFadeTexture == null) return;
         spriteBatch.setColor(0, 0, 0, currentAlpha);
         spriteBatch.begin();
-        spriteBatch.draw(blackFadeTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //Render the black texture with the calculated alpha
+        spriteBatch.draw(mBlackFadeTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.end();
         spriteBatch.setColor(0, 0, 0, 1);
 
-        if (transitionedIn && !transitionOut) mStage.draw();
+        //If the state is not transitioning render the UI
+        if (mTransitionedIn && !mTransitionOut) mStage.draw();
     }
 
     @Override
     protected void loaded() {
-        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
-
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
+        mBlackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+
+        //Create the title label
         mTitle = new Label("PAUSED", mSkin, "title");
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
+        //Create the option buttons
         mResumeButton = new TextButton("RESUME", mSkin);
         mResumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                transitionOut = true;
+                mTransitionOut = true;
             }
         });
 
@@ -121,12 +131,13 @@ public class PauseState extends State {
         mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //Remove the play state and this state
                 mGameStateManager.removeState(1);
                 mGameStateManager.pop();
             }
         });
 
-
+        //Create the UI structure to hold all the elements
         Table mTable = new Table();
         mTable.setTransform(true);
         mTable.padBottom(20f);

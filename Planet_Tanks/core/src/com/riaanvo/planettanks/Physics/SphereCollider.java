@@ -20,7 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.riaanvo.planettanks.GameObjects.GameObject;
 
 /**
- * Created by riaanvo on 22/5/17.
+ * This class extends the collider super class and implements the methods using a bounding sphere.
  */
 
 public class SphereCollider extends Collider {
@@ -34,14 +34,27 @@ public class SphereCollider extends Collider {
         mBoundingSphere = new BoundingSphere(gameObject.getPosition().cpy().add(offSet), radius);
     }
 
+    /**
+     * Updates the position of the bounding sphere based on the game objects position
+     */
     public void updatePosition() {
         mBoundingSphere.setCenter(mGameObject.getPosition().cpy().add(mOffset));
     }
 
+    /**
+     * Sets the position of the bounding sphere
+     *
+     * @param newGameObjectPosition the new position
+     */
     public void setPosition(Vector3 newGameObjectPosition) {
         mBoundingSphere.setCenter(newGameObjectPosition.cpy().add(mOffset));
     }
 
+    /**
+     * Adds the provided vector 3 to the colliders current position
+     *
+     * @param adjustment amound as a vector 3
+     */
     public void adjustPosition(Vector3 adjustment) {
         mBoundingSphere.setCenter(mBoundingSphere.getCenter().cpy().add(adjustment));
     }
@@ -52,6 +65,7 @@ public class SphereCollider extends Collider {
 
     @Override
     public boolean intersectsWith(Collider other) {
+        //determine which method to run based on the colider type and then fill in the bounding shapes
         switch (other.mColliderType) {
             case BOX:
                 return intersects(((BoxCollider) other).getBoundingBox(), mBoundingSphere);

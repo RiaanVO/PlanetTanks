@@ -21,14 +21,13 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.riaanvo.planettanks.GameObjects.GameObject;
 
 /**
- * Created by riaanvo on 22/5/17.
+ * This class extends the collider super class and implements the methods using a bounding box.
  */
 
 public class BoxCollider extends Collider {
     private BoundingBox mBoundingBox;
     private Vector3 mSize;
     private Vector3 mHalfSize;
-
 
     public BoxCollider(GameObject gameObject, ColliderTag tag, Vector3 offset, Vector3 size) {
         mColliderType = ColliderType.BOX;
@@ -43,13 +42,20 @@ public class BoxCollider extends Collider {
         mBoundingBox.set(getMinBound(), getMaxBound());
     }
 
+    /**
+     * Sets the size and calculates the half size of the collider
+     *
+     * @param newSize the new size of the collider
+     */
     public void setSize(Vector3 newSize) {
         mSize = newSize;
         mHalfSize = newSize.cpy().scl(0.5f);
     }
 
+
     @Override
     public boolean intersectsWith(Collider other) {
+        //determine which method to run based on the colider type and then fill in the bounding shapes
         switch (other.mColliderType) {
             case BOX:
                 return intersects(((BoxCollider) other).getBoundingBox(), mBoundingBox);
@@ -59,10 +65,20 @@ public class BoxCollider extends Collider {
         return false;
     }
 
+    /**
+     * Returns the front bottom left corner of the bounding box
+     *
+     * @return a vector 3 position
+     */
     public Vector3 getMinBound() {
         return mGameObject.getPosition().cpy().add(mOffset).sub(mHalfSize);
     }
 
+    /**
+     * Returns the top back right corner of the bounding box
+     *
+     * @return a vector 3 position
+     */
     public Vector3 getMaxBound() {
         return mGameObject.getPosition().cpy().add(mOffset).add(mHalfSize);
     }

@@ -34,95 +34,107 @@ import com.riaanvo.planettanks.Constants;
 import com.riaanvo.planettanks.managers.LevelManager;
 
 /**
- * Created by riaanvo on 29/5/17.
+ * This class creates the game over screen shown when the player dies. It extends from the state
+ * super class. It allows the player to restart the current level or quit to the main menu.
  */
 
 public class GameOverState extends State {
-
     private Stage mStage;
     private Skin mSkin;
 
     private Label mTitle;
     private TextButton mReplayButton;
     private TextButton mMainMenuButton;
-    private Texture blackFadeTexture;
 
-    private float alpha;
     private State mPlayState;
 
-    private boolean transitionedIn;
-    private boolean transitionOut;
-    private float fadeInTime;
-    private float fadeInTimer;
+    //Used to control the transition
+    private boolean mTransitionedIn;
+    private boolean mTransitionOut;
+    private float mFadeInTime;
+    private float mFadeInTimer;
+    private Texture mBlackFadeTexture;
+    private float mAlpha;
 
     public GameOverState() {
         mPlayState = mGameStateManager.getState(0);
-        alpha = 0.8f;
-        transitionedIn = false;
-        transitionOut = false;
-        fadeInTime = 0.5f;
-        fadeInTimer = 0f;
+        mAlpha = 0.8f;
+        mTransitionedIn = false;
+        mTransitionOut = false;
+        mFadeInTime = 0.5f;
+        mFadeInTimer = 0f;
     }
 
     @Override
     protected void update(float deltaTime) {
-        if (!transitionedIn) {
-            fadeInTimer += deltaTime;
-            if (fadeInTimer >= fadeInTime) {
-                fadeInTimer = fadeInTime;
-                transitionedIn = true;
-            }
-            if (mPlayState != null) {
-                mPlayState.Update(deltaTime);
+        if (!mTransitionedIn) {
+            mFadeInTimer += deltaTime;
+            //Check if the timer has expired
+            if (mFadeInTimer >= mFadeInTime) {
+                mFadeInTimer = mFadeInTime;
+                mTransitionedIn = true;
             }
         } else {
+            //Update the stage
             mStage.act(deltaTime);
-            if (transitionOut) {
-                if (mPlayState != null) {
-                    mPlayState.Update(deltaTime);
-                }
-                fadeInTimer -= deltaTime;
-                if (fadeInTimer < 0) {
-                    fadeInTimer = 0;
+
+            if (mTransitionOut) {
+                mFadeInTimer -= deltaTime;
+                //Check if it has transitioned
+                if (mFadeInTimer < 0) {
+                    mFadeInTimer = 0;
                     mGameStateManager.pop();
                 }
             }
+        }
+
+        //Update the play state as fading out
+        if (mPlayState != null) {
+            mPlayState.Update(deltaTime);
         }
     }
 
     @Override
     protected void render(SpriteBatch spriteBatch, ModelBatch modelBatch) {
+        //Render the play state if it is set
         if (mPlayState != null) {
             mPlayState.render(spriteBatch, modelBatch);
         }
-        float currentAlpha = alpha * (fadeInTimer / fadeInTime);
-        if (blackFadeTexture == null) return;
+        //calculate the current black fade alpha
+        float currentAlpha = mAlpha * (mFadeInTimer / mFadeInTime);
+        if (mBlackFadeTexture == null) return;
         spriteBatch.setColor(0, 0, 0, currentAlpha);
         spriteBatch.begin();
-        spriteBatch.draw(blackFadeTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //Render the black fade
+        spriteBatch.draw(mBlackFadeTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.end();
         spriteBatch.setColor(0, 0, 0, 1);
 
-        if (transitionedIn && !transitionOut) mStage.draw();
+        //if not transitioning draw the UI menu
+        if (mTransitionedIn && !mTransitionOut) mStage.draw();
     }
 
     @Override
     protected void loaded() {
-        blackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
-
+        //Set up the stage for the UI
         mStage = new Stage(new ScalingViewport(Scaling.stretch, Constants.VIRTUAL_SCREEN_WIDTH, Constants.VIRTUAL_SCREEN_HEIGHT));
         mSkin = mContentManager.getSkin(Constants.SKIN_KEY);
 
+        mBlackFadeTexture = mContentManager.getTexture(Constants.BLACK_TEXTURE);
+
+        //Create the title label
         mTitle = new Label("GAME OVER!", mSkin, "title");
         mTitle.setFontScale(2);
         mTitle.setAlignment(Align.center);
 
+        //Create the menu buttons
         mReplayButton = new TextButton("RETRY", mSkin);
         mReplayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //restart the level and fade out
                 LevelManager.get().RestartLevel();
-                transitionOut = true;
+                mTransitionOut = true;
             }
         });
 
@@ -130,12 +142,13 @@ public class GameOverState extends State {
         mMainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // remove the play state and this state
                 mGameStateManager.removeState(1);
                 mGameStateManager.pop();
             }
         });
 
-
+        //Set up the UI structure
         Table mTable = new Table();
         mTable.setTransform(true);
         mTable.padBottom(20f);
@@ -156,12 +169,14 @@ public class GameOverState extends State {
     @Override
     public void initialiseInput() {
         if (mStage == null) return;
+        //Re assign the input processor
         Gdx.input.setInputProcessor(mStage);
     }
 
     @Override
     public void dispose() {
         if (mStage == null) return;
+        //Dispose of the UI elements
         mStage.dispose();
     }
 }
